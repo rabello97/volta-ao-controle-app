@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    body{margin:0}
+    input,select,button,textarea{font-family:inherit}
+    *{box-sizing:border-box}
+    ::-webkit-scrollbar{width:8px;height:8px}
+    ::-webkit-scrollbar-thumb{background:oklch(88% 0.006 260);border-radius:8px}
+    @keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes popIn{from{opacity:0;transform:scale(.94) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    @keyframes pulseDot{0%,100%{opacity:1}50%{opacity:.4}}
+  </style>
+</helmet>
+<div style="{{ rootStyle }}">
+
+<sc-if value="{{ !loggedIn }}" hint-placeholder-val="{{ true }}">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:{{ loginBg }}">
+    <div style="width:min(420px,100%);display:flex;flex-direction:column;gap:28px;background:#fff;padding:36px 32px;border-radius:24px;box-shadow:0 20px 60px oklch(30% 0.05 260 / 0.12);animation:popIn .45s ease both">
+      <div style="display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center">
+        <div style="width:52px;height:52px;border-radius:16px;background:{{ accentGradient }};display:flex;align-items:center;justify-content:center">
+          <i data-lucide="wallet" style="width:26px;height:26px;color:#fff"></i>
+        </div>
+        <h1 style="font-family:'Sora',sans-serif;font-weight:800;font-size:24px;margin:6px 0 0;color:{{ textColor }}">NósFinanças</h1>
+        <div style="font-size:13px;color:{{ textMuted }}">Finanças do casal, num só lugar</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:{{ textMuted }};margin-bottom:6px">E-mail</label>
+          <input style="{{ inputStyle }}" type="email" value="{{ loginEmailFor }}" readonly="{{ true }}">
+        </div>
+        <div>
+          <label style="display:block;font-size:12px;font-weight:600;color:{{ textMuted }};margin-bottom:6px">Senha</label>
+          <input style="{{ inputStyle }}" type="password" value="••••••••" readonly="{{ true }}">
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="font-size:12px;font-weight:600;color:{{ textMuted }}">Entrar como</div>
+        <div style="display:flex;gap:10px">
+          <button style="{{ profilePickRodrigoStyle }}" style-hover="{{ profilePickHoverStyle }}" onClick="{{ pickLoginProfile('rodrigo') }}">
+            <div style="{{ avatarStyleRodrigo }}">RM</div>
+            <span>Rodrigo</span>
+          </button>
+          <button style="{{ profilePickBrunaStyle }}" style-hover="{{ profilePickHoverStyle }}" onClick="{{ pickLoginProfile('bruna') }}">
+            <div style="{{ avatarStyleBruna }}">BS</div>
+            <span>Bruna</span>
+          </button>
+        </div>
+      </div>
+
+      <button style="{{ loginButtonStyle }}" style-hover="{{ loginButtonHoverStyle }}" onClick="{{ doLogin }}">Entrar</button>
+      <div style="font-size:11.5px;text-align:center;color:{{ textFaint }}">Protótipo — dados fictícios, sem autenticação real.</div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;min-height:100vh;background:{{ bgColor }}">
+
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <div style="{{ sidebarStyle }}">
+      <div style="display:flex;align-items:center;gap:10px;padding:4px 8px 20px">
+        <div style="width:34px;height:34px;border-radius:10px;background:{{ accentGradient }};display:flex;align-items:center;justify-content:center;flex:none">
+          <i data-lucide="wallet" style="width:18px;height:18px;color:#fff"></i>
+        </div>
+        <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:{{ textColor }}">NósFinanças</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:3px;flex:1">
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="5">
+          <button style="{{ item.style }}" style-hover="{{ item.hoverStyle }}" onClick="{{ item.onClick }}">
+            <i data-lucide="{{ item.icon }}" style="width:18px;height:18px;flex:none"></i>
+            <span>{{ item.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid {{ divider }};margin-top:8px">
+        <div style="{{ sidebarAvatarStyle }}">{{ authInitials }}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:13px;font-weight:700;color:{{ textColor }}">{{ authUserLabel }}</div>
+          <div style="font-size:11px;color:{{ textMuted }}">Sessão ativa</div>
+        </div>
+        <button style="{{ logoutButtonStyle }}" style-hover="{{ logoutHoverStyle }}" onClick="{{ doLogout }}">
+          <i data-lucide="log-out" style="width:16px;height:16px"></i>
+        </button>
+      </div>
+    </div>
+  </sc-if>
+
+  <div style="flex:1;display:flex;flex-direction:column;min-width:0">
+
+    <div style="{{ topbarStyle }}">
+      <sc-if value="{{ !isDesktop }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="width:26px;height:26px;border-radius:8px;background:{{ accentGradient }};display:flex;align-items:center;justify-content:center;flex:none">
+            <i data-lucide="wallet" style="width:14px;height:14px;color:#fff"></i>
+          </div>
+          <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:15px;color:{{ textColor }}">NósFinanças</div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+        <h2 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:22px;color:{{ textColor }}">{{ screenTitle }}</h2>
+      </sc-if>
+
+      <div style="{{ segmentedWrapStyle }}">
+        <sc-for list="{{ viewOptions }}" as="opt" hint-placeholder-count="3">
+          <button style="{{ opt.style }}" onClick="{{ opt.onClick }}">{{ opt.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ !isDesktop }}" hint-placeholder-val="{{ false }}">
+        <button style="{{ mobileLogoutStyle }}" onClick="{{ doLogout }}">
+          <i data-lucide="log-out" style="width:18px;height:18px"></i>
+        </button>
+      </sc-if>
+    </div>
+
+    <div style="{{ contentAreaStyle }}" key="{{ screen }}">
+
+      <sc-if value="{{ screen == 'dashboard' }}" hint-placeholder-val="{{ true }}" data-screen-label="Dashboard">
+        <sc-if value="{{ hasAlerts }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+            <sc-for list="{{ alertBanners }}" as="a" hint-placeholder-count="1">
+              <div style="{{ alertStyle }}">
+                <i data-lucide="alert-triangle" style="width:16px;height:16px;flex:none;color:{{ negative }}"></i>
+                <span>{{ a.text }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="{{ summaryGridStyle }}">
+          <sc-for list="{{ summaryCards }}" as="c" hint-placeholder-count="4">
+            <div style="{{ summaryCardStyle }}" style-hover="{{ cardHoverStyle }}">
+              <div style="display:flex;align-items:center;gap:8px">
+                <div style="{{ c.iconWrapStyle }}"><i data-lucide="{{ c.icon }}" style="width:15px;height:15px;color:{{ c.iconColor }}"></i></div>
+                <div style="font-size:12.5px;font-weight:600;color:{{ textMuted }}">{{ c.label }}</div>
+              </div>
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:25px;{{ c.valueStyle }}">{{ c.value }}</div>
+              <div style="font-size:12px;color:{{ textFaint }}">{{ c.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="{{ dashGridStyle }}">
+          <div style="{{ panelStyle }}">
+            <h3 style="{{ panelTitleStyle }}">Gastos por categoria</h3>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <sc-for list="{{ categoryBars }}" as="cat" hint-placeholder-count="5">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+                    <span style="color:{{ textColor }}">{{ cat.name }}</span>
+                    <span style="font-weight:700;color:{{ textColor }}">{{ cat.amountDisplay }}</span>
+                  </div>
+                  <div style="height:8px;background:{{ trackColor }};border-radius:99px;overflow:hidden">
+                    <div style="{{ cat.barStyle }}"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="{{ panelStyle }}">
+            <h3 style="{{ panelTitleStyle }}">Próximas contas a vencer</h3>
+            <div style="display:flex;flex-direction:column">
+              <sc-for list="{{ upcomingBills }}" as="b" hint-placeholder-count="4">
+                <div style="{{ billRowStyle }}">
+                  <div style="display:flex;align-items:center;gap:12px;min-width:0">
+                    <div style="{{ b.iconWrapStyle }}"><i data-lucide="calendar" style="width:15px;height:15px;color:{{ negative }}"></i></div>
+                    <div style="min-width:0">
+                      <div style="font-weight:700;font-size:14px;color:{{ textColor }}">{{ b.name }}</div>
+                      <div style="font-size:12px;color:{{ textMuted }}">{{ b.dueLabel }}</div>
+                    </div>
+                  </div>
+                  <div style="text-align:right;flex:none">
+                    <div style="font-weight:700;font-size:14px;color:{{ textColor }}">{{ b.valueDisplay }}</div>
+                    <div style="{{ b.statusStyle }}">{{ b.statusLabel }}</div>
+                  </div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noUpcoming }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:16px 0;font-size:13px;color:{{ textMuted }}">Nenhuma conta pendente por aqui.</div>
+              </sc-if>
+            </div>
+          </div>
+
+          <div style="{{ panelStyle }}">
+            <h3 style="{{ panelTitleStyle }}">Faturas abertas</h3>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              <sc-for list="{{ openInvoicesDash }}" as="inv" hint-placeholder-count="2">
+                <button style="{{ invoiceCardStyle }}" style-hover="{{ cardHoverStyle }}" onClick="{{ inv.onClick }}">
+                  <div style="display:flex;justify-content:space-between;align-items:baseline">
+                    <span style="font-weight:700;font-size:14px;color:{{ textColor }}">{{ inv.name }}</span>
+                    <span style="font-size:11px;color:{{ textMuted }}">{{ inv.owner }}</span>
+                  </div>
+                  <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:20px;color:{{ negative }}">{{ inv.valueDisplay }}</div>
+                  <div style="height:6px;background:{{ trackColor }};border-radius:99px;overflow:hidden"><div style="{{ inv.barStyle }}"></div></div>
+                  <div style="font-size:11px;color:{{ textFaint }}">{{ inv.metaLabel }}</div>
+                </button>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="{{ panelStyle }}">
+            <h3 style="{{ panelTitleStyle }};margin-bottom:4px">Projeção fim do mês</h3>
+            <div style="font-size:12.5px;color:{{ textMuted }};margin-bottom:16px">Saldo atual − contas e faturas pendentes</div>
+            <div style="display:flex;align-items:baseline;gap:10px">
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:30px;{{ projectionValueStyle }}">{{ projectionValueDisplay }}</div>
+              <div style="{{ projectionDeltaStyle }}">{{ projectionDeltaLabel }}</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screen == 'transactions' }}" hint-placeholder-val="{{ false }}" data-screen-label="Transações">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <div style="{{ segStyle }}">
+              <sc-for list="{{ txTypeOptions }}" as="o" hint-placeholder-count="3">
+                <button style="{{ o.style }}" onClick="{{ o.onClick }}">{{ o.label }}</button>
+              </sc-for>
+            </div>
+            <select style="{{ selectStyle }}" value="{{ txFilters.category }}" onChange="{{ setTxCategory }}">
+              <sc-for list="{{ txCategoryOptions }}" as="c" hint-placeholder-count="6">
+                <option value="{{ c }}">{{ c }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <button style="{{ primaryBtnStyle }}" style-hover="{{ primaryBtnHoverStyle }}" onClick="{{ openAddTx }}">
+            <i data-lucide="plus" style="width:16px;height:16px"></i><span>Nova transação</span>
+          </button>
+        </div>
+
+        <div style="{{ panelStyle }};padding:0;overflow:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead>
+              <tr>
+                <th style="{{ thStyle }}">Data</th>
+                <th style="{{ thStyle }}">Descrição</th>
+                <th style="{{ thStyle }}">Categoria</th>
+                <sc-if value="{{ view == 'unified' }}" hint-placeholder-val="{{ false }}"><th style="{{ thStyle }}">Quem</th></sc-if>
+                <th style="{{ thStyle }};text-align:right">Valor</th>
+              </tr>
+            </thead>
+            <tbody>
+              <sc-for list="{{ filteredTx }}" as="t" hint-placeholder-count="8">
+                <tr style="{{ trStyle }}" style-hover="{{ trHoverStyle }}">
+                  <td style="{{ tdStyle }}">{{ t.dateLabel }}</td>
+                  <td style="{{ tdStyle }}">
+                    <div style="font-weight:600;color:{{ textColor }}">{{ t.desc }}</div>
+                    <sc-if value="{{ t.cardName }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:{{ textMuted }}">{{ t.cardName }}</div></sc-if>
+                  </td>
+                  <td style="{{ tdStyle }}"><span style="{{ tagStyle }}">{{ t.category }}</span></td>
+                  <sc-if value="{{ view == 'unified' }}" hint-placeholder-val="{{ false }}"><td style="{{ tdStyle }}">{{ t.owner }}</td></sc-if>
+                  <td style="{{ tdStyle }};text-align:right;font-weight:700;{{ t.valueStyle }}">{{ t.valueDisplay }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+          <sc-if value="{{ noTx }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:40px;text-align:center;font-size:13px;color:{{ textMuted }}">Nenhuma transação com esses filtros.</div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screen == 'recurring' }}" hint-placeholder-val="{{ false }}" data-screen-label="Contas recorrentes">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+          <div style="font-size:13px;color:{{ textMuted }}">Contas fixas do mês — água, luz, internet, aluguel e outras.</div>
+          <button style="{{ primaryBtnStyle }}" style-hover="{{ primaryBtnHoverStyle }}" onClick="{{ openAddBill }}">
+            <i data-lucide="plus" style="width:16px;height:16px"></i><span>Nova conta</span>
+          </button>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <sc-for list="{{ recurringList }}" as="r" hint-placeholder-count="5">
+            <div style="{{ recurringRowStyle }}" style-hover="{{ cardHoverStyle }}">
+              <div style="display:flex;align-items:center;gap:14px;min-width:0">
+                <div style="{{ r.dueBadgeStyle }}">{{ r.dueDay }}</div>
+                <div style="min-width:0">
+                  <div style="font-weight:700;font-size:14px;color:{{ textColor }}">{{ r.name }}</div>
+                  <div style="font-size:12px;color:{{ textMuted }}">{{ r.categoryOwnerLabel }}</div>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:14px;flex:none">
+                <div style="font-weight:700;font-size:15px;color:{{ textColor }}">{{ r.valueDisplay }}</div>
+                <button style="{{ r.statusButtonStyle }}" onClick="{{ r.toggle }}">{{ r.statusLabel }}</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screen == 'cards' }}" hint-placeholder-val="{{ false }}" data-screen-label="Cartões">
+        <div style="{{ cardsGridStyle }}">
+          <sc-for list="{{ cardsList }}" as="c" hint-placeholder-count="3">
+            <button style="{{ cardTileStyle }}" style-hover="{{ cardHoverStyle }}" onClick="{{ c.onClick }}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline">
+                <span style="font-family:'Sora',sans-serif;font-weight:800;font-size:16px;color:{{ textColor }}">{{ c.name }}</span>
+                <span style="font-size:11px;color:{{ textMuted }}">{{ c.owner }}</span>
+              </div>
+              <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:{{ textMuted }};margin-top:14px">Fatura atual</div>
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:23px;color:{{ negative }}">{{ c.invoiceDisplay }}</div>
+              <div style="height:6px;background:{{ trackColor }};border-radius:99px;overflow:hidden;margin-top:8px"><div style="{{ c.barStyle }}"></div></div>
+              <div style="display:flex;justify-content:space-between;font-size:11px;color:{{ textFaint }};margin-top:8px">
+                <span>Limite {{ c.limitDisplay }}</span>
+                <span>Fecha {{ c.closingDay }} · vence {{ c.dueDay }}</span>
+              </div>
+            </button>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screen == 'cardDetail' }}" hint-placeholder-val="{{ false }}" data-screen-label="Fatura do cartão">
+        <button style="{{ backLinkStyle }}" onClick="{{ backToCards }}"><i data-lucide="chevron-left" style="width:16px;height:16px"></i><span>Cartões</span></button>
+        <div style="{{ panelStyle }};margin-top:14px">
+          <div style="display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;align-items:baseline;margin-bottom:20px">
+            <div>
+              <h3 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:{{ textColor }}">{{ cardDetailName }}</h3>
+              <div style="font-size:12px;color:{{ textMuted }}">{{ cardDetailMeta }}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:{{ textMuted }}">Total da fatura</div>
+              <div style="font-family:'Sora',sans-serif;font-weight:800;font-size:25px;color:{{ negative }}">{{ cardDetailTotal }}</div>
+            </div>
+          </div>
+          <table style="width:100%;border-collapse:collapse;font-size:14px">
+            <thead><tr><th style="{{ thStyle }}">Data</th><th style="{{ thStyle }}">Descrição</th><th style="{{ thStyle }}">Categoria</th><th style="{{ thStyle }};text-align:right">Valor</th></tr></thead>
+            <tbody>
+              <sc-for list="{{ cardDetailTx }}" as="t" hint-placeholder-count="4">
+                <tr style="{{ trStyle }}" style-hover="{{ trHoverStyle }}">
+                  <td style="{{ tdStyle }}">{{ t.dateLabel }}</td>
+                  <td style="{{ tdStyle }};color:{{ textColor }}">{{ t.desc }}</td>
+                  <td style="{{ tdStyle }}"><span style="{{ tagStyle }}">{{ t.category }}</span></td>
+                  <td style="{{ tdStyle }};text-align:right;font-weight:700;color:{{ negative }}">{{ t.valueDisplay }}</td>
+                </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ screen == 'reports' }}" hint-placeholder-val="{{ false }}" data-screen-label="Relatórios">
+        <div style="{{ dashGridStyle }}">
+          <div style="{{ panelStyle }};grid-column:span 2">
+            <h3 style="{{ panelTitleStyle }}">Evolução de gastos — últimos 6 meses</h3>
+            <div style="display:flex;align-items:flex-end;gap:14px;height:170px">
+              <sc-for list="{{ monthlyBars }}" as="m" hint-placeholder-count="6">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                  <div style="font-size:11px;font-weight:700;color:{{ textColor }}">{{ m.totalDisplay }}</div>
+                  <div style="{{ m.barStyle }}"></div>
+                  <div style="font-size:12px;color:{{ textMuted }}">{{ m.month }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="{{ panelStyle }}">
+            <h3 style="{{ panelTitleStyle }}">Gastos por categoria (mês atual)</h3>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <sc-for list="{{ categoryBars }}" as="cat" hint-placeholder-count="5">
+                <div>
+                  <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+                    <span style="color:{{ textColor }}">{{ cat.name }}</span><span style="font-weight:700;color:{{ textColor }}">{{ cat.amountDisplay }}</span>
+                  </div>
+                  <div style="height:8px;background:{{ trackColor }};border-radius:99px;overflow:hidden"><div style="{{ cat.barStyle }}"></div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="{{ panelStyle }}">
+            <h3 style="{{ panelTitleStyle }}">Projeção de saldo</h3>
+            <div style="display:flex;flex-direction:column;gap:10px;font-size:14px;color:{{ textColor }}">
+              <div style="display:flex;justify-content:space-between"><span>Saldo atual</span><strong>{{ reportCurrentBalance }}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>Contas pendentes</span><strong style="color:{{ negative }}">{{ reportPendingBills }}</strong></div>
+              <div style="display:flex;justify-content:space-between"><span>Faturas de cartão</span><strong style="color:{{ negative }}">{{ reportPendingCards }}</strong></div>
+              <div style="height:1px;background:{{ divider }};margin:6px 0"></div>
+              <div style="display:flex;justify-content:space-between;font-size:16px"><span>Projeção fim do mês</span><strong style="{{ projectionValueStyle }}">{{ projectionValueDisplay }}</strong></div>
+            </div>
+          </div>
+
+          <div style="{{ panelStyle }};grid-column:span 2">
+            <h3 style="{{ panelTitleStyle }}">Individual vs. unificado</h3>
+            <table style="width:100%;border-collapse:collapse;font-size:14px">
+              <thead><tr><th style="{{ thStyle }}"></th><th style="{{ thStyle }}">Rodrigo</th><th style="{{ thStyle }}">Bruna</th><th style="{{ thStyle }}">Unificado</th></tr></thead>
+              <tbody>
+                <sc-for list="{{ comparisonRows }}" as="row" hint-placeholder-count="4">
+                  <tr style="{{ trStyle }}">
+                    <td style="{{ tdStyle }};font-weight:600;color:{{ textColor }}">{{ row.label }}</td>
+                    <td style="{{ tdStyle }};{{ row.style }}">{{ row.rodrigo }}</td>
+                    <td style="{{ tdStyle }};{{ row.style }}">{{ row.bruna }}</td>
+                    <td style="{{ tdStyle }};{{ row.style }};font-weight:700">{{ row.unificado }}</td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <sc-if value="{{ !isDesktop }}" hint-placeholder-val="{{ false }}">
+      <div style="{{ bottomNavStyle }}">
+        <sc-for list="{{ navItemsMobile }}" as="item" hint-placeholder-count="5">
+          <button style="{{ item.styleMobile }}" onClick="{{ item.onClick }}">
+            <i data-lucide="{{ item.icon }}" style="width:20px;height:20px"></i>
+            <span style="font-size:10.5px">{{ item.label }}</span>
+          </button>
+        </sc-for>
+      </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showAddTxModal }}" hint-placeholder-val="{{ false }}">
+  <div style="{{ backdropStyle }}" onClick="{{ closeAddTx }}">
+    <div style="{{ dialogStyle }}" onClick="{{ stop }}">
+      <h3 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:{{ textColor }}">Nova transação</h3>
+      <div style="{{ segStyle }}">
+        <sc-for list="{{ newTxTypeOptions }}" as="o" hint-placeholder-count="2">
+          <button style="{{ o.style }}" onClick="{{ o.onClick }}">{{ o.label }}</button>
+        </sc-for>
+      </div>
+      <div><label style="{{ fieldLabelStyle }}">Descrição</label><input style="{{ inputStyle }}" value="{{ newTx.desc }}" onChange="{{ setNewTxField('desc') }}" placeholder="ex: Mercado"></div>
+      <div style="display:flex;gap:14px">
+        <div style="flex:1"><label style="{{ fieldLabelStyle }}">Valor (R$)</label><input style="{{ inputStyle }}" type="number" step="0.01" value="{{ newTx.value }}" onChange="{{ setNewTxField('value') }}"></div>
+        <div style="flex:1"><label style="{{ fieldLabelStyle }}">Data</label><input style="{{ inputStyle }}" type="date" value="{{ newTx.date }}" onChange="{{ setNewTxField('date') }}"></div>
+      </div>
+      <div>
+        <label style="{{ fieldLabelStyle }}">Categoria</label>
+        <select style="{{ inputStyle }}" value="{{ newTx.category }}" onChange="{{ setNewTxField('category') }}">
+          <sc-for list="{{ newTxCategoryOptions }}" as="c" hint-placeholder-count="5"><option value="{{ c }}">{{ c }}</option></sc-for>
+        </select>
+      </div>
+      <sc-if value="{{ showOwnerSelect }}" hint-placeholder-val="{{ false }}">
+        <div><label style="{{ fieldLabelStyle }}">Quem lançou</label>
+          <select style="{{ inputStyle }}" value="{{ newTx.owner }}" onChange="{{ setNewTxField('owner') }}">
+            <option value="rodrigo">Rodrigo</option><option value="bruna">Bruna</option>
+          </select>
+        </div>
+      </sc-if>
+      <sc-if value="{{ newTx.type == 'out' }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <label style="{{ fieldLabelStyle }}">Cartão (opcional)</label>
+          <select style="{{ inputStyle }}" value="{{ newTx.cardId }}" onChange="{{ setNewTxField('cardId') }}">
+            <option value="">Nenhum — débito/dinheiro</option>
+            <sc-for list="{{ newTxCardOptions }}" as="c" hint-placeholder-count="2"><option value="{{ c.id }}">{{ c.label }}</option></sc-for>
+          </select>
+        </div>
+        <sc-if value="{{ newTx.cardId }}" hint-placeholder-val="{{ false }}">
+          <div><label style="{{ fieldLabelStyle }}">Fatura</label>
+            <div style="{{ segStyle }}">
+              <sc-for list="{{ invoiceCycleOptions }}" as="o" hint-placeholder-count="2"><button style="{{ o.style }}" onClick="{{ o.onClick }}">{{ o.label }}</button></sc-for>
+            </div>
+          </div>
+        </sc-if>
+      </sc-if>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;color:{{ textColor }}">
+        <input type="checkbox" checked="{{ newTx.recurring }}" onChange="{{ toggleNewTxRecurring }}"><span>Esta é uma despesa recorrente</span>
+      </label>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px">
+        <button style="{{ secondaryBtnStyle }}" onClick="{{ closeAddTx }}">Cancelar</button>
+        <button style="{{ primaryBtnStyle }}" style-hover="{{ primaryBtnHoverStyle }}" onClick="{{ submitNewTx }}">Salvar</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ showAddBillModal }}" hint-placeholder-val="{{ false }}">
+  <div style="{{ backdropStyle }}" onClick="{{ closeAddBill }}">
+    <div style="{{ dialogStyle }}" onClick="{{ stop }}">
+      <h3 style="margin:0;font-family:'Sora',sans-serif;font-weight:700;font-size:19px;color:{{ textColor }}">Nova conta recorrente</h3>
+      <div><label style="{{ fieldLabelStyle }}">Nome</label><input style="{{ inputStyle }}" value="{{ newBill.name }}" onChange="{{ setNewBillField('name') }}" placeholder="ex: Internet"></div>
+      <div style="display:flex;gap:14px">
+        <div style="flex:1"><label style="{{ fieldLabelStyle }}">Valor (R$)</label><input style="{{ inputStyle }}" type="number" step="0.01" value="{{ newBill.value }}" onChange="{{ setNewBillField('value') }}"></div>
+        <div style="flex:1"><label style="{{ fieldLabelStyle }}">Dia de vencimento</label><input style="{{ inputStyle }}" type="number" min="1" max="31" value="{{ newBill.dueDay }}" onChange="{{ setNewBillField('dueDay') }}"></div>
+      </div>
+      <div>
+        <label style="{{ fieldLabelStyle }}">Categoria</label>
+        <select style="{{ inputStyle }}" value="{{ newBill.category }}" onChange="{{ setNewBillField('category') }}">
+          <sc-for list="{{ newTxCategoryOptions }}" as="c" hint-placeholder-count="5"><option value="{{ c }}">{{ c }}</option></sc-for>
+        </select>
+      </div>
+      <sc-if value="{{ showOwnerSelect }}" hint-placeholder-val="{{ false }}">
+        <div><label style="{{ fieldLabelStyle }}">Responsável</label>
+          <select style="{{ inputStyle }}" value="{{ newBill.owner }}" onChange="{{ setNewBillField('owner') }}">
+            <option value="rodrigo">Rodrigo</option><option value="bruna">Bruna</option>
+          </select>
+        </div>
+      </sc-if>
+      <div style="display:flex;justify-content:flex-end;gap:10px;margin-top:6px">
+        <button style="{{ secondaryBtnStyle }}" onClick="{{ closeAddBill }}">Cancelar</button>
+        <button style="{{ primaryBtnStyle }}" style-hover="{{ primaryBtnHoverStyle }}" onClick="{{ submitNewBill }}">Salvar</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const BG = 'oklch(96.8% 0.005 258)';
+const SURFACE = '#ffffff';
+const TEXT = 'oklch(24% 0.014 258)';
+const TEXT_MUTED = 'oklch(52% 0.014 258)';
+const TEXT_FAINT = 'oklch(64% 0.012 258)';
+const DIVIDER = 'oklch(90% 0.006 258)';
+const TRACK = 'oklch(92% 0.006 258)';
+const ACCENT = 'oklch(53% 0.17 264)';
+const ACCENT_HOVER = 'oklch(47% 0.175 264)';
+const ACCENT_TINT = 'oklch(94% 0.03 264)';
+const ACCENT_TINT2 = 'oklch(90% 0.045 264)';
+const POSITIVE = 'oklch(56% 0.135 148)';
+const POSITIVE_TINT = 'oklch(93% 0.045 148)';
+const NEGATIVE = 'oklch(56% 0.16 21)';
+const NEGATIVE_TINT = 'oklch(94% 0.035 21)';
+const SHADOW_SM = '0 1px 2px oklch(20% 0.02 258 / 0.05)';
+const SHADOW_MD = '0 8px 24px oklch(20% 0.03 258 / 0.08)';
+const SHADOW_LG = '0 24px 64px oklch(20% 0.05 258 / 0.18)';
+
+const CATS_OUT = ['Moradia','Alimentação','Transporte','Lazer','Saúde','Educação','Assinaturas','Compras','Outros'];
+const CATS_IN = ['Salário','Renda extra','Investimentos'];
+const TODAY = new Date(2026,7,11);
+const MONTH_NAMES = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+function fmt(n){
+  const neg = n < 0;
+  const s = Math.abs(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  return (neg?'-':'') + 'R$ ' + s;
+}
+function dateLabel(iso){
+  const d = new Date(iso+'T00:00:00');
+  return String(d.getDate()).padStart(2,'0')+' '+MONTH_NAMES[d.getMonth()];
+}
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function buildInitialData(){
+  return {
+    rodrigo: {
+      name:'Rodrigo', initials:'RM', startBalance:3800,
+      transactions:[
+        {id:'r1',date:'2026-08-01',desc:'Mercado',category:'Alimentação',type:'out',value:412.30,recurring:false,cardId:null},
+        {id:'r2',date:'2026-08-02',desc:'Uber',category:'Transporte',type:'out',value:38.90,recurring:false,cardId:null},
+        {id:'r3',date:'2026-08-03',desc:'Salário Agosto',category:'Salário',type:'in',value:8200.00,recurring:true,cardId:null},
+        {id:'r4',date:'2026-08-03',desc:'Farmácia',category:'Saúde',type:'out',value:76.40,recurring:false,cardId:null},
+        {id:'r5',date:'2026-08-04',desc:'Restaurante',category:'Lazer',type:'out',value:145.00,recurring:false,cardId:'ro-c1'},
+        {id:'r6',date:'2026-08-05',desc:'Aluguel',category:'Moradia',type:'out',value:2200.00,recurring:true,cardId:null},
+        {id:'r7',date:'2026-08-05',desc:'Posto de gasolina',category:'Transporte',type:'out',value:220.00,recurring:false,cardId:null},
+        {id:'r8',date:'2026-08-06',desc:'Cinema',category:'Lazer',type:'out',value:68.00,recurring:false,cardId:'ro-c1'},
+        {id:'r9',date:'2026-08-07',desc:'Compra online (roupas)',category:'Compras',type:'out',value:189.90,recurring:false,cardId:'ro-c2'},
+        {id:'r10',date:'2026-08-08',desc:'Mercado',category:'Alimentação',type:'out',value:298.50,recurring:false,cardId:null},
+        {id:'r11',date:'2026-08-08',desc:'Freelance',category:'Renda extra',type:'in',value:450.00,recurring:false,cardId:null},
+        {id:'r12',date:'2026-08-09',desc:'Curso online',category:'Educação',type:'out',value:120.00,recurring:false,cardId:'ro-c1'},
+        {id:'r13',date:'2026-08-10',desc:'Farmácia',category:'Saúde',type:'out',value:54.20,recurring:false,cardId:null},
+        {id:'r14',date:'2026-08-10',desc:'Delivery',category:'Alimentação',type:'out',value:87.30,recurring:false,cardId:'ro-c1'},
+        {id:'r15',date:'2026-08-11',desc:'Presente de aniversário',category:'Lazer',type:'out',value:150.00,recurring:false,cardId:'ro-c2'},
+      ],
+      recurring:[
+        {id:'rb1',name:'Aluguel',value:2200,dueDay:5,status:'pago',category:'Moradia'},
+        {id:'rb2',name:'Internet',value:120,dueDay:10,status:'pendente',category:'Assinaturas'},
+        {id:'rb3',name:'Luz',value:180,dueDay:15,status:'pendente',category:'Moradia'},
+        {id:'rb4',name:'Água',value:90,dueDay:15,status:'pendente',category:'Moradia'},
+        {id:'rb5',name:'Streaming combo',value:55,dueDay:20,status:'pendente',category:'Assinaturas'},
+        {id:'rb6',name:'Plano celular',value:70,dueDay:22,status:'pendente',category:'Assinaturas'},
+      ],
+      cards:[
+        {id:'ro-c1',name:'Cartão Ouro',limit:8000,closingDay:25,dueDay:5},
+        {id:'ro-c2',name:'Cartão Viagem',limit:5000,closingDay:20,dueDay:28},
+      ],
+      monthlyTotals:[4820,5010,4690,5230,4950,0],
+    },
+    bruna: {
+      name:'Bruna', initials:'BS', startBalance:2600,
+      transactions:[
+        {id:'b1',date:'2026-08-01',desc:'Mercado',category:'Alimentação',type:'out',value:365.00,recurring:false,cardId:null},
+        {id:'b2',date:'2026-08-03',desc:'Salário Agosto',category:'Salário',type:'in',value:6800.00,recurring:true,cardId:null},
+        {id:'b3',date:'2026-08-04',desc:'Cabeleireiro',category:'Lazer',type:'out',value:180.00,recurring:false,cardId:'bs-c1'},
+        {id:'b4',date:'2026-08-05',desc:'Uber',category:'Transporte',type:'out',value:45.60,recurring:false,cardId:null},
+        {id:'b5',date:'2026-08-06',desc:'Farmácia',category:'Saúde',type:'out',value:62.10,recurring:false,cardId:null},
+        {id:'b6',date:'2026-08-07',desc:'Assinatura streaming',category:'Assinaturas',type:'out',value:42.90,recurring:false,cardId:'bs-c1'},
+        {id:'b7',date:'2026-08-08',desc:'Freelance design',category:'Renda extra',type:'in',value:600.00,recurring:false,cardId:null},
+        {id:'b8',date:'2026-08-08',desc:'Restaurante',category:'Alimentação',type:'out',value:132.40,recurring:false,cardId:'bs-c1'},
+        {id:'b9',date:'2026-08-09',desc:'Academia',category:'Saúde',type:'out',value:150.00,recurring:false,cardId:null},
+        {id:'b10',date:'2026-08-09',desc:'Livros',category:'Educação',type:'out',value:95.30,recurring:false,cardId:'bs-c1'},
+        {id:'b11',date:'2026-08-10',desc:'Mercado',category:'Alimentação',type:'out',value:210.80,recurring:false,cardId:null},
+        {id:'b12',date:'2026-08-10',desc:'Presente',category:'Lazer',type:'out',value:120.00,recurring:false,cardId:'bs-c1'},
+        {id:'b13',date:'2026-08-11',desc:'Posto de gasolina',category:'Transporte',type:'out',value:180.00,recurring:false,cardId:null},
+      ],
+      recurring:[
+        {id:'bb1',name:'Condomínio',value:480,dueDay:5,status:'pago',category:'Moradia'},
+        {id:'bb2',name:'Plano de saúde',value:340,dueDay:8,status:'pago',category:'Saúde'},
+        {id:'bb3',name:'Academia (mensalidade)',value:150,dueDay:9,status:'pago',category:'Saúde'},
+        {id:'bb4',name:'Seguro do carro',value:210,dueDay:18,status:'pendente',category:'Transporte'},
+        {id:'bb5',name:'Assinatura software',value:40,dueDay:12,status:'pendente',category:'Assinaturas'},
+      ],
+      cards:[{id:'bs-c1',name:'Cartão Platinum',limit:6000,closingDay:22,dueDay:2}],
+      monthlyTotals:[3980,4120,3860,4310,4080,0],
+    },
+  };
+}
+
+class Component extends DCLogic {
+  state = {
+    loggedIn:false, authUser:null, loginProfile:'rodrigo',
+    view:'rodrigo', screen:'dashboard',
+    selectedCardId:null, selectedCardOwner:null,
+    showAddTxModal:false, showAddBillModal:false,
+    txFilters:{ type:'all', category:'todas' },
+    width: (typeof window!=='undefined') ? window.innerWidth : 1280,
+    newTx:{ desc:'', value:'', date:'2026-08-11', category:'Alimentação', type:'out', owner:'rodrigo', cardId:'', invoiceCycle:'atual', recurring:false },
+    newBill:{ name:'', value:'', dueDay:'10', category:'Moradia', owner:'rodrigo' },
+    data: buildInitialData(),
+  };
+
+  componentDidMount(){
+    this._onResize = () => this.setState({ width: window.innerWidth });
+    window.addEventListener('resize', this._onResize);
+    this.paintIcons();
+  }
+  componentDidUpdate(){ this.paintIcons(); }
+  componentWillUnmount(){ window.removeEventListener('resize', this._onResize); }
+  paintIcons(){ if (window.lucide) window.lucide.createIcons(); }
+
+  pickLoginProfile = (p) => this.setState({ loginProfile:p });
+  doLogin = () => this.setState({ loggedIn:true, authUser:this.state.loginProfile, view:this.state.loginProfile, screen:'dashboard' });
+  doLogout = () => this.setState({ loggedIn:false, screen:'dashboard' });
+  setScreen = (s) => this.setState({ screen:s });
+  setView = (v) => this.setState({ view:v });
+
+  openAddTx = () => this.setState(s => ({ showAddTxModal:true, newTx:{ ...s.newTx, owner: s.view==='unified' ? s.newTx.owner : s.view, date:'2026-08-11', desc:'', value:'', cardId:'', category: s.newTx.type==='in' ? CATS_IN[0] : CATS_OUT[0] } }));
+  closeAddTx = () => this.setState({ showAddTxModal:false });
+  setNewTxField = (field) => (e) => {
+    const val = e && e.target ? e.target.value : e;
+    this.setState(s => {
+      const nt = { ...s.newTx, [field]: val };
+      if (field === 'type') nt.category = val === 'in' ? CATS_IN[0] : CATS_OUT[0];
+      return { newTx: nt };
+    });
+  };
+  setNewTxType = (t) => () => this.setState(s => ({ newTx:{ ...s.newTx, type:t, category: t==='in'?CATS_IN[0]:CATS_OUT[0], cardId:'' } }));
+  setInvoiceCycle = (c) => () => this.setState(s => ({ newTx:{ ...s.newTx, invoiceCycle:c } }));
+  toggleNewTxRecurring = () => this.setState(s => ({ newTx:{ ...s.newTx, recurring: !s.newTx.recurring } }));
+
+  submitNewTx = () => {
+    const nt = this.state.newTx;
+    const value = parseFloat(nt.value);
+    if (!nt.desc || !value || value <= 0) return;
+    const owner = this.state.view === 'unified' ? nt.owner : this.state.view;
+    const tx = { id: uid(), date: nt.date, desc: nt.desc, category: nt.category, type: nt.type, value, recurring: nt.recurring, cardId: nt.type==='out' ? (nt.cardId || null) : null, invoiceCycle: nt.invoiceCycle };
+    this.setState(s => {
+      const data = { ...s.data, [owner]: { ...s.data[owner], transactions: [tx, ...s.data[owner].transactions] } };
+      return { data, showAddTxModal:false };
+    });
+  };
+
+  openAddBill = () => this.setState(s => ({ showAddBillModal:true, newBill:{ name:'', value:'', dueDay:'10', category:'Moradia', owner: s.view==='unified' ? 'rodrigo' : s.view } }));
+  closeAddBill = () => this.setState({ showAddBillModal:false });
+  setNewBillField = (field) => (e) => {
+    const val = e && e.target ? e.target.value : e;
+    this.setState(s => ({ newBill:{ ...s.newBill, [field]: val } }));
+  };
+  submitNewBill = () => {
+    const nb = this.state.newBill;
+    const value = parseFloat(nb.value);
+    const dueDay = parseInt(nb.dueDay, 10);
+    if (!nb.name || !value || value <= 0 || !dueDay) return;
+    const owner = this.state.view === 'unified' ? nb.owner : this.state.view;
+    const bill = { id: uid(), name: nb.name, value, dueDay, status:'pendente', category: nb.category };
+    this.setState(s => {
+      const data = { ...s.data, [owner]: { ...s.data[owner], recurring: [...s.data[owner].recurring, bill] } };
+      return { data, showAddBillModal:false };
+    });
+  };
+
+  toggleBillStatus = (owner, id) => () => {
+    this.setState(s => {
+      const list = s.data[owner].recurring.map(b => b.id===id ? { ...b, status: b.status==='pago'?'pendente':'pago' } : b);
+      return { data:{ ...s.data, [owner]:{ ...s.data[owner], recurring:list } } };
+    });
+  };
+
+  openCard = (owner, id) => () => this.setState({ screen:'cardDetail', selectedCardOwner:owner, selectedCardId:id });
+  backToCards = () => this.setState({ screen:'cards' });
+
+  setTxType = (t) => () => this.setState(s => ({ txFilters:{ ...s.txFilters, type:t } }));
+  setTxCategory = (e) => this.setState(s => ({ txFilters:{ ...s.txFilters, category:e.target.value } }));
+  stop = (e) => { if (e && e.stopPropagation) e.stopPropagation(); };
+
+  getOwners(view){ return view==='unified' ? ['rodrigo','bruna'] : [view]; }
+  getAllTx(view){
+    const owners = this.getOwners(view); const data = this.state.data;
+    return owners.flatMap(o => data[o].transactions.map(t => ({ ...t, owner:o })));
+  }
+  getAllRecurring(view){
+    const owners = this.getOwners(view); const data = this.state.data;
+    return owners.flatMap(o => data[o].recurring.map(r => ({ ...r, owner:o })));
+  }
+  getAllCards(view){
+    const owners = this.getOwners(view); const data = this.state.data;
+    return owners.flatMap(o => data[o].cards.map(c => ({ ...c, owner:o })));
+  }
+  cardInvoice(owner, cardId, cycle){
+    return this.state.data[owner].transactions
+      .filter(t => t.cardId===cardId && t.type==='out' && (t.invoiceCycle||'atual')===cycle)
+      .reduce((a,t)=>a+t.value,0);
+  }
+  balanceOf(owner){
+    const d = this.state.data[owner];
+    const income = d.transactions.filter(t=>t.type==='in').reduce((a,t)=>a+t.value,0);
+    const expense = d.transactions.filter(t=>t.type==='out').reduce((a,t)=>a+t.value,0);
+    return { balance: d.startBalance + income - expense, income, expense };
+  }
+  pendingBillsTotal(owner){
+    return this.state.data[owner].recurring.filter(r=>r.status==='pendente').reduce((a,r)=>a+r.value,0);
+  }
+  cardsCurrentTotal(owner){
+    return this.state.data[owner].cards.reduce((a,c)=>a+this.cardInvoice(owner,c.id,'atual'),0);
+  }
+
+  renderVals(){
+    const s = this.state;
+    const isDesktop = s.width >= 880;
+    const view = s.view;
+    const owners = this.getOwners(view);
+    const authName = s.authUser ? this.state.data[s.authUser].name : '';
+    const authInitials = s.authUser ? this.state.data[s.authUser].initials : '';
+    const otherKey = s.authUser === 'rodrigo' ? 'bruna' : 'rodrigo';
+    const transition = 'all .18s ease';
+
+    const navDefs = [
+      {key:'dashboard',label:'Início',icon:'home'},
+      {key:'transactions',label:'Lançamentos',icon:'list'},
+      {key:'recurring',label:'Contas fixas',icon:'repeat'},
+      {key:'cards',label:'Cartões',icon:'credit-card'},
+      {key:'reports',label:'Relatórios',icon:'bar-chart-3'},
+    ];
+    const activeScreen = s.screen==='cardDetail' ? 'cards' : s.screen;
+    const navItemBase = (n) => {
+      const active = activeScreen === n.key;
+      return {
+        key:n.key, icon:n.icon, label:n.label, onClick:() => this.setScreen(n.key),
+        style:`display:flex;align-items:center;gap:11px;padding:10px 12px;border:none;border-radius:12px;background:${active?ACCENT_TINT:'transparent'};color:${active?ACCENT:TEXT_MUTED};font-weight:${active?'700':'500'};font-size:14px;cursor:pointer;text-align:left;transition:${transition}`,
+        hoverStyle: active ? `background:${ACCENT_TINT}` : `background:${TRACK};color:${TEXT}`,
+        styleMobile:`display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border:none;background:transparent;color:${active?ACCENT:TEXT_MUTED};flex:1;cursor:pointer;transition:${transition}`,
+      };
+    };
+    const navItems = navDefs.map(navItemBase);
+
+    let balance=0, income=0, expense=0, pendingBills=0, pendingCards=0;
+    const catTotals = {};
+    owners.forEach(o => {
+      const b = this.balanceOf(o);
+      balance += b.balance; income += b.income; expense += b.expense;
+      pendingBills += this.pendingBillsTotal(o);
+      pendingCards += this.cardsCurrentTotal(o);
+      this.state.data[o].transactions.filter(t=>t.type==='out').forEach(t=>{
+        catTotals[t.category] = (catTotals[t.category]||0) + t.value;
+      });
+    });
+    const projectedEnd = balance - pendingBills;
+
+    const summaryCards = [
+      { label:'Saldo total', icon:'wallet', iconColor:balance>=0?POSITIVE:NEGATIVE, iconWrapStyle:`width:28px;height:28px;border-radius:8px;background:${balance>=0?POSITIVE_TINT:NEGATIVE_TINT};display:flex;align-items:center;justify-content:center`, value: fmt(balance), sub: owners.map(o=>this.state.data[o].name).join(' + '), valueStyle: balance>=0 ? `color:${POSITIVE}` : `color:${NEGATIVE}` },
+      { label:'Entradas do mês', icon:'trending-up', iconColor:POSITIVE, iconWrapStyle:`width:28px;height:28px;border-radius:8px;background:${POSITIVE_TINT};display:flex;align-items:center;justify-content:center`, value: fmt(income), sub:'agosto/2026', valueStyle:`color:${POSITIVE}` },
+      { label:'Saídas do mês', icon:'trending-down', iconColor:NEGATIVE, iconWrapStyle:`width:28px;height:28px;border-radius:8px;background:${NEGATIVE_TINT};display:flex;align-items:center;justify-content:center`, value: fmt(expense), sub:'agosto/2026', valueStyle:`color:${NEGATIVE}` },
+      { label:'Faturas abertas', icon:'credit-card', iconColor:NEGATIVE, iconWrapStyle:`width:28px;height:28px;border-radius:8px;background:${NEGATIVE_TINT};display:flex;align-items:center;justify-content:center`, value: fmt(pendingCards), sub: owners.length+' titular(es)', valueStyle:`color:${NEGATIVE}` },
+    ];
+
+    const maxCat = Math.max(1, ...Object.values(catTotals));
+    const categoryBars = Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).slice(0,7).map(([name,amount])=>({
+      name, amountDisplay: fmt(amount),
+      barStyle:`height:100%;background:${ACCENT};border-radius:99px;width:${Math.round(amount/maxCat*100)}%;transition:width .5s ease`,
+    }));
+
+    const upcomingAll = [];
+    owners.forEach(o => this.state.data[o].recurring.forEach(r => upcomingAll.push({ ...r, owner:o })));
+    const upcomingBills = upcomingAll.filter(r=>r.status==='pendente').sort((a,b)=>a.dueDay-b.dueDay).slice(0,5).map(r=>{
+      const daysLeft = r.dueDay - TODAY.getDate();
+      return {
+        name: r.name + (owners.length>1 ? ' · '+this.state.data[r.owner].name : ''),
+        dueLabel: daysLeft<0 ? `Venceu dia ${r.dueDay}` : daysLeft===0 ? 'Vence hoje' : `Vence em ${daysLeft} dia(s)`,
+        valueDisplay: fmt(r.value),
+        statusLabel:'Pendente',
+        statusStyle:`font-size:11px;color:${NEGATIVE};font-weight:700`,
+        iconWrapStyle:`width:32px;height:32px;border-radius:9px;background:${NEGATIVE_TINT};display:flex;align-items:center;justify-content:center;flex:none`,
+      };
+    });
+    const noUpcoming = upcomingBills.length===0;
+
+    const invoiceCards = [];
+    owners.forEach(o => this.state.data[o].cards.forEach(c => {
+      const inv = this.cardInvoice(o,c.id,'atual');
+      invoiceCards.push({ owner:o, card:c, inv });
+    }));
+    const openInvoicesDash = invoiceCards.map(({owner,card,inv})=>({
+      name:card.name, owner: this.state.data[owner].name,
+      valueDisplay: fmt(inv),
+      barStyle:`height:100%;background:${ACCENT};border-radius:99px;width:${Math.min(100,Math.round(inv/card.limit*100))}%;transition:width .5s ease`,
+      metaLabel:`Fecha dia ${card.closingDay}`,
+      onClick: this.openCard(owner, card.id),
+    }));
+
+    const closingSoon = invoiceCards.filter(({card})=>{
+      const d = card.closingDay - TODAY.getDate();
+      return d>=0 && d<=5;
+    });
+    const alertBanners = closingSoon.map(({owner,card})=>({ text:`Fatura do ${card.name} (${this.state.data[owner].name}) fecha em ${card.closingDay-TODAY.getDate()} dia(s).` }));
+    const hasAlerts = alertBanners.length>0;
+
+    const viewDefs = s.authUser ? [
+      { key:s.authUser, label:'Minha visão' },
+      { key:otherKey, label:`Visão de ${this.state.data[otherKey].name}` },
+      { key:'unified', label:'Unificado' },
+    ] : [];
+    const viewOptions = viewDefs.map(v => ({
+      key:v.key, label:v.label, onClick: () => this.setView(v.key),
+      style:`padding:8px 14px;border:none;border-radius:10px;background:${view===v.key?SURFACE:'transparent'};color:${view===v.key?ACCENT:TEXT_MUTED};font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:${view===v.key?SHADOW_SM:'none'};transition:${transition}`,
+    }));
+
+    const allTx = this.getAllTx(view).slice().sort((a,b)=> b.date.localeCompare(a.date));
+    const txTypeDefs = [{k:'all',l:'Todas'},{k:'in',l:'Entradas'},{k:'out',l:'Saídas'}];
+    const txTypeOptions = txTypeDefs.map(o=>({
+      label:o.l, onClick:this.setTxType(o.k),
+      style:`padding:8px 14px;border:none;border-radius:10px;background:${s.txFilters.type===o.k?SURFACE:'transparent'};color:${s.txFilters.type===o.k?ACCENT:TEXT_MUTED};font-size:12.5px;font-weight:700;cursor:pointer;box-shadow:${s.txFilters.type===o.k?SHADOW_SM:'none'};transition:${transition}`,
+    }));
+    const txCategoryOptions = ['todas', ...CATS_OUT, ...CATS_IN];
+    const filteredTx = allTx.filter(t => (s.txFilters.type==='all'||t.type===s.txFilters.type) && (s.txFilters.category==='todas'||t.category===s.txFilters.category))
+      .map(t => ({
+        ...t, dateLabel: dateLabel(t.date),
+        cardName: t.cardId ? (this.state.data[t.owner].cards.find(c=>c.id===t.cardId)||{}).name : null,
+        owner: this.state.data[t.owner].name,
+        valueDisplay: (t.type==='in'?'+ ':'- ') + fmt(t.value),
+        valueStyle: t.type==='in' ? `color:${POSITIVE}` : `color:${NEGATIVE}`,
+      }));
+    const noTx = filteredTx.length===0;
+
+    const recurringList = this.getAllRecurring(view).sort((a,b)=>a.dueDay-b.dueDay).map(r=>{
+      const paid = r.status==='pago';
+      return {
+        ...r, valueDisplay: fmt(r.value),
+        categoryOwnerLabel: r.category + (owners.length>1 ? ' · '+this.state.data[r.owner].name : ''),
+        dueBadgeStyle:`width:36px;height:36px;flex:none;display:flex;align-items:center;justify-content:center;background:${TRACK};border-radius:10px;font-weight:700;font-size:12px;color:${TEXT}`,
+        statusLabel: paid?'Pago':'Marcar como pago',
+        statusButtonStyle:`padding:7px 14px;border:none;border-radius:10px;background:${paid?POSITIVE_TINT:ACCENT};color:${paid?POSITIVE:'#fff'};font-size:12px;font-weight:700;cursor:pointer;transition:${transition}`,
+        toggle: this.toggleBillStatus(r.owner, r.id),
+      };
+    });
+
+    const cardsList = this.getAllCards(view).map(c=>{
+      const inv = this.cardInvoice(c.owner, c.id, 'atual');
+      return {
+        id:c.id, owner:this.state.data[c.owner].name,
+        name:c.name, limitDisplay: fmt(c.limit), invoiceDisplay: fmt(inv),
+        closingDay:c.closingDay, dueDay:c.dueDay,
+        barStyle:`height:100%;background:${ACCENT};border-radius:99px;width:${Math.min(100,Math.round(inv/c.limit*100))}%;transition:width .5s ease`,
+        onClick: this.openCard(c.owner, c.id),
+      };
+    });
+
+    let cardDetailName='', cardDetailMeta='', cardDetailTotal='', cardDetailTx=[];
+    if (s.screen==='cardDetail' && s.selectedCardOwner) {
+      const owner = s.selectedCardOwner;
+      const card = this.state.data[owner].cards.find(c=>c.id===s.selectedCardId);
+      if (card) {
+        const txs = this.state.data[owner].transactions.filter(t=>t.cardId===card.id && (t.invoiceCycle||'atual')==='atual');
+        cardDetailName = card.name;
+        cardDetailMeta = `${this.state.data[owner].name} · fecha dia ${card.closingDay} · vence dia ${card.dueDay} · limite ${fmt(card.limit)}`;
+        const total = txs.reduce((a,t)=>a+t.value,0);
+        cardDetailTotal = fmt(total);
+        cardDetailTx = txs.sort((a,b)=>a.date.localeCompare(b.date)).map(t=>({ ...t, dateLabel:dateLabel(t.date), valueDisplay: fmt(t.value) }));
+      }
+    }
+
+    const monthLabels = ['mar','abr','mai','jun','jul','ago'];
+    const monthlyCombined = [0,1,2,3,4,5].map(i => owners.reduce((a,o)=>{
+      const mt = this.state.data[o].monthlyTotals;
+      return a + (i===5 ? this.balanceOf(o).expense : mt[i]);
+    },0));
+    const maxMonth = Math.max(1, ...monthlyCombined);
+    const monthlyBars = monthLabels.map((m,i)=>({
+      month:m, totalDisplay: fmt(monthlyCombined[i]),
+      barStyle:`width:100%;border-radius:8px 8px 0 0;background:${i===5?ACCENT:TRACK};height:${Math.round(monthlyCombined[i]/maxMonth*130)}px;transition:height .5s ease`,
+    }));
+
+    const rBal = this.balanceOf('rodrigo'), bBal = this.balanceOf('bruna');
+    const rCards = this.cardsCurrentTotal('rodrigo'), bCards = this.cardsCurrentTotal('bruna');
+    const comparisonRows = [
+      { label:'Saldo atual', rodrigo:fmt(rBal.balance), bruna:fmt(bBal.balance), unificado:fmt(rBal.balance+bBal.balance), style:`color:${POSITIVE}` },
+      { label:'Entradas do mês', rodrigo:fmt(rBal.income), bruna:fmt(bBal.income), unificado:fmt(rBal.income+bBal.income), style:`color:${POSITIVE}` },
+      { label:'Saídas do mês', rodrigo:fmt(rBal.expense), bruna:fmt(bBal.expense), unificado:fmt(rBal.expense+bBal.expense), style:`color:${NEGATIVE}` },
+      { label:'Faturas de cartão', rodrigo:fmt(rCards), bruna:fmt(bCards), unificado:fmt(rCards+bCards), style:`color:${NEGATIVE}` },
+    ];
+
+    const newTxCardOptions = (s.view==='unified' ? s.newTx.owner : view) ?
+      this.state.data[s.view==='unified' ? s.newTx.owner : view].cards.map(c=>({id:c.id,label:c.name})) : [];
+    const newTxTypeOptions = [{k:'out',l:'Saída'},{k:'in',l:'Entrada'}].map(o=>({
+      label:o.l, onClick:this.setNewTxType(o.k),
+      style:`flex:1;padding:9px;border:none;border-radius:10px;background:${s.newTx.type===o.k?SURFACE:'transparent'};color:${s.newTx.type===o.k?ACCENT:TEXT_MUTED};font-size:13px;font-weight:700;cursor:pointer;box-shadow:${s.newTx.type===o.k?SHADOW_SM:'none'};transition:${transition}`,
+    }));
+    const invoiceCycleOptions = [{k:'atual',l:'Fatura atual'},{k:'proxima',l:'Próxima fatura'}].map(o=>({
+      label:o.l, onClick:this.setInvoiceCycle(o.k),
+      style:`flex:1;padding:8px;border:none;border-radius:10px;background:${s.newTx.invoiceCycle===o.k?SURFACE:'transparent'};color:${s.newTx.invoiceCycle===o.k?ACCENT:TEXT_MUTED};font-size:12px;font-weight:700;cursor:pointer;box-shadow:${s.newTx.invoiceCycle===o.k?SHADOW_SM:'none'};transition:${transition}`,
+    }));
+
+    return {
+      loggedIn:s.loggedIn, screen:s.screen, view, isDesktop,
+      rootStyle:`font-family:'Inter',system-ui,sans-serif;background:${BG};color:${TEXT};min-height:100vh`,
+      loginBg:`linear-gradient(160deg, ${ACCENT_TINT}, ${BG} 60%)`,
+      accentGradient:`linear-gradient(135deg, ${ACCENT}, oklch(53% 0.17 300))`,
+      textColor:TEXT, textMuted:TEXT_MUTED, textFaint:TEXT_FAINT, bgColor:BG, divider:DIVIDER, trackColor:TRACK,
+      negative:NEGATIVE, positive:POSITIVE,
+      inputStyle:`width:100%;background:${TRACK};border:1.5px solid transparent;border-radius:12px;padding:11px 14px;font-size:14px;color:${TEXT};transition:${transition};outline:none`,
+      loginEmailFor: s.loginProfile==='rodrigo' ? 'rodrigo@email.com' : 'bruna@email.com',
+      profilePickRodrigoStyle:`flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;border:1.5px solid ${s.loginProfile==='rodrigo'?ACCENT:DIVIDER};border-radius:14px;background:${s.loginProfile==='rodrigo'?ACCENT_TINT:'transparent'};cursor:pointer;font-size:13px;font-weight:700;color:${TEXT};transition:${transition}`,
+      profilePickBrunaStyle:`flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;border:1.5px solid ${s.loginProfile==='bruna'?ACCENT:DIVIDER};border-radius:14px;background:${s.loginProfile==='bruna'?ACCENT_TINT:'transparent'};cursor:pointer;font-size:13px;font-weight:700;color:${TEXT};transition:${transition}`,
+      profilePickHoverStyle:`border-color:${ACCENT};transform:translateY(-1px)`,
+      avatarStyleRodrigo:`width:40px;height:40px;border-radius:50%;background:oklch(40% 0.02 258);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px`,
+      avatarStyleBruna:`width:40px;height:40px;border-radius:50%;background:${ACCENT};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px`,
+      pickLoginProfile:this.pickLoginProfile,
+      loginButtonStyle:`background:${ACCENT};color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Sora',sans-serif;font-weight:700;font-size:15px;cursor:pointer;transition:${transition}`,
+      loginButtonHoverStyle:`background:${ACCENT_HOVER};transform:translateY(-1px);box-shadow:${SHADOW_MD}`,
+      doLogin:this.doLogin,
+
+      sidebarStyle:`width:230px;flex:none;display:flex;flex-direction:column;padding:20px 14px;background:${SURFACE};border-right:1px solid ${DIVIDER}`,
+      navItems, navItemsMobile:navItems,
+      sidebarAvatarStyle:`width:34px;height:34px;border-radius:50%;background:${ACCENT_TINT2};color:${ACCENT};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none`,
+      logoutButtonStyle:`display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:9px;border:none;background:transparent;color:${TEXT_MUTED};cursor:pointer;transition:${transition}`,
+      logoutHoverStyle:`background:${NEGATIVE_TINT};color:${NEGATIVE}`,
+      authUserLabel: authName, authInitials,
+      doLogout:this.doLogout,
+
+      topbarStyle:`display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 24px;background:${SURFACE};border-bottom:1px solid ${DIVIDER};flex-wrap:wrap`,
+      screenTitle: ({dashboard:'Início',transactions:'Lançamentos',recurring:'Contas fixas',cards:'Cartões',cardDetail:'Fatura',reports:'Relatórios'})[s.screen] || '',
+      segmentedWrapStyle:`display:inline-flex;gap:2px;background:${TRACK};border-radius:12px;padding:3px`,
+      viewOptions,
+      mobileLogoutStyle:`border:none;background:transparent;color:${TEXT_MUTED};cursor:pointer;padding:4px`,
+
+      contentAreaStyle:`flex:1;overflow:auto;padding:24px 24px 60px;max-width:1200px;width:100%;margin:0 auto;animation:screenIn .35s ease both`,
+
+      hasAlerts, alertBanners, alertStyle:`display:flex;align-items:center;gap:10px;padding:12px 16px;background:${NEGATIVE_TINT};color:${NEGATIVE};border-radius:12px;font-size:13px;font-weight:600`,
+      summaryGridStyle:`display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:20px`,
+      summaryCards, summaryCardStyle:`background:${SURFACE};padding:18px;border-radius:18px;display:flex;flex-direction:column;gap:6px;box-shadow:${SHADOW_SM};transition:${transition}`,
+      cardHoverStyle:`box-shadow:${SHADOW_MD};transform:translateY(-2px)`,
+      dashGridStyle:`display:grid;grid-template-columns:repeat(2,1fr);gap:16px`,
+      panelStyle:`background:${SURFACE};padding:22px;border-radius:18px;box-shadow:${SHADOW_SM}`,
+      panelTitleStyle:`margin:0 0 16px;font-family:'Sora',sans-serif;font-weight:700;font-size:16px;color:${TEXT}`,
+      categoryBars,
+      upcomingBills, noUpcoming, billRowStyle:`display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid ${DIVIDER}`,
+      openInvoicesDash, invoiceCardStyle:`display:flex;flex-direction:column;gap:6px;text-align:left;border:1px solid ${DIVIDER};background:transparent;border-radius:14px;padding:16px;cursor:pointer;width:100%;transition:${transition}`,
+      projectionValueDisplay: fmt(projectedEnd),
+      projectionValueStyle: projectedEnd>=0 ? `color:${POSITIVE}` : `color:${NEGATIVE}`,
+      projectionDeltaLabel: (projectedEnd>=balance?'+':'') + fmt(projectedEnd-balance) + ' até o fim do mês',
+      projectionDeltaStyle:`font-size:13px;color:${TEXT_FAINT}`,
+
+      txTypeOptions, selectStyle:`background:${TRACK};border:none;border-radius:10px;padding:9px 12px;font-size:13px;color:${TEXT}`,
+      txCategoryOptions, setTxCategory:this.setTxCategory,
+      primaryBtnStyle:`display:inline-flex;align-items:center;gap:7px;background:${ACCENT};color:#fff;border:none;border-radius:12px;padding:10px 18px;font-family:'Sora',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:${transition}`,
+      primaryBtnHoverStyle:`background:${ACCENT_HOVER};transform:translateY(-1px);box-shadow:${SHADOW_MD}`,
+      secondaryBtnStyle:`border:1.5px solid ${DIVIDER};background:transparent;color:${TEXT};border-radius:12px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;transition:${transition}`,
+      openAddTx:this.openAddTx,
+      thStyle:`text-align:left;font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:${TEXT_MUTED};padding:12px 16px;border-bottom:1px solid ${DIVIDER}`,
+      tdStyle:`padding:12px 16px;border-bottom:1px solid ${DIVIDER};color:${TEXT}`,
+      trStyle:`transition:${transition}`, trHoverStyle:`background:${BG}`,
+      tagStyle:`display:inline-flex;padding:4px 11px;border-radius:99px;background:${TRACK};color:${TEXT_MUTED};font-size:11.5px;font-weight:600`,
+      filteredTx, noTx,
+      txFilters:s.txFilters,
+
+      openAddBill:this.openAddBill,
+      recurringList, recurringRowStyle:`display:flex;justify-content:space-between;align-items:center;background:${SURFACE};padding:16px;border-radius:16px;box-shadow:${SHADOW_SM};transition:${transition}`,
+
+      cardsGridStyle:`display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px`,
+      cardsList, cardTileStyle:`text-align:left;background:${SURFACE};padding:20px;border-radius:18px;border:none;cursor:pointer;box-shadow:${SHADOW_SM};transition:${transition}`,
+
+      backLinkStyle:`display:inline-flex;align-items:center;gap:4px;background:transparent;border:none;color:${ACCENT};font-weight:700;font-size:13px;cursor:pointer;padding:0`,
+      backToCards:this.backToCards,
+      cardDetailName, cardDetailMeta, cardDetailTotal, cardDetailTx,
+
+      monthlyBars, comparisonRows,
+      reportCurrentBalance: fmt(balance), reportPendingBills: fmt(pendingBills), reportPendingCards: fmt(pendingCards),
+
+      bottomNavStyle:`display:flex;background:${SURFACE};border-top:1px solid ${DIVIDER};padding:4px 0`,
+
+      showAddTxModal:s.showAddTxModal, closeAddTx:this.closeAddTx,
+      backdropStyle:`position:fixed;inset:0;background:oklch(20% 0.02 258 / 0.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50;animation:fadeIn .2s ease both`,
+      dialogStyle:`width:min(460px,100%);max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:14px;padding:26px;background:${SURFACE};border-radius:20px;box-shadow:${SHADOW_LG};animation:popIn .25s ease both`,
+      segStyle:`display:inline-flex;gap:2px;background:${TRACK};border-radius:12px;padding:3px`,
+      fieldLabelStyle:`display:block;font-size:12px;font-weight:600;color:${TEXT_MUTED};margin-bottom:6px`,
+      newTx:s.newTx, newTxTypeOptions, setNewTxField:this.setNewTxField, toggleNewTxRecurring:this.toggleNewTxRecurring,
+      newTxCategoryOptions: s.newTx.type==='in' ? CATS_IN : CATS_OUT,
+      newTxCardOptions, invoiceCycleOptions,
+      showOwnerSelect: view==='unified',
+      submitNewTx:this.submitNewTx,
+      stop:this.stop,
+
+      showAddBillModal:s.showAddBillModal, closeAddBill:this.closeAddBill,
+      newBill:s.newBill, setNewBillField:this.setNewBillField, submitNewBill:this.submitNewBill,
+    };
+  }
+}
+
+</script>
+</body>
+</html>
