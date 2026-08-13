@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
 import { useCreditCards, useInvoice } from "@/hooks/useCreditCards";
-import { currentYearMonth } from "@/lib/upcomingDue";
+import { currentInvoiceReference, currentYearMonth } from "@/lib/upcomingDue";
 import { formatCurrency, formatDate, formatMonthLabel } from "@/lib/format";
 
 export function CreditCardDetailPage() {
@@ -14,6 +14,17 @@ export function CreditCardDetailPage() {
 
   const [{ year, month }, setPeriod] = useState(currentYearMonth());
   const invoice = useInvoice(id ?? "", year, month);
+
+  // Assim que sabemos o dia de fechamento do cartão, ajusta o período inicial
+  // para a fatura que está de fato aberta (mesma regra do backend), em vez de
+  // assumir sempre o mês corrente do calendário.
+  const didInitPeriod = useRef(false);
+  useEffect(() => {
+    if (card && !didInitPeriod.current) {
+      didInitPeriod.current = true;
+      setPeriod(currentInvoiceReference(card.closingDay));
+    }
+  }, [card]);
 
   function goToPreviousMonth() {
     setPeriod((prev) => (prev.month === 1 ? { year: prev.year - 1, month: 12 } : { year: prev.year, month: prev.month - 1 }));

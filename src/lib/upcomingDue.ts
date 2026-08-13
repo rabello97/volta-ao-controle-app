@@ -12,6 +12,28 @@ export function currentYearMonth(referenceDate: Date = new Date()): { year: numb
   return { year: referenceDate.getFullYear(), month: referenceDate.getMonth() + 1 };
 }
 
+export function addMonths(ref: { year: number; month: number }, delta: number): { year: number; month: number } {
+  let monthIndex = ref.month - 1 + delta;
+  let year = ref.year + Math.floor(monthIndex / 12);
+  monthIndex = ((monthIndex % 12) + 12) % 12;
+  return { year, month: monthIndex + 1 };
+}
+
+/**
+ * A fatura "atual" de um cartão depende do dia de fechamento: depois que o mês
+ * fecha, novos lançamentos já caem na fatura do mês seguinte. Espelha
+ * `computeBaseReference` do backend (src/services/invoiceService.ts) para que a
+ * exibição do frontend bata com a fatura em que o backend realmente lança as
+ * transações.
+ */
+export function currentInvoiceReference(
+  closingDay: number,
+  referenceDate: Date = new Date(),
+): { year: number; month: number } {
+  const base = currentYearMonth(referenceDate);
+  return referenceDate.getDate() > closingDay ? addMonths(base, 1) : base;
+}
+
 export function buildUpcomingItems(
   bills: RecurringBill[],
   cards: CreditCard[],
@@ -28,7 +50,9 @@ export function buildUpcomingItems(
       kind: "bill",
       name: bill.name,
       amount: Number(bill.expectedAmount),
-      dueDate: new Date(year, month - 1, bill.dueDay),
+      // Ancorado em UTC para bater com as datas vindas do backend (também UTC) e
+      // exibir o mesmo dia independentemente do fuso horário do navegador.
+      dueDate: new Date(Date.UTC(year, month - 1, bill.dueDay)),
     });
   }
 
@@ -48,7 +72,9 @@ export function buildUpcomingItems(
 }
 
 export function isDueSoon(item: UpcomingItem, referenceDate: Date = new Date(), windowDays = 5): boolean {
-  const startOfToday = new Date(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate());
+  const startOfToday = new Date(
+    Date.UTC(referenceDate.getFullYear(), referenceDate.getMonth(), referenceDate.getDate()),
+  );
   const diffMs = item.dueDate.getTime() - startOfToday.getTime();
   const diffDays = diffMs / (1000 * 60 * 60 * 24);
   return diffDays >= 0 && diffDays <= windowDays;

@@ -6,7 +6,14 @@ export function formatCurrency(value: number | string): string {
 
 export function formatDate(value: string | Date): string {
   const date = typeof value === "string" ? new Date(value) : value;
-  return new Intl.DateTimeFormat("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" }).format(date);
+  // Datas de calendário (transações, vencimentos) são armazenadas como meia-noite UTC.
+  // Formatar em UTC evita que o fuso horário do navegador exiba o dia anterior/seguinte.
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(date);
 }
 
 const MONTH_LABELS = [

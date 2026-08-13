@@ -5,7 +5,7 @@ import {
   listCreditCards,
   type CreditCardInput,
 } from "@/api/creditCards";
-import { currentYearMonth } from "@/lib/upcomingDue";
+import { currentInvoiceReference } from "@/lib/upcomingDue";
 import type { CreditCard } from "@/api/types";
 
 export function useCreditCards() {
@@ -22,14 +22,16 @@ export function useCreditCardsWithCurrentInvoice(): {
 } {
   const cardsQuery = useCreditCards();
   const cards = cardsQuery.data ?? [];
-  const { year, month } = currentYearMonth();
 
   const invoiceQueries = useQueries({
-    queries: cards.map((card) => ({
-      queryKey: ["invoice", card.id, year, month],
-      queryFn: () => getInvoiceByMonth(card.id, year, month),
-      enabled: cardsQuery.isSuccess,
-    })),
+    queries: cards.map((card) => {
+      const { year, month } = currentInvoiceReference(card.closingDay);
+      return {
+        queryKey: ["invoice", card.id, year, month],
+        queryFn: () => getInvoiceByMonth(card.id, year, month),
+        enabled: cardsQuery.isSuccess,
+      };
+    }),
   });
 
   const enriched = cards.map((card, index) => ({

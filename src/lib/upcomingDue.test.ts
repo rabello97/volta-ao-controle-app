@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildUpcomingItems, filterDueSoon, isDueSoon } from "./upcomingDue";
+import { buildUpcomingItems, currentInvoiceReference, filterDueSoon, isDueSoon } from "./upcomingDue";
 import type { CreditCard, InvoiceDetail, RecurringBill } from "@/api/types";
 
 const referenceDate = new Date(2026, 2, 10); // 10 de março de 2026
@@ -101,5 +101,22 @@ describe("isDueSoon / filterDueSoon", () => {
     const dueSoon = filterDueSoon(items, referenceDate, 5);
     expect(dueSoon).toHaveLength(1);
     expect(dueSoon[0].id).toBe("bill-perto");
+  });
+});
+
+describe("currentInvoiceReference", () => {
+  it("usa o mês corrente quando a data de hoje é antes do fechamento", () => {
+    const today = new Date(2026, 7, 5); // 5 de agosto, fecha dia 10
+    expect(currentInvoiceReference(10, today)).toEqual({ year: 2026, month: 8 });
+  });
+
+  it("avança para o mês seguinte quando a data de hoje já passou do fechamento", () => {
+    const today = new Date(2026, 7, 11); // 11 de agosto, fecha dia 10
+    expect(currentInvoiceReference(10, today)).toEqual({ year: 2026, month: 9 });
+  });
+
+  it("vira o ano quando o fechamento cruza dezembro/janeiro", () => {
+    const today = new Date(2026, 11, 15); // 15 de dezembro, fecha dia 10
+    expect(currentInvoiceReference(10, today)).toEqual({ year: 2027, month: 1 });
   });
 });
