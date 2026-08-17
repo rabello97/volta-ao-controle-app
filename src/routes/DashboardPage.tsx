@@ -51,19 +51,29 @@ export function DashboardPage() {
         </div>
       )}
 
-      {/* Leitura principal — como o mostrador central de um painel */}
-      <div className="relative overflow-hidden rounded-2xl border border-divider bg-sidebar p-6">
-        <div
-          className={cn(
-            "pointer-events-none absolute -right-16 -top-16 size-56 rounded-full blur-3xl",
-            inControl ? "bg-positive/10" : "bg-negative/10",
-          )}
-        />
-        <div className="relative flex items-center justify-between gap-4">
-          <div className="flex flex-col gap-2">
+      {/* Bento: o mostrador central domina, os secundários preenchem ao lado */}
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-12 lg:grid-rows-[repeat(2,minmax(0,auto))]">
+        <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-divider bg-sidebar p-6 lg:col-span-8 lg:row-span-2">
+          <div
+            className={cn(
+              "pointer-events-none absolute -right-20 -top-20 size-64 rounded-full blur-3xl",
+              inControl ? "bg-positive/10" : "bg-negative/10",
+            )}
+          />
+          <div className="relative flex items-start justify-between gap-4">
             <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-faint">
               <Gauge className="size-3.5" /> Saldo atual
             </span>
+            <div
+              className={cn(
+                "flex size-11 flex-none items-center justify-center rounded-full border",
+                inControl ? "border-positive/30 bg-positive-tint" : "border-negative/30 bg-negative-tint",
+              )}
+            >
+              <Gauge className={cn("size-5", inControl ? "text-positive" : "text-negative")} strokeWidth={2} />
+            </div>
+          </div>
+          <div className="relative flex flex-col gap-2">
             <span
               className={cn(
                 "font-mono text-4xl font-bold tabular-nums tracking-tight sm:text-5xl",
@@ -80,36 +90,32 @@ export function DashboardPage() {
                 : "Calculando…"}
             </span>
           </div>
-          <div
-            className={cn(
-              "hidden size-16 flex-none items-center justify-center rounded-full border sm:flex",
-              inControl ? "border-positive/30 bg-positive-tint" : "border-negative/30 bg-negative-tint",
-            )}
-          >
-            <Gauge className={cn("size-7", inControl ? "text-positive" : "text-negative")} strokeWidth={2} />
-          </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-3">
-        <StatCard
-          icon={TrendingUp}
-          label="Entradas"
-          value={dashboard.data ? formatCurrency(dashboard.data.income) : "—"}
-          tone="positive"
-        />
-        <StatCard
-          icon={TrendingDown}
-          label="Saídas"
-          value={dashboard.data ? formatCurrency(dashboard.data.expense) : "—"}
-          tone="negative"
-        />
-        <StatCard
-          icon={CalendarClock}
-          label="Dívidas em aberto"
-          value={dashboard.data ? formatCurrency(dashboard.data.debts) : "—"}
-          tone="negative"
-        />
+        <div className="lg:col-span-4">
+          <StatCard
+            icon={TrendingUp}
+            label="Entradas"
+            value={dashboard.data ? formatCurrency(dashboard.data.income) : "—"}
+            tone="positive"
+          />
+        </div>
+        <div className="lg:col-span-2">
+          <StatCard
+            icon={TrendingDown}
+            label="Saídas"
+            value={dashboard.data ? formatCurrency(dashboard.data.expense) : "—"}
+            tone="negative"
+          />
+        </div>
+        <div className="lg:col-span-2">
+          <StatCard
+            icon={CalendarClock}
+            label="Dívidas"
+            value={dashboard.data ? formatCurrency(dashboard.data.debts) : "—"}
+            tone="negative"
+          />
+        </div>
       </div>
 
       <div className="rounded-xl border border-divider bg-surface p-5">
@@ -122,7 +128,7 @@ export function DashboardPage() {
           />
         )}
         {upcoming.length > 0 && (
-          <ul className="flex flex-col gap-2.5">
+          <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
             {upcoming.map((item) => (
               <li
                 key={item.id}
