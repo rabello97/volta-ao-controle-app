@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, AlertTriangle, CalendarClock, RotateCw, Gauge } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, CalendarClock, RotateCw, Compass } from "lucide-react";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -62,7 +62,7 @@ export function DashboardPage() {
           />
           <div className="relative flex items-start justify-between gap-4">
             <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-faint">
-              <Gauge className="size-3.5" /> Saldo atual
+              <Compass className="size-3.5" /> Saldo atual
             </span>
             <div
               className={cn(
@@ -70,13 +70,13 @@ export function DashboardPage() {
                 inControl ? "border-positive/30 bg-positive-tint" : "border-negative/30 bg-negative-tint",
               )}
             >
-              <Gauge className={cn("size-5", inControl ? "text-positive" : "text-negative")} strokeWidth={2} />
+              <Compass className={cn("size-5", inControl ? "text-positive" : "text-negative")} strokeWidth={2} />
             </div>
           </div>
           <div className="relative flex flex-col gap-2">
             <span
               className={cn(
-                "font-mono text-4xl font-bold tabular-nums tracking-tight sm:text-5xl",
+                "font-heading text-4xl font-extrabold tabular-nums tracking-tight sm:text-5xl",
                 inControl ? "text-positive" : "text-negative",
               )}
             >
@@ -135,7 +135,7 @@ export function DashboardPage() {
                 className="flex items-center justify-between gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-track font-mono text-sm font-bold text-text">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-track text-sm font-bold text-text">
                     {item.dueDate.getUTCDate()}
                   </div>
                   <div>
@@ -143,7 +143,7 @@ export function DashboardPage() {
                     <div className="text-xs text-text-muted">{formatDate(item.dueDate)}</div>
                   </div>
                 </div>
-                <span className="font-mono text-sm font-bold tabular-nums text-negative">
+                <span className="text-sm font-bold tabular-nums text-negative">
                   {formatCurrency(item.amount)}
                 </span>
               </li>

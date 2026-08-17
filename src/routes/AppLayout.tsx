@@ -1,7 +1,26 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { LayoutDashboard, ArrowLeftRight, Repeat, CreditCard, PieChart, LogOut, Gauge } from "lucide-react";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  ArrowLeftRight,
+  Repeat,
+  CreditCard,
+  PieChart,
+  LogOut,
+  Compass,
+  Users,
+  Settings,
+  ChevronDown,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NAV_ITEMS = [
   { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
@@ -24,6 +43,7 @@ function initials(name: string | null | undefined): string {
 export function AppLayout() {
   const { user, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
@@ -31,7 +51,7 @@ export function AppLayout() {
         <div className="mx-auto flex h-14 w-full max-w-[1180px] items-center gap-6 px-4 md:px-7">
           <div className="flex flex-none items-center gap-2">
             <div className="flex size-7.5 items-center justify-center rounded-[8px] bg-accent">
-              <Gauge className="size-4 text-accent-ink" strokeWidth={2.25} />
+              <Compass className="size-4 text-accent-ink" strokeWidth={2.25} />
             </div>
             <span className="hidden font-heading text-[14px] font-bold tracking-tight text-text sm:inline">
               Volta ao Controle
@@ -56,23 +76,37 @@ export function AppLayout() {
             ))}
           </nav>
 
-          <div className="ml-auto flex flex-none items-center gap-3">
-            <div className="hidden items-center gap-2 sm:flex">
-              <div className="flex size-7 items-center justify-center rounded-full bg-accent-tint-2 font-mono text-[10.5px] font-bold text-accent">
-                {initials(user?.name)}
-              </div>
-              <span className="max-w-[120px] truncate text-[13px] font-medium text-text">
-                {user?.name ?? "Sessão ativa"}
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={logout}
-              aria-label="Sair"
-              className="flex size-8 items-center justify-center rounded-md text-text-faint transition-colors hover:bg-negative-tint hover:text-negative"
-            >
-              <LogOut className="size-4" />
-            </button>
+          <div className="ml-auto flex flex-none items-center gap-1.5">
+            <ThemeToggle />
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-md py-1.5 pl-1.5 pr-2 transition-colors hover:bg-surface"
+                >
+                  <div className="flex size-7 flex-none items-center justify-center rounded-full bg-accent-tint-2 text-[11px] font-bold text-accent">
+                    {initials(user?.name)}
+                  </div>
+                  <span className="hidden max-w-[120px] truncate text-[13px] font-medium text-text sm:inline">
+                    {user?.name ?? "Sessão ativa"}
+                  </span>
+                  <ChevronDown className="hidden size-3.5 text-text-faint sm:inline" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => navigate("/household")}>
+                  <Users className="size-4" /> Household
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate("/settings")}>
+                  <Settings className="size-4" /> Perfil e configurações
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive" onClick={logout}>
+                  <LogOut className="size-4" /> Sair
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </header>

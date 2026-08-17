@@ -19,6 +19,22 @@ export interface HouseholdResponse {
   members: HouseholdMember[];
 }
 
+export type InviteStatus = "PENDING" | "ACCEPTED" | "DECLINED";
+
+export interface HouseholdInvite {
+  id: string;
+  householdId: string | null;
+  fromUserId: string;
+  toEmail: string;
+  status: InviteStatus;
+  createdAt: string;
+}
+
+export interface HouseholdInvitesResponse {
+  sent: HouseholdInvite[];
+  received: HouseholdInvite[];
+}
+
 export type TransactionType = "INCOME" | "EXPENSE";
 export type InvoiceChoice = "CURRENT" | "NEXT";
 

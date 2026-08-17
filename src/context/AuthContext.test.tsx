@@ -50,7 +50,7 @@ describe("AuthProvider", () => {
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ income: 0, expense: 0, balance: 0, debts: 0 }),
+        json: async () => ({ id: "u1", name: "Ana", email: "ana@example.com" }),
       }),
     );
 
@@ -87,7 +87,7 @@ describe("AuthProvider", () => {
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ income: 0, expense: 0, balance: 0, debts: 0 }),
+        json: async () => ({ id: "u1", name: "Ana", email: "ana@example.com" }),
       }),
     );
 
@@ -105,6 +105,37 @@ describe("AuthProvider", () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(result.current.status).toBe("authenticated");
     expect(getToken()).toBe("valid-token");
+  });
+
+  it("atualiza os dados do usuário a partir de /auth/me após restaurar a sessão", async () => {
+    setToken("valid-token");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ id: "u1", name: "Ana Atualizada", email: "ana@example.com" }),
+      }),
+    );
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.user?.name).toBe("Ana Atualizada"));
+    expect(getStoredUser()?.name).toBe("Ana Atualizada");
+  });
+
+  it("updateUser() atualiza o usuário em memória e na sessão salva", async () => {
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
+
+    act(() => {
+      result.current.login({ token: "abc123", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+    });
+    act(() => {
+      result.current.updateUser({ id: "u1", name: "Ana Paula", email: "ana@example.com" });
+    });
+
+    expect(result.current.user?.name).toBe("Ana Paula");
+    expect(getStoredUser()?.name).toBe("Ana Paula");
   });
 
   it("limpa o token quando a validação da sessão restaurada falha com 401", async () => {

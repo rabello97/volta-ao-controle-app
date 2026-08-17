@@ -4,8 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Navigate } from "react-router-dom";
-import { Gauge } from "lucide-react";
+import { Compass } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -22,6 +23,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const { status, login } = useAuth();
+  const { resolvedTheme } = useTheme();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -70,7 +72,7 @@ export function LoginPage() {
       >
         <div className="flex flex-col items-center gap-2.5 text-center">
           <div className="flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent-tint">
-            <Gauge className="size-6 text-accent" strokeWidth={2.25} />
+            <Compass className="size-6 text-accent" strokeWidth={2.25} />
           </div>
           <h1 className="font-heading text-xl font-bold tracking-tight text-text">Volta ao Controle</h1>
           <p className="text-[13px] text-text-muted">Finanças do casal, sem perder o rumo.</p>
@@ -110,7 +112,7 @@ export function LoginPage() {
             }}
             onError={() => setServerError("Não foi possível entrar com Google.")}
             text="continue_with"
-            theme="filled_black"
+            theme={resolvedTheme === "dark" ? "filled_black" : "outline"}
           />
         </div>
       </motion.div>

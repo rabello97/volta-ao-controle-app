@@ -26,7 +26,7 @@ export function StatCard({ icon: Icon, label, value, tone = "neutral" }: StatCar
         key={value}
         initial={{ opacity: 0, y: 4 }}
         animate={{ opacity: 1, y: 0 }}
-        className={cn("font-mono text-2xl font-bold tabular-nums tracking-tight", TONE_CLASSES[tone])}
+        className={cn("font-heading text-2xl font-extrabold tabular-nums tracking-tight", TONE_CLASSES[tone])}
       >
         {value}
       </motion.span>

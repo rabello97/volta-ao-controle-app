@@ -16,8 +16,8 @@ export default defineConfig({
         name: "Volta ao Controle",
         short_name: "Volta ao Controle",
         description: "Finanças do casal, sem perder o rumo.",
-        theme_color: "#15181c",
-        background_color: "#15181c",
+        theme_color: "#f6f8fa",
+        background_color: "#f6f8fa",
         display: "standalone",
         start_url: "/",
         icons: [

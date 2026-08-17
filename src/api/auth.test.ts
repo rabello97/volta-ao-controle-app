@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { login, loginWithGoogle } from "./auth";
-import { clearToken } from "@/lib/session";
+import { changePassword, getCurrentUser, login, loginWithGoogle, updateProfile } from "./auth";
+import { clearToken, setToken } from "@/lib/session";
 
 function mockFetchOk(body: unknown) {
   return vi.fn().mockResolvedValue({
@@ -43,5 +43,49 @@ describe("loginWithGoogle", () => {
     const [url, options] = fetchMock.mock.calls[0];
     expect(String(url)).toContain("/auth/google");
     expect(JSON.parse(options.body)).toEqual({ idToken: "google-id-token-123" });
+  });
+});
+
+describe("getCurrentUser", () => {
+  it("busca GET /auth/me com o token de autorização", async () => {
+    setToken("session-token");
+    const fetchMock = mockFetchOk({ id: "1", name: "Ana", email: "ana@example.com" });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await getCurrentUser();
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("/auth/me");
+    expect(options.headers.Authorization).toBe("Bearer session-token");
+  });
+});
+
+describe("updateProfile", () => {
+  it("envia PATCH /auth/me com o novo nome", async () => {
+    setToken("session-token");
+    const fetchMock = mockFetchOk({ id: "1", name: "Ana Paula", email: "ana@example.com" });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await updateProfile({ name: "Ana Paula" });
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("/auth/me");
+    expect(options.method).toBe("PATCH");
+    expect(JSON.parse(options.body)).toEqual({ name: "Ana Paula" });
+  });
+});
+
+describe("changePassword", () => {
+  it("envia PATCH /auth/me/password com a senha atual e a nova", async () => {
+    setToken("session-token");
+    const fetchMock = vi.fn().mockResolvedValue({ ok: true, status: 204, json: async () => null });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await changePassword({ currentPassword: "antiga", newPassword: "novaSenha123" });
+
+    const [url, options] = fetchMock.mock.calls[0];
+    expect(String(url)).toContain("/auth/me/password");
+    expect(options.method).toBe("PATCH");
+    expect(JSON.parse(options.body)).toEqual({ currentPassword: "antiga", newPassword: "novaSenha123" });
   });
 });

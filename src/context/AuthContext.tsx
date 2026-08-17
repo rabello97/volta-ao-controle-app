@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { clearStoredUser, clearToken, getStoredUser, getToken, setStoredUser, setToken } from "@/lib/session";
-import { apiRequest, ApiError } from "@/api/client";
+import { getCurrentUser } from "@/api/auth";
+import { ApiError } from "@/api/client";
 import type { AuthResult, User } from "@/api/types";
 
 export interface AuthContextValue {
@@ -9,6 +10,7 @@ export interface AuthContextValue {
   status: "authenticated" | "unauthenticated";
   login: (result: AuthResult) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -31,14 +33,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const token = getToken();
     if (!token) return;
 
-    apiRequest<unknown>("/dashboard/me").catch((error) => {
-      if (error instanceof ApiError && error.status === 401) {
-        clearToken();
-        clearStoredUser();
-        setUser(null);
-        setStatus("unauthenticated");
-      }
-    });
+    getCurrentUser()
+      .then((freshUser) => {
+        setStoredUser(freshUser);
+        setUser(freshUser);
+      })
+      .catch((error) => {
+        if (error instanceof ApiError && error.status === 401) {
+          clearToken();
+          clearStoredUser();
+          setUser(null);
+          setStatus("unauthenticated");
+        }
+      });
   }, []);
 
   const login = useCallback((result: AuthResult) => {
@@ -56,7 +63,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.clear();
   }, [queryClient]);
 
-  const value = useMemo(() => ({ user, status, login, logout }), [user, status, login, logout]);
+  const updateUser = useCallback((nextUser: User) => {
+    setStoredUser(nextUser);
+    setUser(nextUser);
+  }, []);
+
+  const value = useMemo(
+    () => ({ user, status, login, logout, updateUser }),
+    [user, status, login, logout, updateUser],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

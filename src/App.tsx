@@ -8,6 +8,8 @@ import { RecurringBillsPage } from "@/routes/RecurringBillsPage";
 import { CreditCardsPage } from "@/routes/CreditCardsPage";
 import { CreditCardDetailPage } from "@/routes/CreditCardDetailPage";
 import { ReportsPage } from "@/routes/ReportsPage";
+import { HouseholdPage } from "@/routes/HouseholdPage";
+import { SettingsPage } from "@/routes/SettingsPage";
 
 export function App() {
   return (
@@ -22,6 +24,8 @@ export function App() {
           <Route path="/credit-cards" element={<CreditCardsPage />} />
           <Route path="/credit-cards/:id" element={<CreditCardDetailPage />} />
           <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/household" element={<HouseholdPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Route>
 
