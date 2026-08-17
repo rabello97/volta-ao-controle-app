@@ -79,7 +79,7 @@ export function SettingsPage() {
     <div className="flex flex-col gap-5">
       <h1 className="font-heading text-[22px] font-bold tracking-tight text-text">Perfil e configurações</h1>
 
-      <div className="rounded-xl border border-divider bg-surface p-5">
+      <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
         <div className="mb-4 flex items-center gap-2">
           <User className="size-4 text-text-faint" />
           <h2 className="font-heading text-[15px] font-bold text-text">Seu perfil</h2>
@@ -102,7 +102,7 @@ export function SettingsPage() {
         </form>
       </div>
 
-      <div className="rounded-xl border border-divider bg-surface p-5">
+      <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
         <div className="mb-4 flex items-center gap-2">
           <KeyRound className="size-4 text-text-faint" />
           <h2 className="font-heading text-[15px] font-bold text-text">Senha</h2>

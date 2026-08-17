@@ -63,7 +63,7 @@ export function AppLayout() {
               className={({ isActive }) =>
                 cn(
                   "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-text-muted transition-colors",
-                  isActive ? "bg-brand-tint text-brand" : "hover:bg-surface-2 hover:text-text",
+                  isActive ? "bg-track font-semibold text-text" : "hover:bg-surface-2 hover:text-text",
                 )
               }
             >

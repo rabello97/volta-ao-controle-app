@@ -82,7 +82,7 @@ export function HouseholdPage() {
       <h1 className="font-heading text-[22px] font-bold tracking-tight text-text">Household</h1>
 
       {hasHousehold && partner && (
-        <div className="rounded-xl border border-divider bg-surface p-5">
+        <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
           <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Vocês formam um household</h2>
           <div className="flex items-center gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3">
             <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-bold text-brand">
@@ -100,7 +100,7 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && pendingReceived.length > 0 && (
-        <div className="rounded-xl border border-divider bg-surface p-5">
+        <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
           <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Convites recebidos</h2>
           <ul className="flex flex-col gap-2.5">
             {pendingReceived.map((invite) => (
@@ -137,7 +137,7 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && (
-        <div className="rounded-xl border border-divider bg-surface p-5">
+        <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
           <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Convidar parceiro(a)</h2>
           <p className="mb-4 text-[13px] text-text-muted">
             Convide alguém já cadastrado pelo e-mail para formar um household e compartilhar a visão das finanças.

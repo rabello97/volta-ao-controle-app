@@ -68,7 +68,7 @@ export function LoginPage() {
         initial={{ opacity: 0, y: 8, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="relative flex w-full max-w-[400px] flex-col gap-7 rounded-2xl border border-divider bg-surface p-8"
+        className="relative flex w-full max-w-[400px] flex-col gap-7 rounded-2xl border border-divider/70 bg-surface p-8 shadow-sm"
       >
         <div className="flex flex-col items-center gap-2.5 text-center">
           <div className="flex size-12 items-center justify-center rounded-xl border border-brand/25 bg-brand-tint">

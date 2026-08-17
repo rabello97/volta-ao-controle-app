@@ -103,7 +103,7 @@ export function TransactionsPage() {
           {transactions.data.map((transaction) => (
             <li
               key={transaction.id}
-              className="flex items-center justify-between gap-3 rounded-xl border border-divider bg-surface p-4"
+              className="flex items-center justify-between gap-3 rounded-2xl border border-divider/70 bg-surface p-4 shadow-sm"
             >
               <div className="flex min-w-0 items-center gap-3">
                 <div

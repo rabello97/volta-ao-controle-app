@@ -51,7 +51,7 @@ export function CreditCardsPage() {
             <Link
               key={card.id}
               to={`/credit-cards/${card.id}`}
-              className="flex flex-col gap-1 rounded-xl border border-divider bg-surface p-4.5 transition-transform hover:-translate-y-0.5"
+              className="flex flex-col gap-1 rounded-2xl border border-divider/70 bg-surface p-4.5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
             >
               <span className="font-heading text-base font-extrabold text-text">{card.nickname}</span>
               <span className="mt-2 text-[11px] font-semibold uppercase tracking-wide text-text-muted">

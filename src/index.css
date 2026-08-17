@@ -4,9 +4,7 @@
 @import "@fontsource/inter/500.css";
 @import "@fontsource/inter/600.css";
 @import "@fontsource/inter/700.css";
-@import "@fontsource/bricolage-grotesque/600.css";
-@import "@fontsource/bricolage-grotesque/700.css";
-@import "@fontsource/bricolage-grotesque/800.css";
+@import "@fontsource/inter/800.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
@@ -42,7 +40,7 @@
   --negative: oklch(56% 0.19 25);
   --negative-tint: oklch(94% 0.045 25);
 
-  --radius: 0.75rem;
+  --radius: 0.875rem;
 
   /* Tokens de componente (shadcn/ui), ancorados na marca acima */
   --foreground: var(--text);
@@ -71,8 +69,8 @@
   --sidebar-foreground: var(--text);
   --sidebar-primary: var(--brand);
   --sidebar-primary-foreground: var(--brand-ink);
-  --sidebar-accent: var(--brand-tint);
-  --sidebar-accent-foreground: var(--brand);
+  --sidebar-accent: var(--track);
+  --sidebar-accent-foreground: var(--text);
   --sidebar-border: var(--divider);
   --sidebar-ring: var(--brand);
 }
@@ -101,7 +99,7 @@
 
 @theme inline {
   --font-sans: "Inter", system-ui, sans-serif;
-  --font-heading: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
+  --font-heading: "Inter", system-ui, sans-serif;
 
   --color-background: var(--background);
   --color-surface: var(--surface);

@@ -88,7 +88,7 @@ export function RecurringBillsPage() {
       {bills.data && bills.data.length > 0 && (
         <ul className="flex flex-col gap-2">
           {bills.data.map((bill) => (
-            <li key={bill.id} className="flex items-center justify-between gap-3 rounded-xl border border-divider bg-surface p-4">
+            <li key={bill.id} className="flex items-center justify-between gap-3 rounded-2xl border border-divider/70 bg-surface p-4 shadow-sm">
               <div className="min-w-0">
                 <div className="truncate text-sm font-medium text-text">{bill.name}</div>
                 <div className="text-xs text-text-muted">

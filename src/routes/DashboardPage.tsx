@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, AlertTriangle, CalendarClock, RotateCw, Compass } from "lucide-react";
+import { TrendingUp, TrendingDown, AlertTriangle, CalendarClock, RotateCw, Wallet } from "lucide-react";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { StatCard } from "@/components/StatCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -27,7 +27,7 @@ export function DashboardPage() {
       </div>
 
       {dashboard.isError && (
-        <div className="flex flex-col items-start gap-2 rounded-xl border border-negative/20 bg-negative-tint p-4 text-sm text-negative">
+        <div className="flex flex-col items-start gap-2 rounded-2xl border border-negative/20 bg-negative-tint p-4 text-sm text-negative">
           <span>Não foi possível carregar o painel.</span>
           <Button size="sm" variant="secondary" onClick={() => dashboard.refetch()}>
             <RotateCw className="size-3.5" /> Tentar novamente
@@ -40,7 +40,7 @@ export function DashboardPage() {
           {alerts.map((alert) => (
             <div
               key={alert.id}
-              className="flex items-center gap-2.5 rounded-xl border border-negative/20 bg-negative-tint px-4 py-3 text-[13px] font-medium text-negative"
+              className="flex items-center gap-2.5 rounded-2xl border border-negative/20 bg-negative-tint px-4 py-3 text-[13px] font-medium text-negative"
             >
               <AlertTriangle className="size-4 flex-none" />
               <span className="flex-1">
@@ -53,40 +53,31 @@ export function DashboardPage() {
 
       {/* Bento: o mostrador central domina, os secundários preenchem ao lado */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-12 lg:grid-rows-[repeat(2,minmax(0,auto))]">
-        <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-divider bg-sidebar p-6 lg:col-span-8 lg:row-span-2">
-          <div
-            className={cn(
-              "pointer-events-none absolute -right-20 -top-20 size-64 rounded-full blur-3xl",
-              inControl ? "bg-positive/10" : "bg-negative/10",
-            )}
-          />
-          <div className="relative flex items-start justify-between gap-4">
-            <span className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-text-faint">
-              <Compass className="size-3.5" /> Saldo atual
-            </span>
+        <div className="flex flex-col justify-between gap-6 rounded-2xl border border-divider/70 bg-surface p-6 shadow-sm lg:col-span-8 lg:row-span-2">
+          <div className="flex items-start justify-between gap-4">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-text-faint">Saldo atual</span>
             <div
               className={cn(
-                "flex size-11 flex-none items-center justify-center rounded-full border",
-                inControl ? "border-positive/30 bg-positive-tint" : "border-negative/30 bg-negative-tint",
+                "flex size-9 flex-none items-center justify-center rounded-full",
+                inControl ? "bg-positive-tint" : "bg-negative-tint",
               )}
             >
-              <Compass className={cn("size-5", inControl ? "text-positive" : "text-negative")} strokeWidth={2} />
+              <Wallet className={cn("size-4", inControl ? "text-positive" : "text-negative")} strokeWidth={2} />
             </div>
           </div>
-          <div className="relative flex flex-col gap-2">
+          <div className="flex flex-col gap-2">
             <span
               className={cn(
-                "font-heading text-4xl font-extrabold tabular-nums tracking-tight sm:text-5xl",
-                inControl ? "text-positive" : "text-negative",
+                "font-heading text-4xl font-extrabold tabular-nums tracking-tight text-text sm:text-5xl",
               )}
             >
               {dashboard.data ? formatCurrency(dashboard.data.balance) : "—"}
             </span>
-            <span className="text-[13px] text-text-muted">
+            <span className={cn("text-[13px] font-medium", inControl ? "text-positive" : "text-negative")}>
               {dashboard.data
                 ? inControl
-                  ? "No controle — saldo positivo."
-                  : "Atenção — saldo negativo no período."
+                  ? "No controle — saldo positivo"
+                  : "Atenção — saldo negativo no período"
                 : "Calculando…"}
             </span>
           </div>
@@ -118,7 +109,7 @@ export function DashboardPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-divider bg-surface p-5">
+      <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
         <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Próximos vencimentos</h2>
         {!upcomingLoading && upcoming.length === 0 && (
           <EmptyState
@@ -132,7 +123,7 @@ export function DashboardPage() {
             {upcoming.map((item) => (
               <li
                 key={item.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3"
+                className="flex items-center justify-between gap-3 rounded-xl bg-surface-2 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex size-9 items-center justify-center rounded-lg bg-track text-sm font-bold text-text">
