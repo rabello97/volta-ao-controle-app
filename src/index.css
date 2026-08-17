@@ -25,11 +25,17 @@
   --divider: oklch(89% 0.008 240);
   --track: oklch(93.5% 0.006 240);
 
-  --accent: oklch(52% 0.1 220);
-  --accent-hover: oklch(46% 0.11 220);
-  --accent-tint: oklch(93% 0.028 220);
-  --accent-tint-2: oklch(87% 0.045 220);
-  --accent-ink: oklch(99% 0.005 220);
+  /* --brand é a cor da marca (usada nos meus próprios componentes: botões,
+     ícones, texto em destaque). --accent/--accent-foreground abaixo são o par
+     semântico que o shadcn/ui usa internamente para estados de hover/foco
+     (menus, select) — são um par DIFERENTE do brand, de propósito: precisa
+     ser um fundo sutil com texto legível em cima, nunca a mesma cor forte
+     nos dois, senão o texto fica invisível sobre o próprio fundo. */
+  --brand: oklch(52% 0.1 220);
+  --brand-hover: oklch(46% 0.11 220);
+  --brand-tint: oklch(93% 0.028 220);
+  --brand-tint-2: oklch(87% 0.045 220);
+  --brand-ink: oklch(99% 0.005 220);
 
   --positive: oklch(53% 0.13 152);
   --positive-tint: oklch(93% 0.05 152);
@@ -44,30 +50,31 @@
   --card-foreground: var(--text);
   --popover: var(--surface);
   --popover-foreground: var(--text);
-  --primary: var(--accent);
-  --primary-foreground: var(--accent-ink);
+  --primary: var(--brand);
+  --primary-foreground: var(--brand-ink);
   --secondary: var(--track);
   --secondary-foreground: var(--text);
   --muted: var(--track);
   --muted-foreground: var(--text-muted);
-  --accent-foreground: var(--accent);
+  --accent: var(--brand-tint);
+  --accent-foreground: var(--brand);
   --destructive: var(--negative);
   --border: var(--divider);
   --input: var(--divider);
-  --ring: var(--accent);
-  --chart-1: var(--accent);
+  --ring: var(--brand);
+  --chart-1: var(--brand);
   --chart-2: var(--positive);
   --chart-3: var(--negative);
   --chart-4: var(--text-muted);
   --chart-5: var(--track);
   --sidebar: var(--surface);
   --sidebar-foreground: var(--text);
-  --sidebar-primary: var(--accent);
-  --sidebar-primary-foreground: var(--accent-ink);
-  --sidebar-accent: var(--accent-tint);
-  --sidebar-accent-foreground: var(--accent);
+  --sidebar-primary: var(--brand);
+  --sidebar-primary-foreground: var(--brand-ink);
+  --sidebar-accent: var(--brand-tint);
+  --sidebar-accent-foreground: var(--brand);
   --sidebar-border: var(--divider);
-  --sidebar-ring: var(--accent);
+  --sidebar-ring: var(--brand);
 }
 
 .dark {
@@ -80,11 +87,11 @@
   --divider: oklch(28% 0.015 240);
   --track: oklch(24% 0.014 240);
 
-  --accent: oklch(72% 0.11 220);
-  --accent-hover: oklch(78% 0.1 220);
-  --accent-tint: oklch(26% 0.05 220);
-  --accent-tint-2: oklch(31% 0.06 220);
-  --accent-ink: oklch(18% 0.02 220);
+  --brand: oklch(72% 0.11 220);
+  --brand-hover: oklch(78% 0.1 220);
+  --brand-tint: oklch(26% 0.05 220);
+  --brand-tint-2: oklch(31% 0.06 220);
+  --brand-ink: oklch(18% 0.02 220);
 
   --positive: oklch(70% 0.15 152);
   --positive-tint: oklch(24% 0.05 152);
@@ -105,11 +112,11 @@
   --color-divider: var(--divider);
   --color-track: var(--track);
 
-  --color-accent: var(--accent);
-  --color-accent-hover: var(--accent-hover);
-  --color-accent-tint: var(--accent-tint);
-  --color-accent-tint-2: var(--accent-tint-2);
-  --color-accent-ink: var(--accent-ink);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-tint: var(--brand-tint);
+  --color-brand-tint-2: var(--brand-tint-2);
+  --color-brand-ink: var(--brand-ink);
 
   --color-positive: var(--positive);
   --color-positive-tint: var(--positive-tint);
@@ -127,6 +134,7 @@
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-destructive: var(--destructive);
   --color-border: var(--border);
@@ -166,7 +174,7 @@ body {
 }
 
 ::selection {
-  background: var(--accent-tint-2);
+  background: var(--brand-tint-2);
   color: var(--text);
 }
 

@@ -62,7 +62,7 @@ export function LoginPage() {
 
   return (
     <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-background p-6">
-      <div className="pointer-events-none absolute left-1/2 top-1/3 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/[0.07] blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-1/3 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/[0.07] blur-3xl" />
 
       <motion.div
         initial={{ opacity: 0, y: 8, scale: 0.98 }}
@@ -71,8 +71,8 @@ export function LoginPage() {
         className="relative flex w-full max-w-[400px] flex-col gap-7 rounded-2xl border border-divider bg-surface p-8"
       >
         <div className="flex flex-col items-center gap-2.5 text-center">
-          <div className="flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent-tint">
-            <Compass className="size-6 text-accent" strokeWidth={2.25} />
+          <div className="flex size-12 items-center justify-center rounded-xl border border-brand/25 bg-brand-tint">
+            <Compass className="size-6 text-brand" strokeWidth={2.25} />
           </div>
           <h1 className="font-heading text-xl font-bold tracking-tight text-text">Volta ao Controle</h1>
           <p className="text-[13px] text-text-muted">Finanças do casal, sem perder o rumo.</p>

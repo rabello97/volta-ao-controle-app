@@ -85,7 +85,7 @@ export function HouseholdPage() {
         <div className="rounded-xl border border-divider bg-surface p-5">
           <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Vocês formam um household</h2>
           <div className="flex items-center gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3">
-            <div className="flex size-9 items-center justify-center rounded-full bg-accent-tint-2 text-sm font-bold text-accent">
+            <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-bold text-brand">
               {partner.name.charAt(0).toUpperCase()}
             </div>
             <div>
@@ -109,7 +109,7 @@ export function HouseholdPage() {
                 className="flex items-center justify-between gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex size-9 items-center justify-center rounded-lg bg-accent-tint text-accent">
+                  <div className="flex size-9 items-center justify-center rounded-lg bg-brand-tint text-brand">
                     <Mail className="size-4" />
                   </div>
                   <div>

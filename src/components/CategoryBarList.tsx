@@ -18,7 +18,7 @@ export function CategoryBarList({ data }: { data: CategorySummaryEntry[] }) {
               initial={{ width: 0 }}
               animate={{ width: `${Math.round((item.total / max) * 100)}%` }}
               transition={{ duration: 0.5, ease: "easeOut" }}
-              className="h-full rounded-full bg-accent"
+              className="h-full rounded-full bg-brand"
             />
           </div>
         </div>

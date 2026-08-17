@@ -14,7 +14,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyTotal[] }) {
             initial={{ height: 0 }}
             animate={{ height: `${Math.round((item.total / max) * 130)}px` }}
             transition={{ duration: 0.5, ease: "easeOut", delay: index * 0.03 }}
-            className={index === data.length - 1 ? "w-full rounded-t-lg bg-accent" : "w-full rounded-t-lg bg-track"}
+            className={index === data.length - 1 ? "w-full rounded-t-lg bg-brand" : "w-full rounded-t-lg bg-track"}
           />
           <span className="text-xs text-text-muted">{formatMonthLabel(item.month)}</span>
         </div>
