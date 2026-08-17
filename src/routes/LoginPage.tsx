@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Navigate } from "react-router-dom";
-import { Wallet } from "lucide-react";
+import { Gauge } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,19 +59,21 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-background p-6">
+    <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-background p-6">
+      <div className="pointer-events-none absolute left-1/2 top-1/3 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent/[0.07] blur-3xl" />
+
       <motion.div
         initial={{ opacity: 0, y: 8, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="flex w-full max-w-[420px] flex-col gap-7 rounded-3xl bg-surface p-9 shadow-lg"
+        className="relative flex w-full max-w-[400px] flex-col gap-7 rounded-2xl border border-divider bg-surface p-8"
       >
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex size-13 items-center justify-center rounded-2xl bg-accent">
-            <Wallet className="size-6.5 text-white" />
+        <div className="flex flex-col items-center gap-2.5 text-center">
+          <div className="flex size-12 items-center justify-center rounded-xl border border-accent/25 bg-accent-tint">
+            <Gauge className="size-6 text-accent" strokeWidth={2.25} />
           </div>
-          <h1 className="font-heading text-2xl font-extrabold text-text">NósFinanças</h1>
-          <p className="text-[13px] text-text-muted">Finanças do casal, num só lugar</p>
+          <h1 className="font-heading text-xl font-bold tracking-tight text-text">Volta ao Controle</h1>
+          <p className="text-[13px] text-text-muted">Finanças do casal, sem perder o rumo.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5">
@@ -88,7 +90,7 @@ export function LoginPage() {
 
           {serverError && <p className="text-sm text-negative">{serverError}</p>}
 
-          <Button type="submit" disabled={isSubmitting} className="mt-1 font-heading">
+          <Button type="submit" disabled={isSubmitting} className="mt-1 font-heading font-semibold">
             {isSubmitting ? "Entrando…" : "Entrar"}
           </Button>
         </form>
@@ -108,6 +110,7 @@ export function LoginPage() {
             }}
             onError={() => setServerError("Não foi possível entrar com Google.")}
             text="continue_with"
+            theme="filled_black"
           />
         </div>
       </motion.div>

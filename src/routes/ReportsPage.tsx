@@ -34,12 +34,12 @@ export function ReportsPage() {
       <h1 className="font-heading text-[22px] font-bold text-text">Relatórios</h1>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl bg-surface p-5 shadow-sm lg:col-span-2">
+        <div className="rounded-xl border border-divider bg-surface p-5 lg:col-span-2">
           <h2 className="mb-4 font-heading text-[15px] font-bold text-text">Evolução de gastos — últimos 6 meses</h2>
           {evolution.data && <MonthlyBarChart data={evolution.data} />}
         </div>
 
-        <div className="rounded-2xl bg-surface p-5 shadow-sm">
+        <div className="rounded-xl border border-divider bg-surface p-5">
           <h2 className="mb-4 font-heading text-[15px] font-bold text-text">Gastos por categoria (mês atual)</h2>
           {categorySummary.data && categorySummary.data.length > 0 ? (
             <CategoryBarList data={categorySummary.data} />
@@ -48,7 +48,7 @@ export function ReportsPage() {
           )}
         </div>
 
-        <div className="rounded-2xl bg-surface p-5 shadow-sm">
+        <div className="rounded-xl border border-divider bg-surface p-5">
           <h2 className="mb-4 font-heading text-[15px] font-bold text-text">Projeção de saldo</h2>
           <div className="flex flex-col gap-2.5 text-sm text-text">
             <div className="flex justify-between">
@@ -74,7 +74,7 @@ export function ReportsPage() {
         </div>
 
         {hasHousehold && (
-          <div className="rounded-2xl bg-surface p-5 shadow-sm lg:col-span-2">
+          <div className="rounded-xl border border-divider bg-surface p-5 lg:col-span-2">
             <h2 className="mb-4 font-heading text-[15px] font-bold text-text">Individual vs. unificado</h2>
             {comparisonRows ? (
               <table className="w-full border-collapse text-sm">

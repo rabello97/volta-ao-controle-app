@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { clearToken, getToken, setToken } from "@/lib/session";
-import { apiRequest } from "@/api/client";
+import { clearStoredUser, clearToken, getStoredUser, getToken, setStoredUser, setToken } from "@/lib/session";
+import { apiRequest, ApiError } from "@/api/client";
 import type { AuthResult, User } from "@/api/types";
 
 export interface AuthContextValue {
   user: User | null;
-  status: "loading" | "authenticated" | "unauthenticated";
+  status: "authenticated" | "unauthenticated";
   login: (result: AuthResult) => void;
   logout: () => void;
 }
@@ -14,39 +14,43 @@ export interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<AuthContextValue["status"]>("loading");
+  // Nome/e-mail vêm junto do token no login e ficam salvos localmente, para que
+  // a barra lateral já mostre a pessoa certa mesmo depois de um refresh —
+  // sem isso, só teríamos esses dados de volta no próximo login().
+  const [user, setUser] = useState<User | null>(() => getStoredUser());
+  // Otimista: se há um token salvo, entra direto como autenticado (sem tela de
+  // carregamento bloqueante). A validação roda em segundo plano — só desloga se
+  // o backend confirmar explicitamente que o token é inválido (401). Um erro de
+  // rede/timeout nessa checagem não derruba a sessão nem trava o app.
+  const [status, setStatus] = useState<AuthContextValue["status"]>(() =>
+    getToken() ? "authenticated" : "unauthenticated",
+  );
   const queryClient = useQueryClient();
 
   useEffect(() => {
     const token = getToken();
-    if (!token) {
-      setStatus("unauthenticated");
-      return;
-    }
+    if (!token) return;
 
-    apiRequest<{ income: number; expense: number; balance: number; debts: number }>("/dashboard/me")
-      .then(() => {
-        // Sessão válida, mas ainda não temos os dados do usuário (só o dashboard) —
-        // o login/loginWithGoogle preenchem `user` diretamente; numa restauração de
-        // sessão sem esses dados, mantemos autenticado com user desconhecido até a
-        // primeira tela buscar algo que o traga (ex.: household).
-        setStatus("authenticated");
-      })
-      .catch(() => {
+    apiRequest<unknown>("/dashboard/me").catch((error) => {
+      if (error instanceof ApiError && error.status === 401) {
         clearToken();
+        clearStoredUser();
+        setUser(null);
         setStatus("unauthenticated");
-      });
+      }
+    });
   }, []);
 
   const login = useCallback((result: AuthResult) => {
     setToken(result.token);
+    setStoredUser(result.user);
     setUser(result.user);
     setStatus("authenticated");
   }, []);
 
   const logout = useCallback(() => {
     clearToken();
+    clearStoredUser();
     setUser(null);
     setStatus("unauthenticated");
     queryClient.clear();

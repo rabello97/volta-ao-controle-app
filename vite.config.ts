@@ -13,11 +13,11 @@ export default defineConfig({
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       manifest: {
-        name: "NósFinanças",
-        short_name: "NósFinanças",
-        description: "Finanças pessoais e domésticas para casais",
-        theme_color: "#ffffff",
-        background_color: "#f5f6f8",
+        name: "Volta ao Controle",
+        short_name: "Volta ao Controle",
+        description: "Finanças do casal, sem perder o rumo.",
+        theme_color: "#15181c",
+        background_color: "#15181c",
         display: "standalone",
         start_url: "/",
         icons: [

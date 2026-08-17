@@ -29,17 +29,35 @@ function buildUrl(path: string, query?: RequestOptions["query"]): string {
   return url.toString();
 }
 
+const REQUEST_TIMEOUT_MS = 15_000;
+
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const token = options.skipAuth ? null : getToken();
 
-  const res = await fetch(buildUrl(path, options.query), {
-    method: options.method ?? "GET",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
-  });
+  // Sem timeout, uma aba em segundo plano ou uma rede instável podia deixar o
+  // fetch pendurado indefinidamente — travando a tela em "carregando" para sempre.
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
+  let res: Response;
+  try {
+    res = await fetch(buildUrl(path, options.query), {
+      method: options.method ?? "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: options.body !== undefined ? JSON.stringify(options.body) : undefined,
+      signal: controller.signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new ApiError(0, "Tempo de conexão esgotado. Tente novamente.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   if (!res.ok) {
     const data = await res.json().catch(() => null);

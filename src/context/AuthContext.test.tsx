@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { act, renderHook, waitFor } from "@testing-library/react";
+import { act, cleanup, renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { AuthProvider, useAuth } from "./AuthContext";
-import { clearToken, getToken, setToken } from "@/lib/session";
+import { clearStoredUser, clearToken, getStoredUser, getToken, setToken } from "@/lib/session";
 
 function wrapper({ children }: { children: ReactNode }) {
   const queryClient = new QueryClient();
@@ -16,9 +16,11 @@ function wrapper({ children }: { children: ReactNode }) {
 
 beforeEach(() => {
   clearToken();
+  clearStoredUser();
 });
 
 afterEach(() => {
+  cleanup();
   vi.unstubAllGlobals();
 });
 
@@ -39,6 +41,27 @@ describe("AuthProvider", () => {
     expect(result.current.status).toBe("authenticated");
     expect(result.current.user?.name).toBe("Ana");
     expect(getToken()).toBe("abc123");
+    expect(getStoredUser()?.name).toBe("Ana");
+  });
+
+  it("mantém o nome do usuário salvo entre remontagens (sobrevive a um refresh)", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ income: 0, expense: 0, balance: 0, debts: 0 }),
+      }),
+    );
+
+    const { result: first } = renderHook(() => useAuth(), { wrapper });
+    await waitFor(() => expect(first.current.status).toBe("unauthenticated"));
+    act(() => {
+      first.current.login({ token: "abc123", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+    });
+
+    const { result: second } = renderHook(() => useAuth(), { wrapper });
+    expect(second.current.user?.name).toBe("Ana");
   });
 
   it("logout() limpa sessão e usuário", async () => {
@@ -57,7 +80,7 @@ describe("AuthProvider", () => {
     expect(getToken()).toBeNull();
   });
 
-  it("restaura a sessão quando há um token salvo e o backend confirma", async () => {
+  it("entra autenticado imediatamente quando há um token salvo (otimista, sem tela de carregamento)", () => {
     setToken("valid-token");
     vi.stubGlobal(
       "fetch",
@@ -69,10 +92,22 @@ describe("AuthProvider", () => {
     );
 
     const { result } = renderHook(() => useAuth(), { wrapper });
-    await waitFor(() => expect(result.current.status).toBe("authenticated"));
+    expect(result.current.status).toBe("authenticated");
   });
 
-  it("limpa o token quando a validação da sessão restaurada falha", async () => {
+  it("mantém a sessão quando a validação em segundo plano falha por erro de rede (não por 401)", async () => {
+    setToken("valid-token");
+    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("Failed to fetch")));
+
+    const { result } = renderHook(() => useAuth(), { wrapper });
+    expect(result.current.status).toBe("authenticated");
+
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(result.current.status).toBe("authenticated");
+    expect(getToken()).toBe("valid-token");
+  });
+
+  it("limpa o token quando a validação da sessão restaurada falha com 401", async () => {
     setToken("expired-token");
     vi.stubGlobal(
       "fetch",
