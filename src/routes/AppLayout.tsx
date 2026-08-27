@@ -1,20 +1,13 @@
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import {
-  LayoutDashboard,
-  ArrowLeftRight,
-  Repeat,
-  CreditCard,
-  PieChart,
-  LogOut,
-  Users,
-  Settings,
-  ChevronDown,
-} from "lucide-react";
+import { useTheme } from "next-themes";
+import { LogOut, Users, Settings, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { BrandMark } from "@/components/BrandMark";
-import { MoneyValue } from "@/components/MoneyValue";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { formatCurrency } from "@/lib/format";
+import { useTransactions } from "@/hooks/useTransactions";
+import { useRecurringBills } from "@/hooks/useRecurringBills";
+import { useCreditCards } from "@/hooks/useCreditCards";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,31 +16,111 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+/** Ícones desenhados a partir dos SVGs inline do mockup (16x16, stroke 1.5). */
 const NAV_ITEMS = [
-  { to: "/dashboard", label: "Painel", icon: LayoutDashboard },
-  { to: "/transactions", label: "Transações", icon: ArrowLeftRight },
-  { to: "/recurring-bills", label: "Recorrentes", icon: Repeat },
-  { to: "/credit-cards", label: "Cartões", icon: CreditCard },
-  { to: "/reports", label: "Relatórios", icon: PieChart },
+  {
+    to: "/dashboard",
+    label: "Painel",
+    icon: (
+      <>
+        <rect x="1.8" y="1.8" width="5" height="5" rx="1.2" />
+        <rect x="9.2" y="1.8" width="5" height="5" rx="1.2" />
+        <rect x="1.8" y="9.2" width="5" height="5" rx="1.2" />
+        <rect x="9.2" y="9.2" width="5" height="5" rx="1.2" />
+      </>
+    ),
+  },
+  {
+    to: "/transactions",
+    label: "Transações",
+    icon: <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />,
+  },
+  {
+    to: "/recurring-bills",
+    label: "Recorrentes",
+    icon: (
+      <>
+        <path d="M2.6 8a5.4 5.4 0 0 1 9.2-3.8M13.4 8a5.4 5.4 0 0 1-9.2 3.8" />
+        <path d="M11.4 1.9v2.5h-2.5M4.6 14.1v-2.5h2.5" />
+      </>
+    ),
+  },
+  {
+    to: "/credit-cards",
+    label: "Cartões",
+    icon: (
+      <>
+        <rect x="1.5" y="3.5" width="13" height="9" rx="2" />
+        <path d="M1.5 6.8h13" />
+      </>
+    ),
+  },
+  {
+    to: "/reports",
+    label: "Relatórios",
+    icon: (
+      <>
+        <circle cx="8" cy="8" r="6.2" />
+        <path d="M8 1.8V8h6.2" />
+      </>
+    ),
+  },
 ];
 
-function SavingsGoalWidget({ user }: { user: { savingsGoalTarget: number | null; savingsGoalSaved: number | null } }) {
-  const target = user.savingsGoalTarget ?? 0;
-  const saved = user.savingsGoalSaved ?? 0;
+function NavIcon({ children }: { children: React.ReactNode }) {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="flex-none">
+      {children}
+    </svg>
+  );
+}
+
+function SavingsGoalCard({ saved, target }: { saved: number; target: number }) {
   const pct = target > 0 ? Math.min(100, Math.round((saved / target) * 100)) : 0;
 
   return (
-    <div className="flex flex-col gap-1.5 rounded-lg px-2 py-2">
-      <div className="flex items-center justify-between text-[11px] font-semibold uppercase tracking-wide text-text-4">
-        <span>Meta de reserva</span>
-        <span className="font-mono text-text-3">{pct}%</span>
+    <div className="flex flex-col gap-[9px] rounded-[14px] border border-divider bg-surface p-3.5 shadow-[var(--shadow-card)]">
+      <div className="flex items-baseline justify-between">
+        <span className="text-[11.5px] text-text-3">Meta de reserva</span>
+        <span className="font-mono text-[11.5px] text-brand">{pct}%</span>
       </div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-track">
-        <div className="h-full rounded-full bg-brand" style={{ width: `${pct}%` }} />
+      <div className="h-[5px] overflow-hidden rounded-[4px] bg-track">
+        <div className="h-full rounded-[4px] bg-[image:var(--meter-grad)]" style={{ width: `${pct}%` }} />
       </div>
-      <div className="text-[11px] text-text-4">
-        <MoneyValue value={saved} className="text-[11px]" /> de <MoneyValue value={target} className="text-[11px]" />
-      </div>
+      <span className="text-[11px] text-text-5">
+        {formatCurrency(saved)} de {formatCurrency(target)}
+      </span>
+    </div>
+  );
+}
+
+function ThemeSegmented() {
+  const { setTheme, resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
+
+  return (
+    <div className="flex gap-0.5 rounded-full bg-surface-2 p-[3px]">
+      {(
+        [
+          { key: "dark", label: "Escuro" },
+          { key: "light", label: "Claro" },
+        ] as const
+      ).map((opt) => {
+        const active = opt.key === (isDark ? "dark" : "light");
+        return (
+          <button
+            key={opt.key}
+            type="button"
+            onClick={() => setTheme(opt.key)}
+            className={cn(
+              "rounded-full px-[9px] py-[3px] text-[11px] transition-colors",
+              active ? "bg-track text-text" : "text-text-5 hover:text-text",
+            )}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -67,57 +140,81 @@ export function AppLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Contadores que o mockup mostra à direita de cada item do menu.
+  const transactions = useTransactions({ page: 1, limit: 1 });
+  const bills = useRecurringBills();
+  const cards = useCreditCards();
+
+  const counts: Record<string, number | undefined> = {
+    "/transactions": transactions.data?.total,
+    "/recurring-bills": bills.data?.length,
+  };
+  const cardsAlert = (cards.data ?? []).some((c) => (c.utilizationPct ?? 0) >= 70);
+
   return (
-    <div className="flex min-h-svh bg-background">
-      <aside className="hidden w-[224px] flex-none flex-col gap-1 border-r border-divider bg-sidebar p-3.5 sm:flex">
-        <div className="flex items-center gap-2.5 px-2 pb-6 pt-2">
-          <div className="flex size-8 flex-none items-center justify-center rounded-[9px] bg-brand">
-            <BrandMark className="size-4.5 text-brand-ink" />
+    <div className="min-h-svh bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
+      <aside className="sticky top-0 hidden h-svh flex-col gap-6 border-r border-divider px-4 py-[22px] sm:flex">
+        <div className="flex items-center gap-[11px] px-2">
+          <div className="flex size-[30px] flex-none items-center justify-center rounded-[9px] bg-brand">
+            <BrandMark className="size-[18px] text-brand-ink" />
           </div>
-          <span className="font-heading text-[15px] font-bold tracking-tight text-text">Volta ao Controle</span>
+          <div className="flex flex-col leading-[1.15]">
+            <span className="whitespace-nowrap text-[14.5px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
+            <span className="text-[11px] text-text-5">Finanças pessoais</span>
+          </div>
         </div>
 
-        <span className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-text-4">Geral</span>
-        <nav className="flex flex-1 flex-col gap-0.5">
+        <nav className="flex flex-col gap-[3px]">
+          <span className="px-[10px] pb-2 text-[10px] font-semibold tracking-[0.12em] text-text-5">GERAL</span>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-text-3 transition-colors",
-                  isActive ? "bg-track font-semibold text-text" : "hover:bg-surface-2 hover:text-text",
+                  "flex items-center gap-[11px] rounded-[10px] px-[10px] py-[9px] text-[13.5px] transition-colors",
+                  isActive
+                    ? "bg-nav-active-bg font-semibold text-nav-active-fg"
+                    : "text-nav-idle-fg hover:text-text",
                 )
               }
             >
-              <item.icon className="size-4.5 flex-none" strokeWidth={1.8} />
-              <span>{item.label}</span>
+              <NavIcon>{item.icon}</NavIcon>
+              {item.label}
+              {counts[item.to] !== undefined && (
+                <span className="ml-auto font-mono text-[11px] text-text-5">{counts[item.to]}</span>
+              )}
+              {item.to === "/credit-cards" && cardsAlert && (
+                <span className="ml-auto size-1.5 rounded-full bg-negative" />
+              )}
             </NavLink>
           ))}
         </nav>
 
-        {user && <SavingsGoalWidget user={user} />}
+        {user && (
+          <SavingsGoalCard saved={user.savingsGoalSaved ?? 0} target={user.savingsGoalTarget ?? 0} />
+        )}
 
-        <div className="flex flex-col gap-2 border-t border-divider pt-3">
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-text-4">Tema</span>
-            <ThemeToggle />
+        <div className="mt-auto flex flex-col gap-3">
+          <div className="flex items-center justify-between px-[10px] py-1.5">
+            <span className="text-[11px] font-semibold tracking-[0.12em] text-text-5">TEMA</span>
+            <ThemeSegmented />
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2.5 rounded-lg px-2 py-2 transition-colors hover:bg-surface-2"
+                className="flex items-center gap-2.5 rounded-[10px] border border-divider bg-surface px-[10px] py-2.5 transition-colors hover:border-divider-strong"
               >
-                <div className="flex size-8 flex-none items-center justify-center rounded-full bg-brand-tint-2 text-[11px] font-bold text-brand">
+                <div className="flex size-7 flex-none items-center justify-center rounded-full bg-brand-tint text-[11px] font-semibold text-brand">
                   {initials(user?.name)}
                 </div>
-                <div className="min-w-0 flex-1 text-left">
-                  <div className="truncate text-[13px] font-semibold text-text">{user?.name ?? "Sessão ativa"}</div>
-                  <div className="text-[11px] text-text-4">Conta</div>
+                <div className="min-w-0 flex-1 text-left leading-[1.2]">
+                  <div className="truncate text-[12.5px] font-medium text-text">{user?.name ?? "Sessão ativa"}</div>
+                  <div className="text-[10.5px] text-text-5">Conta</div>
                 </div>
-                <ChevronDown className="size-3.5 flex-none text-text-4" />
+                <ChevronDown className="size-3.5 flex-none text-text-5" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="top" className="w-48">
@@ -136,41 +233,43 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-divider bg-sidebar px-4 py-3.5 sm:hidden">
+      <div className="flex min-w-0 flex-col">
+        <header className="flex items-center justify-between gap-3 border-b border-divider px-4 py-3.5 sm:hidden">
           <div className="flex items-center gap-2">
-            <div className="flex size-6.5 flex-none items-center justify-center rounded-lg bg-brand">
+            <div className="flex size-[26px] flex-none items-center justify-center rounded-lg bg-brand">
               <BrandMark className="size-3.5 text-brand-ink" />
             </div>
-            <span className="font-heading text-[14px] font-bold tracking-tight text-text">Volta ao Controle</span>
+            <span className="text-[14px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
           </div>
           <div className="flex items-center gap-1">
-            <ThemeToggle />
-            <button type="button" onClick={logout} aria-label="Sair" className="p-1 text-text-4">
-              <LogOut className="size-4.5" />
+            <ThemeSegmented />
+            <button type="button" onClick={logout} aria-label="Sair" className="p-1 text-text-5">
+              <LogOut className="size-[18px]" />
             </button>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 pb-24 sm:p-7 sm:pb-7">
-          <div key={location.pathname} className="mx-auto w-full max-w-[1780px] animate-in fade-in duration-300">
+        <main className="mx-auto w-full max-w-[1780px] flex-1 px-4 pb-24 pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
+          <div key={location.pathname} className="animate-in fade-in duration-300">
             <Outlet />
           </div>
         </main>
 
-        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-sidebar py-1.5 sm:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-surface py-1.5 sm:hidden">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-1 flex-col items-center gap-0.5 py-1.5 text-text-4 transition-colors",
-                  isActive && "text-brand",
+                  "flex flex-1 flex-col items-center gap-0.5 py-1.5 transition-colors",
+                  isActive ? "text-brand" : "text-text-5",
                 )
               }
             >
-              <item.icon className="size-5" strokeWidth={2} />
+              <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                {item.icon}
+              </svg>
               <span className="text-[10.5px] font-medium">{item.label}</span>
             </NavLink>
           ))}

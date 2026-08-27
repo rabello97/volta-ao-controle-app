@@ -11,40 +11,55 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Volta ao Controle — repaginação a partir dos mockups aprovados (ago/2026).
-     Teal é a única cor de ação/positivo; vermelho, amarelo e azul ficam
-     reservados a status/dados, nunca decorativos. Claro por padrão; .dark
-     redefine os mesmos tokens abaixo. */
-  --background: oklch(97.3% 0.004 165);
-  --surface: oklch(100% 0 0);
-  --surface-2: oklch(97.5% 0.005 165);
-  --surface-inset: oklch(98.3% 0.004 165);
-  --text: oklch(20% 0.02 175);
-  --text-2: oklch(32% 0.018 175);
-  --text-3: oklch(46% 0.014 175);
-  --text-4: oklch(49% 0.012 175);
-  --text-5: oklch(50% 0.01 175);
-  --divider: oklch(90% 0.008 165);
-  --divider-strong: oklch(81% 0.014 165);
-  --track: oklch(94.5% 0.006 165);
+  /* Valores extraídos diretamente dos mockups aprovados
+     (~/Downloads/export 2/volta-ao-controle-desktop-claro.html) — hex exatos,
+     não aproximações. Teal é a única cor de ação/positivo. */
+  --background: #F5F7F6;
+  --surface: #FFFFFF;
+  --surface-2: #F4F7F6;
+  --surface-inset: #F7F9F8;
+  --text: #101E1C;
+  --text-2: #2E3C39;
+  --text-3: #54625F;
+  --text-4: #5A6764;
+  --text-5: #5E6B69;
+  --divider: #E1E7E5;
+  --divider-strong: #C6D0CE;
+  --track: #E4E9E7;
 
-  --brand: oklch(46% 0.1 172);
-  --brand-hover: oklch(41% 0.1 172);
-  --brand-tint: oklch(92% 0.045 172);
-  --brand-tint-2: oklch(86% 0.07 172);
-  --brand-ink: oklch(99% 0.004 172);
+  --brand: #0A6F62;
+  --brand-hover: #08594F;
+  --brand-tint: #DCF2EC;
+  --brand-tint-2: #C3E7DE;
+  --brand-ink: #FFFFFF;
 
-  --positive: var(--brand);
-  --positive-tint: var(--brand-tint);
-  --negative: oklch(48% 0.16 30);
-  --negative-tint: oklch(94% 0.05 30);
-  --warning: oklch(48% 0.11 80);
-  --warning-tint: oklch(95% 0.06 90);
-  --info: oklch(52% 0.09 245);
-  --info-tint: oklch(93% 0.03 245);
+  --positive: #0A6F62;
+  --positive-tint: #DCF2EC;
+  --negative: #B33F26;
+  --negative-tint: #FCE9E4;
+  --warning: #7A5A0A;
+  --warning-tint: #FAF1DB;
+  --info: #3E76A6;
+  --info-tint: #E7F0F7;
 
-  --radius: 1.1rem;
-  --shadow-card: 0 1px 2px oklch(20% 0.02 175 / 0.05);
+  --hero-grad: linear-gradient(158deg, #E9F6F2 0%, #FFFFFF 58%);
+  --hero-border: #CDE6E0;
+  --nav-active-bg: #DCF2EC;
+  --nav-active-fg: #0A6F62;
+  --nav-idle-fg: #54625F;
+  --meter-grad: linear-gradient(90deg, #1E9E88, #0A6F62);
+  --meter-grad-negative: linear-gradient(90deg, #C9714F, #B33F26);
+  --card-grad: linear-gradient(150deg, #E4F4EF 0%, #FFFFFF 70%);
+
+  --cat-1: #0A6F62;
+  --cat-2: #B8860B;
+  --cat-3: #B33F26;
+  --cat-4: #3E76A6;
+  --cat-5: #C6D0CE;
+
+  --radius: 1.125rem;
+  --shadow-card: 0 1px 2px rgba(20, 40, 36, 0.05);
+
 
   /* Tokens de componente (shadcn/ui), ancorados na marca acima */
   --foreground: var(--text);
@@ -80,35 +95,52 @@
 }
 
 .dark {
-  --background: oklch(19% 0.008 175);
-  --surface: oklch(23% 0.008 175);
-  --surface-2: oklch(27% 0.009 175);
-  --surface-inset: oklch(21% 0.008 175);
-  --text: oklch(93% 0.004 175);
-  --text-2: oklch(82% 0.008 175);
-  --text-3: oklch(65% 0.01 175);
-  --text-4: oklch(56% 0.01 175);
-  --text-5: oklch(48% 0.01 175);
-  --divider: oklch(31% 0.01 175);
-  --divider-strong: oklch(40% 0.014 175);
-  --track: oklch(27% 0.009 175);
+  /* volta-ao-controle-desktop.html */
+  --background: #0E1113;
+  --surface: #131819;
+  --surface-2: #171D1F;
+  --surface-inset: #101617;
+  --text: #E6EAEA;
+  --text-2: #C6D0D0;
+  --text-3: #9AA6A7;
+  --text-4: #7C8A8B;
+  --text-5: #6C7A7C;
+  --divider: #1C2225;
+  --divider-strong: #2C3639;
+  --track: #1F2629;
 
-  --brand: oklch(80% 0.12 172);
-  --brand-hover: oklch(86% 0.1 172);
-  --brand-tint: oklch(27% 0.045 172);
-  --brand-tint-2: oklch(33% 0.06 172);
-  --brand-ink: oklch(17% 0.02 172);
+  --brand: #6FE3CE;
+  --brand-hover: #86EBD9;
+  --brand-tint: #17332E;
+  --brand-tint-2: #1E403A;
+  --brand-ink: #08302A;
 
-  --positive: var(--brand);
-  --positive-tint: var(--brand-tint);
-  --negative: oklch(72% 0.16 30);
-  --negative-tint: oklch(28% 0.06 30);
-  --warning: oklch(78% 0.12 85);
-  --warning-tint: oklch(28% 0.05 90);
-  --info: oklch(74% 0.09 245);
-  --info-tint: oklch(27% 0.04 245);
+  --positive: #6FE3CE;
+  --positive-tint: #17332E;
+  --negative: #F2836F;
+  --negative-tint: #33211E;
+  --warning: #E8C36A;
+  --warning-tint: #2A2519;
+  --info: #7FA6CB;
+  --info-tint: #1B2530;
 
-  --shadow-card: 0 1px 2px oklch(0% 0 0 / 0.3);
+  --hero-grad: linear-gradient(158deg, #14201F 0%, #121718 58%);
+  --hero-border: #22302E;
+  --nav-active-bg: #17332E;
+  --nav-active-fg: #7BE9D3;
+  --nav-idle-fg: #9AA6A7;
+  --meter-grad: linear-gradient(90deg, #2BA491, #6FE3CE);
+  --meter-grad-negative: linear-gradient(90deg, #C9714F, #F2836F);
+  --card-grad: linear-gradient(150deg, #16302B 0%, #101718 70%);
+
+  --cat-1: #6FE3CE;
+  --cat-2: #E8C36A;
+  --cat-3: #F2836F;
+  --cat-4: #7FA6CB;
+  --cat-5: #2C3639;
+
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3);
+
 }
 
 @theme inline {
@@ -147,6 +179,16 @@
   --color-warning-tint: var(--warning-tint);
   --color-info: var(--info);
   --color-info-tint: var(--info-tint);
+
+  --color-hero-border: var(--hero-border);
+  --color-nav-active-bg: var(--nav-active-bg);
+  --color-nav-active-fg: var(--nav-active-fg);
+  --color-nav-idle-fg: var(--nav-idle-fg);
+  --color-cat-1: var(--cat-1);
+  --color-cat-2: var(--cat-2);
+  --color-cat-3: var(--cat-3);
+  --color-cat-4: var(--cat-4);
+  --color-cat-5: var(--cat-5);
 
   --color-foreground: var(--foreground);
   --color-card: var(--card);

@@ -1,14 +1,10 @@
 import { useState } from "react";
-import { Plus, Receipt, Pencil, Trash2, Search, ChevronLeft, ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { EmptyState } from "@/components/EmptyState";
-import { MoneyValue } from "@/components/MoneyValue";
+import { Plus, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
+import { PageHeader } from "@/components/PageHeader";
 import { TransactionFormDialog } from "@/components/TransactionFormDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   useCreateTransaction,
   useDeleteTransaction,
@@ -16,11 +12,15 @@ import {
   useUpdateTransaction,
 } from "@/hooks/useTransactions";
 import { useCreditCards } from "@/hooks/useCreditCards";
-import { formatDate } from "@/lib/format";
+import { formatCurrency, formatDate } from "@/lib/format";
 import { buildTransactionFilters } from "@/lib/transactionFilters";
+import { cn } from "@/lib/utils";
 import type { Transaction, TransactionType } from "@/api/types";
 import type { TransactionInput } from "@/api/transactions";
-import { toast } from "sonner";
+
+/** Mesma grade de colunas do mockup. Escrita literal (sem interpolar) porque o
+ *  Tailwind precisa enxergar a classe no código-fonte para gerá-la. */
+const GRID = "md:grid-cols-[92px_1fr_150px_130px_150px_40px]";
 
 export function TransactionsPage() {
   const [type, setType] = useState<TransactionType | "ALL">("ALL");
@@ -39,7 +39,11 @@ export function TransactionsPage() {
   const updateMutation = useUpdateTransaction();
   const deleteMutation = useDeleteTransaction();
 
-  function resetPageAnd<T>(setter: (v: T) => void) {
+  const result = transactions.data;
+  const totalPages = result ? Math.max(1, Math.ceil(result.total / result.limit)) : 1;
+  const categories = Array.from(new Set((result?.items ?? []).map((t) => t.category)));
+
+  function reset<T>(setter: (v: T) => void) {
     return (value: T) => {
       setter(value);
       setPage(1);
@@ -48,11 +52,8 @@ export function TransactionsPage() {
 
   async function handleSubmit(input: TransactionInput) {
     try {
-      if (editing) {
-        await updateMutation.mutateAsync({ id: editing.id, input });
-      } else {
-        await createMutation.mutateAsync(input);
-      }
+      if (editing) await updateMutation.mutateAsync({ id: editing.id, input });
+      else await createMutation.mutateAsync(input);
       setFormOpen(false);
       setEditing(null);
     } catch {
@@ -70,171 +71,209 @@ export function TransactionsPage() {
     }
   }
 
-  const result = transactions.data;
-  const totalPages = result ? Math.max(1, Math.ceil(result.total / result.limit)) : 1;
-
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-[22px] font-semibold text-text">Transações</h1>
-        <Button
-          onClick={() => {
-            setEditing(null);
-            setFormOpen(true);
-          }}
-        >
-          <Plus className="size-4" /> Nova transação
-        </Button>
-      </div>
+    <>
+      <PageHeader
+        title="Transações"
+        subtitle={`${result?.total ?? 0} lançamentos`}
+        ctaLabel="Nova transação"
+        onCta={() => {
+          setEditing(null);
+          setFormOpen(true);
+        }}
+        search={search}
+        onSearchChange={reset(setSearch)}
+      />
 
-      <div className="flex flex-wrap items-center gap-3">
-        <Tabs value={type} onValueChange={(v) => resetPageAnd(setType)(v as TransactionType | "ALL")}>
-          <TabsList>
-            <TabsTrigger value="ALL">Todas</TabsTrigger>
-            <TabsTrigger value="EXPENSE">Saídas</TabsTrigger>
-            <TabsTrigger value="INCOME">Entradas</TabsTrigger>
-          </TabsList>
-        </Tabs>
-        <Input
-          placeholder="Categoria"
-          value={category}
-          onChange={(e) => resetPageAnd(setCategory)(e.target.value)}
-          className="max-w-[160px]"
-        />
-        {cards && cards.length > 0 && (
-          <Select value={creditCardId || "all"} onValueChange={(v) => resetPageAnd(setCreditCardId)(v === "all" ? "" : v)}>
-            <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Cartão: todos" />
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-none gap-0.5 rounded-[10px] border border-divider bg-surface p-[3px]">
+            {(
+              [
+                { key: "ALL", label: "Todas" },
+                { key: "EXPENSE", label: "Saídas" },
+                { key: "INCOME", label: "Entradas" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                onClick={() => reset(setType)(opt.key)}
+                className={cn(
+                  "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[12.5px] transition-colors",
+                  type === opt.key ? "bg-track font-medium text-text" : "text-text-3 hover:text-text",
+                )}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+
+          <Select value={category || "all"} onValueChange={(v) => reset(setCategory)(v === "all" ? "" : v)}>
+            <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[12.5px] text-text-3">
+              <SelectValue placeholder="Categoria: todas" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">Cartão: todos</SelectItem>
-              {cards.map((card) => (
-                <SelectItem key={card.id} value={card.id}>
-                  {card.nickname}
+              <SelectItem value="all">Categoria: todas</SelectItem>
+              {categories.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-        )}
-        <div className="relative">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-text-4" />
-          <Input
-            placeholder="Buscar"
-            value={search}
-            onChange={(e) => resetPageAnd(setSearch)(e.target.value)}
-            className="max-w-[180px] pl-8"
-          />
+
+          {cards && cards.length > 0 && (
+            <Select value={creditCardId || "all"} onValueChange={(v) => reset(setCreditCardId)(v === "all" ? "" : v)}>
+              <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[12.5px] text-text-3">
+                <SelectValue placeholder="Cartão: todos" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Cartão: todos</SelectItem>
+                {cards.map((c) => (
+                  <SelectItem key={c.id} value={c.id}>
+                    {c.nickname}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+
+          {result && (
+            <div className="ml-auto flex flex-wrap items-center gap-[18px] whitespace-nowrap rounded-[10px] border border-divider bg-surface px-4 py-2">
+              <span className="text-xs text-text-4">{result.total} lançamentos</span>
+              <span className="font-mono text-[12.5px] text-positive">+ {formatCurrency(result.totals.income)}</span>
+              <span className="font-mono text-[12.5px] text-negative">− {formatCurrency(result.totals.expense)}</span>
+            </div>
+          )}
         </div>
 
-        {result && (
-          <div className="ml-auto flex items-center gap-3 text-[13px]">
-            <span className="text-text-3">{result.total} lançamento(s)</span>
-            <MoneyValue value={result.totals.income} tone="positive" signed className="font-semibold" />
-            <MoneyValue value={-result.totals.expense} tone="negative" signed className="font-semibold" />
-          </div>
-        )}
-      </div>
+        {result?.items.length === 0 ? (
+          <section className="flex flex-col items-center gap-2 rounded-[18px] border border-divider bg-surface px-[22px] py-14">
+            <div className="mb-1.5 flex size-[46px] items-center justify-center rounded-[14px] bg-brand-tint text-brand">
+              <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />
+              </svg>
+            </div>
+            <span className="text-[15.5px] font-semibold text-text">Comece registrando um gasto</span>
+            <span className="max-w-[380px] text-center text-[12.5px] leading-[1.5] text-text-3">
+              Cada lançamento alimenta o painel, os relatórios e a projeção de saldo. Leva 10 segundos.
+            </span>
+            <button
+              type="button"
+              onClick={() => setFormOpen(true)}
+              className="mt-3 flex items-center gap-[7px] rounded-[10px] bg-brand px-4 py-[9px] text-[12.5px] font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+            >
+              <Plus className="size-3.5" /> Nova transação
+            </button>
+          </section>
+        ) : (
+          result && (
+            <section className="overflow-hidden rounded-[18px] border border-divider bg-surface">
+              <div className={cn("hidden gap-3 border-b border-divider bg-surface-inset px-[22px] py-3 md:grid", GRID)}>
+                {["DATA", "DESCRIÇÃO", "CATEGORIA", "ORIGEM"].map((h) => (
+                  <span key={h} className="text-[10.5px] font-semibold tracking-[0.1em] text-text-5">
+                    {h}
+                  </span>
+                ))}
+                <span className="text-right text-[10.5px] font-semibold tracking-[0.1em] text-text-5">VALOR</span>
+                <span />
+              </div>
 
-      {result?.items.length === 0 && (
-        <EmptyState
-          icon={Receipt}
-          title="Nenhuma transação ainda"
-          description="Comece registrando um gasto ou uma entrada."
-          action={
-            <Button size="sm" onClick={() => setFormOpen(true)}>
-              <Plus className="size-4" /> Nova transação
-            </Button>
-          }
-        />
-      )}
-
-      {result && result.items.length > 0 && (
-        <div className="rounded-2xl border border-divider bg-surface shadow-[var(--shadow-card)]">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-divider hover:bg-transparent">
-                <TableHead className="text-text-4">Data</TableHead>
-                <TableHead className="text-text-4">Descrição</TableHead>
-                <TableHead className="text-text-4">Categoria</TableHead>
-                <TableHead className="text-text-4">Origem</TableHead>
-                <TableHead className="text-right text-text-4">Valor</TableHead>
-                <TableHead className="w-16" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {result.items.map((transaction) => {
-                const card = cards?.find((c) => c.id === transaction.creditCardId);
-                const origin = card ? card.nickname : transaction.type === "INCOME" ? "Conta corrente" : "Dinheiro";
+              {result.items.map((t) => {
+                const card = cards?.find((c) => c.id === t.creditCardId);
+                const origin = card ? card.nickname : t.type === "INCOME" ? "Conta corrente" : "Dinheiro";
+                const income = t.type === "INCOME";
                 return (
-                  <TableRow key={transaction.id} className="border-divider">
-                    <TableCell className="font-mono text-text-3">{formatDate(transaction.date)}</TableCell>
-                    <TableCell className="text-text">
-                      {transaction.description || transaction.category}
-                      {transaction.installmentTotal && transaction.installmentTotal > 1 && (
-                        <span className="ml-1.5 text-xs text-text-4">
-                          {transaction.installmentNumber} de {transaction.installmentTotal}
-                        </span>
+                  <div
+                    key={t.id}
+                    className={cn(
+                      "grid grid-cols-1 items-center gap-3 border-b border-divider px-[22px] py-[13px] transition-colors last:border-b-0 hover:bg-surface-2",
+                      GRID,
+                    )}
+                  >
+                    <span className="font-mono text-[12.5px] text-text-3">{formatDate(t.date)}</span>
+                    <div className="flex items-center gap-[11px]">
+                      <span
+                        className={cn(
+                          "flex size-[26px] flex-none items-center justify-center rounded-lg text-[11px] font-bold",
+                          income ? "bg-brand-tint text-brand" : "bg-negative-tint text-negative",
+                        )}
+                      >
+                        {income ? "+" : "−"}
+                      </span>
+                      <span className="truncate text-[13.5px] text-text">
+                        {t.description || t.category}
+                        {t.installmentTotal && t.installmentTotal > 1 && (
+                          <span className="ml-1.5 text-[11px] text-text-5">
+                            {t.installmentNumber} de {t.installmentTotal}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                    <span className="truncate text-xs text-text-3">{t.category}</span>
+                    <span className="truncate text-xs text-text-4">{origin}</span>
+                    <span
+                      className={cn(
+                        "whitespace-nowrap text-right font-mono text-[13.5px]",
+                        income ? "text-positive" : "text-negative",
                       )}
-                    </TableCell>
-                    <TableCell className="text-text-3">{transaction.category}</TableCell>
-                    <TableCell className="text-text-3">{origin}</TableCell>
-                    <TableCell className="text-right">
-                      <MoneyValue
-                        value={transaction.type === "INCOME" ? transaction.amount : -Number(transaction.amount)}
-                        tone={transaction.type === "INCOME" ? "positive" : "negative"}
-                        signed
-                        className="font-semibold"
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          aria-label="Editar"
-                          onClick={() => {
-                            setEditing(transaction);
-                            setFormOpen(true);
-                          }}
-                        >
-                          <Pencil className="size-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          aria-label="Excluir"
-                          onClick={() => setDeleting(transaction)}
-                        >
-                          <Trash2 className="size-4 text-negative" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                    >
+                      {income ? "+ " : "− "}
+                      {formatCurrency(t.amount)}
+                    </span>
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        aria-label="Editar"
+                        onClick={() => {
+                          setEditing(t);
+                          setFormOpen(true);
+                        }}
+                        className="p-1 text-text-5 transition-colors hover:text-text"
+                      >
+                        <Pencil className="size-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Excluir"
+                        onClick={() => setDeleting(t)}
+                        className="p-1 text-text-5 transition-colors hover:text-negative"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
-            </TableBody>
-          </Table>
 
-          <div className="flex items-center justify-between border-t border-divider px-4 py-3 text-[13px] text-text-3">
-            <span>
-              Página {result.page} de {totalPages}
-            </span>
-            <div className="flex items-center gap-2">
-              <Button size="icon" variant="secondary" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
-                <ChevronLeft className="size-4" />
-              </Button>
-              <Button
-                size="icon"
-                variant="secondary"
-                disabled={page >= totalPages}
-                onClick={() => setPage((p) => p + 1)}
-              >
-                <ChevronRight className="size-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+              <div className="flex items-center gap-3 px-[22px] py-3.5">
+                <span className="text-xs text-text-4">
+                  Mostrando {result.items.length} de {result.total}
+                </span>
+                <div className="ml-auto flex gap-1.5">
+                  <button
+                    type="button"
+                    disabled={page <= 1}
+                    onClick={() => setPage((p) => p - 1)}
+                    className="rounded-lg border border-divider px-[11px] py-[5px] text-xs text-text-5 transition-colors enabled:hover:border-brand enabled:hover:text-brand disabled:opacity-40"
+                  >
+                    Anterior
+                  </button>
+                  <button
+                    type="button"
+                    disabled={page >= totalPages}
+                    onClick={() => setPage((p) => p + 1)}
+                    className="rounded-lg border border-divider-strong px-[11px] py-[5px] text-xs text-text-2 transition-colors enabled:hover:border-brand enabled:hover:text-brand disabled:opacity-40"
+                  >
+                    Próxima
+                  </button>
+                </div>
+              </div>
+            </section>
+          )
+        )}
+      </div>
 
       <button
         type="button"
@@ -266,6 +305,6 @@ export function TransactionsPage() {
         description="Essa ação não pode ser desfeita."
         onConfirm={handleDelete}
       />
-    </div>
+    </>
   );
 }

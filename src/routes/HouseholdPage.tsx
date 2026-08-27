@@ -5,6 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Mail, Check, X, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -79,11 +80,11 @@ export function HouseholdPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="font-heading text-[22px] font-semibold tracking-tight text-text">Household</h1>
+      <PageHeader title="Household" subtitle="Compartilhe as finanças com seu parceiro(a)" />
 
       {hasHousehold && partner && (
-        <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Vocês formam um household</h2>
+        <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+          <h2 className="mb-3 text-[14.5px] font-semibold text-text">Vocês formam um household</h2>
           <div className="flex items-center gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3">
             <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-semibold text-brand">
               {partner.name.charAt(0).toUpperCase()}
@@ -100,8 +101,8 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && pendingReceived.length > 0 && (
-        <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Convites recebidos</h2>
+        <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+          <h2 className="mb-3 text-[14.5px] font-semibold text-text">Convites recebidos</h2>
           <ul className="flex flex-col gap-2.5">
             {pendingReceived.map((invite) => (
               <li
@@ -137,8 +138,8 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && (
-        <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Convidar parceiro(a)</h2>
+        <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+          <h2 className="mb-3 text-[14.5px] font-semibold text-text">Convidar parceiro(a)</h2>
           <p className="mb-4 text-[13px] text-text-3">
             Convide alguém já cadastrado pelo e-mail para formar um household e compartilhar a visão das finanças.
           </p>

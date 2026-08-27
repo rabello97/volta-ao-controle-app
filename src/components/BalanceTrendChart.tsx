@@ -6,15 +6,17 @@ interface BalanceTrendChartProps {
   positive: boolean;
 }
 
+/** Área + linha do card de saldo, com as mesmas medidas do mockup:
+ *  viewBox 620x150, gradiente 30% → 0, traço 2.2 e ponto no último valor. */
 export function BalanceTrendChart({ data, positive }: BalanceTrendChartProps) {
   const gradientId = useId();
 
   if (data.length < 2) {
-    return <div className="h-[120px]" />;
+    return <div className="h-[150px]" />;
   }
 
-  const width = 600;
-  const height = 120;
+  const width = 620;
+  const height = 150;
   const values = data.map((d) => d.balance);
   const min = Math.min(...values);
   const max = Math.max(...values);
@@ -22,25 +24,26 @@ export function BalanceTrendChart({ data, positive }: BalanceTrendChartProps) {
 
   const points = data.map((d, i) => {
     const x = (i / (data.length - 1)) * width;
-    const y = height - ((d.balance - min) / range) * (height - 8) - 4;
+    const y = height - 26 - ((d.balance - min) / range) * (height - 52);
     return { x, y };
   });
 
-  const linePath = points.map((p, i) => `${i === 0 ? "M" : "L"}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
-  const areaPath = `${linePath} L${width},${height} L0,${height} Z`;
-  const strokeColor = positive ? "var(--color-positive)" : "var(--color-negative)";
+  const line = points.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" ");
+  const area = `M${points.map((p) => `${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(" L")} L${width} ${height} L0 ${height} Z`;
+  const stroke = positive ? "var(--color-brand)" : "var(--color-negative)";
+  const last = points[points.length - 1];
 
   return (
-    <svg viewBox={`0 0 ${width} ${height}`} className="h-[120px] w-full" preserveAspectRatio="none">
+    <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" className="block h-[150px] w-full">
       <defs>
         <linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={strokeColor} stopOpacity="0.22" />
-          <stop offset="100%" stopColor={strokeColor} stopOpacity="0" />
+          <stop offset="0%" stopColor={stroke} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={stroke} stopOpacity="0" />
         </linearGradient>
       </defs>
-      <path d={areaPath} fill={`url(#${gradientId})`} />
-      <path d={linePath} fill="none" stroke={strokeColor} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="4" fill={strokeColor} />
+      <path d={area} fill={`url(#${gradientId})`} />
+      <polyline points={line} fill="none" stroke={stroke} strokeWidth="2.2" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={last.x} cy={last.y} r="4" fill="var(--color-background)" stroke={stroke} strokeWidth="2.4" />
     </svg>
   );
 }

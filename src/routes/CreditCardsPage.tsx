@@ -1,17 +1,19 @@
 import { useState } from "react";
-import { Plus, CreditCard as CreditCardIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/PageHeader";
 import { CardTile } from "@/components/CardTile";
 import { CreditCardFormDialog } from "@/components/CreditCardFormDialog";
 import { useCreateCreditCard, useCreditCards } from "@/hooks/useCreditCards";
+import { formatCurrency } from "@/lib/format";
 import type { CreditCardInput } from "@/api/creditCards";
 
 export function CreditCardsPage() {
   const [formOpen, setFormOpen] = useState(false);
-  const { data: cards, isLoading } = useCreditCards();
+  const { data: cards } = useCreditCards();
   const createMutation = useCreateCreditCard();
+
+  const openTotal = (cards ?? []).reduce((sum, c) => sum + c.currentInvoiceTotal, 0);
 
   async function handleSubmit(input: CreditCardInput) {
     try {
@@ -23,34 +25,33 @@ export function CreditCardsPage() {
   }
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="font-heading text-[22px] font-bold text-text">Cartões</h1>
-        <Button onClick={() => setFormOpen(true)}>
-          <Plus className="size-4" /> Novo cartão
-        </Button>
+    <>
+      <PageHeader
+        title="Cartões"
+        subtitle={`${cards?.length ?? 0} cartões · ${formatCurrency(openTotal)} em faturas abertas`}
+        ctaLabel="Novo cartão"
+        onCta={() => setFormOpen(true)}
+      />
+
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+        {cards?.map((card, index) => (
+          <CardTile key={card.id} card={card} highlight={index === 0} />
+        ))}
+
+        <button
+          type="button"
+          onClick={() => setFormOpen(true)}
+          className="flex min-h-[168px] flex-col items-center justify-center gap-2 rounded-[18px] border border-dashed border-divider-strong p-5 transition-colors hover:border-brand hover:bg-surface-2"
+        >
+          <div className="flex size-[38px] items-center justify-center rounded-xl bg-brand-tint text-brand">
+            <Plus className="size-4" />
+          </div>
+          <span className="text-[13.5px] font-semibold text-text">Adicionar cartão</span>
+          <span className="max-w-[220px] text-center text-[11.5px] leading-[1.5] text-text-4">
+            Vincule transações e acompanhe a fatura fechando em tempo real.
+          </span>
+        </button>
       </div>
-
-      {!isLoading && cards?.length === 0 && (
-        <EmptyState
-          icon={CreditCardIcon}
-          title="Nenhum cartão cadastrado"
-          description="Cadastre um cartão para vincular transações e acompanhar a fatura."
-          action={
-            <Button size="sm" onClick={() => setFormOpen(true)}>
-              <Plus className="size-4" /> Novo cartão
-            </Button>
-          }
-        />
-      )}
-
-      {cards && cards.length > 0 && (
-        <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-          {cards.map((card) => (
-            <CardTile key={card.id} card={card} />
-          ))}
-        </div>
-      )}
 
       <CreditCardFormDialog
         open={formOpen}
@@ -58,6 +59,6 @@ export function CreditCardsPage() {
         onSubmit={handleSubmit}
         isSubmitting={createMutation.isPending}
       />
-    </div>
+    </>
   );
 }

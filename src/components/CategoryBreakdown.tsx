@@ -1,46 +1,53 @@
-import { MoneyValue } from "@/components/MoneyValue";
+import { formatCurrency } from "@/lib/format";
 import type { CategorySummaryEntry } from "@/api/types";
 
+/** Ordem de cores das categorias, igual à do mockup (teal, âmbar, coral, azul,
+ *  cinza para "Outros"). */
 const SEGMENT_COLORS = [
-  "var(--color-brand)",
-  "var(--color-warning)",
-  "var(--color-negative)",
-  "var(--color-info)",
-  "var(--color-text-4)",
+  "var(--cat-1)",
+  "var(--cat-2)",
+  "var(--cat-3)",
+  "var(--cat-4)",
+  "var(--cat-5)",
 ];
 
 export function CategoryBreakdown({ data }: { data: CategorySummaryEntry[] }) {
   const sorted = [...data].sort((a, b) => b.total - a.total);
-  const total = sorted.reduce((sum, item) => sum + item.total, 0) || 1;
+  const top = sorted.slice(0, 4);
+  const rest = sorted.slice(4);
+  const outros = rest.reduce((sum, item) => sum + item.total, 0);
+  const rows = outros > 0 ? [...top, { category: "Outros", total: outros }] : top;
+  const total = rows.reduce((sum, item) => sum + item.total, 0) || 1;
 
   return (
-    <div className="flex flex-col gap-3.5">
-      <div className="flex h-2 overflow-hidden rounded-full bg-track">
-        {sorted.map((item, index) => (
+    <div className="flex flex-col gap-4">
+      <div className="flex gap-[3px]">
+        {rows.map((item, index) => (
           <div
             key={item.category}
-            style={{ width: `${(item.total / total) * 100}%`, backgroundColor: SEGMENT_COLORS[index % SEGMENT_COLORS.length] }}
+            className="h-2 rounded-[4px]"
+            style={{ flex: item.total, background: SEGMENT_COLORS[index] }}
           />
         ))}
       </div>
 
-      <ul className="flex flex-col gap-2">
-        {sorted.map((item, index) => (
-          <li key={item.category} className="flex items-center justify-between gap-3 text-[13px]">
-            <span className="flex min-w-0 items-center gap-2">
-              <span
-                className="size-2 flex-none rounded-full"
-                style={{ backgroundColor: SEGMENT_COLORS[index % SEGMENT_COLORS.length] }}
-              />
-              <span className="truncate text-text-2">{item.category}</span>
+      <div className="flex flex-col gap-[13px]">
+        {rows.map((item, index) => (
+          <div key={item.category} className="flex items-center gap-2.5">
+            <span
+              className="size-2 flex-none rounded-[3px]"
+              style={{ background: SEGMENT_COLORS[index] }}
+            />
+            <span className="truncate text-[13px] capitalize text-text">{item.category}</span>
+            <span className="ml-auto flex-none whitespace-nowrap font-mono text-[12.5px] text-text-2">
+              {formatCurrency(item.total)}
             </span>
-            <span className="flex flex-none items-center gap-2.5">
-              <MoneyValue value={item.total} className="font-semibold" />
-              <span className="w-9 text-right text-text-4">{Math.round((item.total / total) * 100)}%</span>
+            <span className="w-[34px] flex-none text-right font-mono text-xs text-text-5">
+              {Math.round((item.total / total) * 100)}%
             </span>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
