@@ -1,46 +1,50 @@
 @import "tailwindcss";
 
-@import "@fontsource/inter/400.css";
-@import "@fontsource/inter/500.css";
-@import "@fontsource/inter/600.css";
-@import "@fontsource/inter/700.css";
-@import "@fontsource/inter/800.css";
+@import "@fontsource/instrument-sans/400.css";
+@import "@fontsource/instrument-sans/500.css";
+@import "@fontsource/instrument-sans/600.css";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Volta ao Controle — azul/verde-azulado sóbrio, confiável. Verde/vermelho
-     semânticos ficam separados do acento (nunca usamos a mesma cor pros dois
-     papéis). Claro por padrão; .dark redefine os mesmos tokens abaixo. */
-  --background: oklch(97.5% 0.004 240);
-  --surface: oklch(99.2% 0.002 240);
-  --surface-2: oklch(95% 0.006 240);
-  --text: oklch(23% 0.02 240);
-  --text-muted: oklch(46% 0.015 240);
-  --text-faint: oklch(60% 0.012 240);
-  --divider: oklch(89% 0.008 240);
-  --track: oklch(93.5% 0.006 240);
+  /* Volta ao Controle — repaginação a partir dos mockups aprovados (ago/2026).
+     Teal é a única cor de ação/positivo; vermelho, amarelo e azul ficam
+     reservados a status/dados, nunca decorativos. Claro por padrão; .dark
+     redefine os mesmos tokens abaixo. */
+  --background: oklch(97.3% 0.004 165);
+  --surface: oklch(100% 0 0);
+  --surface-2: oklch(97.5% 0.005 165);
+  --surface-inset: oklch(98.3% 0.004 165);
+  --text: oklch(20% 0.02 175);
+  --text-2: oklch(32% 0.018 175);
+  --text-3: oklch(46% 0.014 175);
+  --text-4: oklch(49% 0.012 175);
+  --text-5: oklch(50% 0.01 175);
+  --divider: oklch(90% 0.008 165);
+  --divider-strong: oklch(81% 0.014 165);
+  --track: oklch(94.5% 0.006 165);
 
-  /* --brand é a cor da marca (usada nos meus próprios componentes: botões,
-     ícones, texto em destaque). --accent/--accent-foreground abaixo são o par
-     semântico que o shadcn/ui usa internamente para estados de hover/foco
-     (menus, select) — são um par DIFERENTE do brand, de propósito: precisa
-     ser um fundo sutil com texto legível em cima, nunca a mesma cor forte
-     nos dois, senão o texto fica invisível sobre o próprio fundo. */
-  --brand: oklch(52% 0.1 220);
-  --brand-hover: oklch(46% 0.11 220);
-  --brand-tint: oklch(93% 0.028 220);
-  --brand-tint-2: oklch(87% 0.045 220);
-  --brand-ink: oklch(99% 0.005 220);
+  --brand: oklch(46% 0.1 172);
+  --brand-hover: oklch(41% 0.1 172);
+  --brand-tint: oklch(92% 0.045 172);
+  --brand-tint-2: oklch(86% 0.07 172);
+  --brand-ink: oklch(99% 0.004 172);
 
-  --positive: oklch(53% 0.13 152);
-  --positive-tint: oklch(93% 0.05 152);
-  --negative: oklch(56% 0.19 25);
-  --negative-tint: oklch(94% 0.045 25);
+  --positive: var(--brand);
+  --positive-tint: var(--brand-tint);
+  --negative: oklch(48% 0.16 30);
+  --negative-tint: oklch(94% 0.05 30);
+  --warning: oklch(48% 0.11 80);
+  --warning-tint: oklch(95% 0.06 90);
+  --info: oklch(52% 0.09 245);
+  --info-tint: oklch(93% 0.03 245);
 
-  --radius: 0.875rem;
+  --radius: 1.1rem;
+  --shadow-card: 0 1px 2px oklch(20% 0.02 175 / 0.05);
 
   /* Tokens de componente (shadcn/ui), ancorados na marca acima */
   --foreground: var(--text);
@@ -53,7 +57,7 @@
   --secondary: var(--track);
   --secondary-foreground: var(--text);
   --muted: var(--track);
-  --muted-foreground: var(--text-muted);
+  --muted-foreground: var(--text-3);
   --accent: var(--brand-tint);
   --accent-foreground: var(--brand);
   --destructive: var(--negative);
@@ -61,10 +65,10 @@
   --input: var(--divider);
   --ring: var(--brand);
   --chart-1: var(--brand);
-  --chart-2: var(--positive);
+  --chart-2: var(--info);
   --chart-3: var(--negative);
-  --chart-4: var(--text-muted);
-  --chart-5: var(--track);
+  --chart-4: var(--warning);
+  --chart-5: var(--text-4);
   --sidebar: var(--surface);
   --sidebar-foreground: var(--text);
   --sidebar-primary: var(--brand);
@@ -76,42 +80,57 @@
 }
 
 .dark {
-  /* Fundo quase neutro (pouquíssimo tom azulado) com separação de luminância
-     bem mais clara entre background → surface → surface-2, já que sombras
-     não têm efeito visível sobre fundo escuro — quem carrega a hierarquia
-     visual dos cards aqui é o contraste de cor, não a sombra. */
-  --background: oklch(14% 0.006 240);
-  --surface: oklch(21.5% 0.008 240);
-  --surface-2: oklch(27.5% 0.009 240);
-  --text: oklch(96% 0.003 240);
-  --text-muted: oklch(73% 0.008 240);
-  --text-faint: oklch(57% 0.008 240);
-  --divider: oklch(35% 0.01 240);
-  --track: oklch(29% 0.009 240);
+  --background: oklch(19% 0.008 175);
+  --surface: oklch(23% 0.008 175);
+  --surface-2: oklch(27% 0.009 175);
+  --surface-inset: oklch(21% 0.008 175);
+  --text: oklch(93% 0.004 175);
+  --text-2: oklch(82% 0.008 175);
+  --text-3: oklch(65% 0.01 175);
+  --text-4: oklch(56% 0.01 175);
+  --text-5: oklch(48% 0.01 175);
+  --divider: oklch(31% 0.01 175);
+  --divider-strong: oklch(40% 0.014 175);
+  --track: oklch(27% 0.009 175);
 
-  --brand: oklch(75% 0.12 220);
-  --brand-hover: oklch(81% 0.1 220);
-  --brand-tint: oklch(29% 0.055 220);
-  --brand-tint-2: oklch(35% 0.065 220);
-  --brand-ink: oklch(16% 0.02 220);
+  --brand: oklch(80% 0.12 172);
+  --brand-hover: oklch(86% 0.1 172);
+  --brand-tint: oklch(27% 0.045 172);
+  --brand-tint-2: oklch(33% 0.06 172);
+  --brand-ink: oklch(17% 0.02 172);
 
-  --positive: oklch(72% 0.15 152);
-  --positive-tint: oklch(28% 0.055 152);
-  --negative: oklch(70% 0.18 25);
-  --negative-tint: oklch(30% 0.065 25);
+  --positive: var(--brand);
+  --positive-tint: var(--brand-tint);
+  --negative: oklch(72% 0.16 30);
+  --negative-tint: oklch(28% 0.06 30);
+  --warning: oklch(78% 0.12 85);
+  --warning-tint: oklch(28% 0.05 90);
+  --info: oklch(74% 0.09 245);
+  --info-tint: oklch(27% 0.04 245);
+
+  --shadow-card: 0 1px 2px oklch(0% 0 0 / 0.3);
 }
 
 @theme inline {
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-heading: "Inter", system-ui, sans-serif;
+  --font-sans: "Instrument Sans", system-ui, sans-serif;
+  --font-heading: "Instrument Sans", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-surface-inset: var(--surface-inset);
   --color-text: var(--text);
-  --color-text-muted: var(--text-muted);
-  --color-text-faint: var(--text-faint);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-4: var(--text-4);
+  --color-text-5: var(--text-5);
+  /* Aliases de compatibilidade enquanto as telas antigas (paleta "ACRU") ainda
+     não passaram pela repaginação — removidos quando a última tela migrar. */
+  --color-text-muted: var(--text-3);
+  --color-text-faint: var(--text-4);
   --color-divider: var(--divider);
+  --color-divider-strong: var(--divider-strong);
   --color-track: var(--track);
 
   --color-brand: var(--brand);
@@ -124,6 +143,10 @@
   --color-positive-tint: var(--positive-tint);
   --color-negative: var(--negative);
   --color-negative-tint: var(--negative-tint);
+  --color-warning: var(--warning);
+  --color-warning-tint: var(--warning-tint);
+  --color-info: var(--info);
+  --color-info-tint: var(--info-tint);
 
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -157,10 +180,10 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --radius-lg: var(--radius);
-  --radius-sm: calc(var(--radius) * 0.55);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.9);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-xl: calc(var(--radius) * 1.35);
+  --radius-2xl: calc(var(--radius) * 1.7);
 }
 
 body {
@@ -168,6 +191,12 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Números, datas e percentuais usam sempre a monoespaçada — é o que dá o
+   alinhamento de coluna nas tabelas e o peso visual dos valores em R$. */
+.font-mono,
+.tabular-nums {
   font-variant-numeric: tabular-nums;
 }
 
@@ -185,7 +214,7 @@ body {
   height: 10px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--divider);
+  background: var(--divider-strong);
   border-radius: 99px;
   border: 2px solid var(--background);
 }

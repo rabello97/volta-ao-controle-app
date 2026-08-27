@@ -4,12 +4,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { motion } from "framer-motion";
 import { Navigate } from "react-router-dom";
-import { Compass } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BrandMark } from "@/components/BrandMark";
 import { useAuth } from "@/context/AuthContext";
 import { login as loginRequest, loginWithGoogle as loginWithGoogleRequest } from "@/api/auth";
 import { ApiError } from "@/api/client";
@@ -61,21 +61,19 @@ export function LoginPage() {
   }
 
   return (
-    <div className="relative flex min-h-svh items-center justify-center overflow-hidden bg-background p-6">
-      <div className="pointer-events-none absolute left-1/2 top-1/3 size-[36rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/[0.07] blur-3xl" />
-
+    <div className="flex min-h-svh items-center justify-center bg-background p-6">
       <motion.div
         initial={{ opacity: 0, y: 8, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 0.35, ease: "easeOut" }}
-        className="relative flex w-full max-w-[400px] flex-col gap-7 rounded-2xl border border-divider/70 bg-surface p-8 shadow-sm"
+        className="relative flex w-full max-w-[400px] flex-col gap-7 rounded-2xl border border-divider bg-surface p-8 shadow-[var(--shadow-card)]"
       >
         <div className="flex flex-col items-center gap-2.5 text-center">
-          <div className="flex size-12 items-center justify-center rounded-xl border border-brand/25 bg-brand-tint">
-            <Compass className="size-6 text-brand" strokeWidth={2.25} />
+          <div className="flex size-12 items-center justify-center rounded-xl bg-brand">
+            <BrandMark className="size-6 text-brand-ink" />
           </div>
           <h1 className="font-heading text-xl font-bold tracking-tight text-text">Volta ao Controle</h1>
-          <p className="text-[13px] text-text-muted">Finanças do casal, sem perder o rumo.</p>
+          <p className="text-[13px] text-text-3">Finanças do casal, sem perder o rumo.</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5">
@@ -97,7 +95,7 @@ export function LoginPage() {
           </Button>
         </form>
 
-        <div className="flex items-center gap-3 text-xs text-text-faint">
+        <div className="flex items-center gap-3 text-xs text-text-4">
           <span className="h-px flex-1 bg-divider" />
           ou
           <span className="h-px flex-1 bg-divider" />

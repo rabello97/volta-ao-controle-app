@@ -6,13 +6,13 @@ import {
   CreditCard,
   PieChart,
   LogOut,
-  Compass,
   Users,
   Settings,
   ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
+import { BrandMark } from "@/components/BrandMark";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import {
   DropdownMenu,
@@ -50,7 +50,7 @@ export function AppLayout() {
       <aside className="hidden w-[224px] flex-none flex-col gap-1 border-r border-divider bg-sidebar p-3.5 md:flex">
         <div className="flex items-center gap-2.5 px-2 pb-6 pt-2">
           <div className="flex size-8 flex-none items-center justify-center rounded-[9px] bg-brand">
-            <Compass className="size-4.5 text-brand-ink" strokeWidth={2.25} />
+            <BrandMark className="size-4.5 text-brand-ink" />
           </div>
           <span className="font-heading text-[15px] font-bold tracking-tight text-text">Volta ao Controle</span>
         </div>
@@ -115,7 +115,7 @@ export function AppLayout() {
         <header className="flex items-center justify-between gap-3 border-b border-divider bg-sidebar px-4 py-3.5 md:hidden">
           <div className="flex items-center gap-2">
             <div className="flex size-6.5 flex-none items-center justify-center rounded-lg bg-brand">
-              <Compass className="size-3.5 text-brand-ink" strokeWidth={2.25} />
+              <BrandMark className="size-3.5 text-brand-ink" />
             </div>
             <span className="font-heading text-[14px] font-bold tracking-tight text-text">Volta ao Controle</span>
           </div>
@@ -128,7 +128,7 @@ export function AppLayout() {
         </header>
 
         <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-7 md:pb-7">
-          <div key={location.pathname} className="mx-auto w-full max-w-[1080px] animate-in fade-in duration-300">
+          <div key={location.pathname} className="mx-auto w-full max-w-[1780px] animate-in fade-in duration-300">
             <Outlet />
           </div>
         </main>
