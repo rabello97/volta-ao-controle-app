@@ -79,29 +79,29 @@ export function HouseholdPage() {
 
   return (
     <div className="flex flex-col gap-5">
-      <h1 className="font-heading text-[22px] font-bold tracking-tight text-text">Household</h1>
+      <h1 className="font-heading text-[22px] font-semibold tracking-tight text-text">Household</h1>
 
       {hasHousehold && partner && (
-        <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
-          <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Vocês formam um household</h2>
+        <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
+          <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Vocês formam um household</h2>
           <div className="flex items-center gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3">
-            <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-bold text-brand">
+            <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-semibold text-brand">
               {partner.name.charAt(0).toUpperCase()}
             </div>
             <div>
               <div className="text-sm font-medium text-text">{partner.name}</div>
-              <div className="text-xs text-text-muted">{partner.email}</div>
+              <div className="text-xs text-text-3">{partner.email}</div>
             </div>
           </div>
-          <p className="mt-3 text-[13px] text-text-muted">
+          <p className="mt-3 text-[13px] text-text-3">
             Vocês já podem ver a visão unificada e a visão individual um do outro no painel e nos relatórios.
           </p>
         </div>
       )}
 
       {!hasHousehold && pendingReceived.length > 0 && (
-        <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
-          <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Convites recebidos</h2>
+        <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
+          <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Convites recebidos</h2>
           <ul className="flex flex-col gap-2.5">
             {pendingReceived.map((invite) => (
               <li
@@ -114,7 +114,7 @@ export function HouseholdPage() {
                   </div>
                   <div>
                     <div className="text-sm font-medium text-text">Convite pendente</div>
-                    <div className="text-xs text-text-muted">Recebido em {formatDate(invite.createdAt)}</div>
+                    <div className="text-xs text-text-3">Recebido em {formatDate(invite.createdAt)}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -137,9 +137,9 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && (
-        <div className="rounded-2xl border border-divider/70 bg-surface p-5 shadow-sm">
-          <h2 className="mb-3 font-heading text-[15px] font-bold text-text">Convidar parceiro(a)</h2>
-          <p className="mb-4 text-[13px] text-text-muted">
+        <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
+          <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Convidar parceiro(a)</h2>
+          <p className="mb-4 text-[13px] text-text-3">
             Convide alguém já cadastrado pelo e-mail para formar um household e compartilhar a visão das finanças.
           </p>
           <form onSubmit={handleSubmit(onInvite)} className="flex flex-col gap-3 sm:flex-row sm:items-end">
@@ -155,7 +155,7 @@ export function HouseholdPage() {
 
           {pendingSent.length > 0 && (
             <div className="mt-5 flex flex-col gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wide text-text-faint">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-text-4">
                 Convites enviados, aguardando resposta
               </span>
               {pendingSent.map((invite) => (
@@ -164,7 +164,7 @@ export function HouseholdPage() {
                   className="flex items-center justify-between rounded-lg border border-divider bg-surface-2 px-4 py-2.5 text-sm"
                 >
                   <span className="text-text">{invite.toEmail}</span>
-                  <span className="text-xs text-text-faint">{formatDate(invite.createdAt)}</span>
+                  <span className="text-xs text-text-4">{formatDate(invite.createdAt)}</span>
                 </div>
               ))}
             </div>

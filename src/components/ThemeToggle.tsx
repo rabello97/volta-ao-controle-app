@@ -22,7 +22,7 @@ export function ThemeToggle() {
       size="icon"
       aria-label={isDark ? "Mudar para tema claro" : "Mudar para tema escuro"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="text-text-faint hover:bg-surface-2 hover:text-text"
+      className="text-text-4 hover:bg-surface-2 hover:text-text"
     >
       {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
     </Button>

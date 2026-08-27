@@ -13,7 +13,14 @@ export function getCurrentUser(): Promise<User> {
   return apiRequest<User>("/auth/me");
 }
 
-export function updateProfile(input: { name: string }): Promise<User> {
+export interface UpdateProfileInput {
+  name?: string;
+  theme?: "light" | "dark" | null;
+  savingsGoalTarget?: number | null;
+  savingsGoalSaved?: number | null;
+}
+
+export function updateProfile(input: UpdateProfileInput): Promise<User> {
   return apiRequest<User>("/auth/me", { method: "PATCH", body: input });
 }
 

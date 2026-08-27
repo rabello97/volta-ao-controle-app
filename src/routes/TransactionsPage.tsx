@@ -236,6 +236,18 @@ export function TransactionsPage() {
         </div>
       )}
 
+      <button
+        type="button"
+        aria-label="Nova transação"
+        onClick={() => {
+          setEditing(null);
+          setFormOpen(true);
+        }}
+        className="fixed bottom-20 right-4 z-10 flex size-14 items-center justify-center rounded-full bg-brand text-brand-ink shadow-lg transition-transform active:scale-95 md:hidden"
+      >
+        <Plus className="size-6" />
+      </button>
+
       <TransactionFormDialog
         open={formOpen}
         onOpenChange={(open) => {
