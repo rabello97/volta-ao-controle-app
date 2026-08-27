@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -12,7 +12,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import type { RecurringBill } from "@/api/types";
+import { Chip } from "@/components/Chip";
+import { EXPENSE_CATEGORIES } from "@/lib/categories";
 import type { RecurringBillInput } from "@/api/recurringBills";
 import {
   recurringBillFormSchema as schema,
@@ -20,10 +21,17 @@ import {
   type RecurringBillFormValues as FormValues,
 } from "@/lib/validators/recurringBillSchema";
 
+interface EditableBill {
+  name: string;
+  expectedAmount: number | string;
+  dueDay: number;
+  category: string;
+}
+
 interface RecurringBillFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  bill?: RecurringBill | null;
+  bill?: EditableBill | null;
   onSubmit: (input: RecurringBillInput) => Promise<void>;
   isSubmitting: boolean;
 }
@@ -35,15 +43,21 @@ export function RecurringBillFormDialog({
   onSubmit,
   isSubmitting,
 }: RecurringBillFormDialogProps) {
+  const [customCategory, setCustomCategory] = useState(false);
+
   const {
     register,
     handleSubmit,
+    watch,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<FormInput, unknown, FormValues>({
     resolver: zodResolver(schema),
     defaultValues: { name: "", expectedAmount: 0, dueDay: 1, category: "" },
   });
+
+  const category = watch("category");
 
   useEffect(() => {
     if (open) {
@@ -52,6 +66,7 @@ export function RecurringBillFormDialog({
           ? { name: bill.name, expectedAmount: Number(bill.expectedAmount), dueDay: bill.dueDay, category: bill.category }
           : { name: "", expectedAmount: 0, dueDay: 1, category: "" },
       );
+      setCustomCategory(Boolean(bill && !EXPENSE_CATEGORIES.includes(bill.category)));
     }
   }, [open, bill, reset]);
 
@@ -86,8 +101,26 @@ export function RecurringBillFormDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="category">Categoria</Label>
-            <Input id="category" placeholder="moradia, assinaturas…" {...register("category")} />
+            <Label>Categoria</Label>
+            {customCategory ? (
+              <Input placeholder="moradia, assinaturas…" {...register("category")} />
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {EXPENSE_CATEGORIES.map((preset) => (
+                  <Chip
+                    key={preset}
+                    type="button"
+                    selected={category === preset}
+                    onClick={() => setValue("category", preset, { shouldValidate: true })}
+                  >
+                    {preset}
+                  </Chip>
+                ))}
+                <Chip type="button" onClick={() => setCustomCategory(true)}>
+                  + nova
+                </Chip>
+              </div>
+            )}
             {errors.category && <span className="text-xs text-negative">{errors.category.message}</span>}
           </div>
 
