@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { formatCurrency } from "@/lib/format";
+import { MoneyValue } from "@/components/MoneyValue";
 import type { CategorySummaryEntry } from "@/api/types";
 
 export function CategoryBarList({ data }: { data: CategorySummaryEntry[] }) {
@@ -10,8 +10,8 @@ export function CategoryBarList({ data }: { data: CategorySummaryEntry[] }) {
       {data.map((item) => (
         <div key={item.category}>
           <div className="mb-1.5 flex justify-between text-[13px]">
-            <span className="text-text">{item.category}</span>
-            <span className="font-bold text-text">{formatCurrency(item.total)}</span>
+            <span className="text-text-2">{item.category}</span>
+            <MoneyValue value={item.total} className="font-semibold" />
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-track">
             <motion.div

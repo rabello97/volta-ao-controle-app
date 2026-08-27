@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { listTransactions } from "@/api/transactions";
 import { getCategorySummary, getHouseholdDashboard, getMemberDashboard, getMyDashboard, getProjection } from "@/api/dashboard";
-import { aggregateMonthlyExpenses, sixMonthsAgoDateRange } from "@/lib/monthlyEvolution";
+import { aggregateMonthlyTotals, sixMonthsAgoDateRange } from "@/lib/monthlyEvolution";
 
 export function useMonthlyEvolution(months = 6) {
   const { from, to } = sixMonthsAgoDateRange();
   return useQuery({
     queryKey: ["transactions-evolution", from, to],
-    queryFn: () => listTransactions({ from, to, type: "EXPENSE", limit: 1000 }),
-    select: (result) => aggregateMonthlyExpenses(result.items, months),
+    queryFn: () => listTransactions({ from, to, limit: 1000 }),
+    select: (result) => aggregateMonthlyTotals(result.items, months),
   });
 }
 

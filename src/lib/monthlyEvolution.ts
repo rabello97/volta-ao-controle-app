@@ -3,10 +3,11 @@ import type { Transaction } from "@/api/types";
 export interface MonthlyTotal {
   year: number;
   month: number;
-  total: number;
+  income: number;
+  expense: number;
 }
 
-export function aggregateMonthlyExpenses(
+export function aggregateMonthlyTotals(
   transactions: Transaction[],
   months: number,
   referenceDate: Date = new Date(),
@@ -14,7 +15,7 @@ export function aggregateMonthlyExpenses(
   const buckets: MonthlyTotal[] = [];
   for (let i = months - 1; i >= 0; i -= 1) {
     const d = new Date(referenceDate.getFullYear(), referenceDate.getMonth() - i, 1);
-    buckets.push({ year: d.getFullYear(), month: d.getMonth() + 1, total: 0 });
+    buckets.push({ year: d.getFullYear(), month: d.getMonth() + 1, income: 0, expense: 0 });
   }
 
   const bucketIndex = new Map(buckets.map((bucket, idx) => [`${bucket.year}-${bucket.month}`, idx]));
@@ -24,7 +25,11 @@ export function aggregateMonthlyExpenses(
     const key = `${date.getFullYear()}-${date.getMonth() + 1}`;
     const idx = bucketIndex.get(key);
     if (idx !== undefined) {
-      buckets[idx].total += Number(transaction.amount);
+      if (transaction.type === "INCOME") {
+        buckets[idx].income += Number(transaction.amount);
+      } else {
+        buckets[idx].expense += Number(transaction.amount);
+      }
     }
   }
 
