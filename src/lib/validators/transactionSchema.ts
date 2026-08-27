@@ -9,6 +9,7 @@ export const transactionFormSchema = z
     description: z.string().optional(),
     creditCardId: z.string().optional(),
     invoiceChoice: z.enum(["CURRENT", "NEXT"]).optional(),
+    installmentTotal: z.coerce.number().int().min(1).max(24).optional(),
   })
   .refine((data) => !data.creditCardId || Boolean(data.invoiceChoice), {
     message: "Escolha a fatura atual ou a próxima",

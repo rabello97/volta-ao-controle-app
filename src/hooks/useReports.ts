@@ -7,8 +7,8 @@ export function useMonthlyEvolution(months = 6) {
   const { from, to } = sixMonthsAgoDateRange();
   return useQuery({
     queryKey: ["transactions-evolution", from, to],
-    queryFn: () => listTransactions({ from, to, type: "EXPENSE" }),
-    select: (transactions) => aggregateMonthlyExpenses(transactions, months),
+    queryFn: () => listTransactions({ from, to, type: "EXPENSE", limit: 1000 }),
+    select: (result) => aggregateMonthlyExpenses(result.items, months),
   });
 }
 

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -14,7 +14,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Chip } from "@/components/Chip";
 import { useCreditCards } from "@/hooks/useCreditCards";
+import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import type { Transaction } from "@/api/types";
 import type { TransactionInput } from "@/api/transactions";
 import {
@@ -39,12 +41,14 @@ export function TransactionFormDialog({
   isSubmitting,
 }: TransactionFormDialogProps) {
   const { data: cards } = useCreditCards();
+  const [customCategory, setCustomCategory] = useState(false);
 
   const {
     control,
     register,
     handleSubmit,
     watch,
+    setValue,
     reset,
     formState: { errors },
   } = useForm<FormInput, unknown, FormValues>({
@@ -53,7 +57,9 @@ export function TransactionFormDialog({
   });
 
   const type = watch("type");
+  const category = watch("category");
   const creditCardId = watch("creditCardId");
+  const presets = type === "INCOME" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   useEffect(() => {
     if (open) {
@@ -69,6 +75,7 @@ export function TransactionFormDialog({
             }
           : { type: "EXPENSE", amount: 0, date: "", category: "", description: "" },
       );
+      setCustomCategory(Boolean(transaction && !EXPENSE_CATEGORIES.concat(INCOME_CATEGORIES).includes(transaction.category)));
     }
   }, [open, transaction, reset]);
 
@@ -81,6 +88,7 @@ export function TransactionFormDialog({
       description: values.description || undefined,
       creditCardId: values.type === "EXPENSE" ? values.creditCardId || undefined : undefined,
       invoiceChoice: values.type === "EXPENSE" ? values.invoiceChoice : undefined,
+      installmentTotal: values.type === "EXPENSE" && values.creditCardId ? values.installmentTotal : undefined,
     });
   }
 
@@ -124,8 +132,26 @@ export function TransactionFormDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="category">Categoria</Label>
-            <Input id="category" placeholder="mercado, lazer, salário…" {...register("category")} />
+            <Label>Categoria</Label>
+            {customCategory ? (
+              <Input placeholder="mercado, lazer, salário…" {...register("category")} />
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {presets.map((preset) => (
+                  <Chip
+                    key={preset}
+                    type="button"
+                    selected={category === preset}
+                    onClick={() => setValue("category", preset, { shouldValidate: true })}
+                  >
+                    {preset}
+                  </Chip>
+                ))}
+                <Chip type="button" onClick={() => setCustomCategory(true)}>
+                  + nova
+                </Chip>
+              </div>
+            )}
             {errors.category && <span className="text-xs text-negative">{errors.category.message}</span>}
           </div>
 
@@ -160,28 +186,35 @@ export function TransactionFormDialog({
               </div>
 
               {creditCardId && (
-                <div className="flex flex-col gap-1.5">
-                  <Label>Fatura</Label>
-                  <Controller
-                    control={control}
-                    name="invoiceChoice"
-                    render={({ field }) => (
-                      <Tabs value={field.value ?? ""} onValueChange={field.onChange}>
-                        <TabsList className="w-full">
-                          <TabsTrigger value="CURRENT" className="flex-1">
-                            Atual
-                          </TabsTrigger>
-                          <TabsTrigger value="NEXT" className="flex-1">
-                            Próxima
-                          </TabsTrigger>
-                        </TabsList>
-                      </Tabs>
+                <>
+                  <div className="flex flex-col gap-1.5">
+                    <Label>Fatura</Label>
+                    <Controller
+                      control={control}
+                      name="invoiceChoice"
+                      render={({ field }) => (
+                        <Tabs value={field.value ?? ""} onValueChange={field.onChange}>
+                          <TabsList className="w-full">
+                            <TabsTrigger value="CURRENT" className="flex-1">
+                              Atual
+                            </TabsTrigger>
+                            <TabsTrigger value="NEXT" className="flex-1">
+                              Próxima
+                            </TabsTrigger>
+                          </TabsList>
+                        </Tabs>
+                      )}
+                    />
+                    {errors.invoiceChoice && (
+                      <span className="text-xs text-negative">{errors.invoiceChoice.message}</span>
                     )}
-                  />
-                  {errors.invoiceChoice && (
-                    <span className="text-xs text-negative">{errors.invoiceChoice.message}</span>
-                  )}
-                </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="installmentTotal">Parcelas (opcional)</Label>
+                    <Input id="installmentTotal" type="number" min={1} max={24} placeholder="1" {...register("installmentTotal")} />
+                  </div>
+                </>
               )}
             </div>
           )}

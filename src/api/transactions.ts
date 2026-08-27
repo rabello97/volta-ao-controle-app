@@ -1,11 +1,15 @@
 import { apiRequest } from "./client";
-import type { InvoiceChoice, Transaction, TransactionType } from "./types";
+import type { InvoiceChoice, TransactionListResult, TransactionType } from "./types";
 
 export interface TransactionFilters {
   from?: string;
   to?: string;
   category?: string;
   type?: TransactionType;
+  creditCardId?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
 }
 
 export interface TransactionInput {
@@ -16,20 +20,22 @@ export interface TransactionInput {
   description?: string;
   creditCardId?: string;
   invoiceChoice?: InvoiceChoice;
+  recurringBillId?: string;
+  installmentTotal?: number;
 }
 
-export type UpdateTransactionInput = Partial<Omit<TransactionInput, "type">>;
+export type UpdateTransactionInput = Partial<Omit<TransactionInput, "type" | "creditCardId" | "invoiceChoice" | "recurringBillId" | "installmentTotal">>;
 
-export function listTransactions(filters: TransactionFilters = {}): Promise<Transaction[]> {
-  return apiRequest<Transaction[]>("/transactions", { query: { ...filters } });
+export function listTransactions(filters: TransactionFilters = {}): Promise<TransactionListResult> {
+  return apiRequest<TransactionListResult>("/transactions", { query: { ...filters } });
 }
 
-export function createTransaction(input: TransactionInput): Promise<Transaction> {
-  return apiRequest<Transaction>("/transactions", { method: "POST", body: input });
+export function createTransaction(input: TransactionInput) {
+  return apiRequest("/transactions", { method: "POST", body: input });
 }
 
-export function updateTransaction(id: string, input: UpdateTransactionInput): Promise<Transaction> {
-  return apiRequest<Transaction>(`/transactions/${id}`, { method: "PATCH", body: input });
+export function updateTransaction(id: string, input: UpdateTransactionInput) {
+  return apiRequest(`/transactions/${id}`, { method: "PATCH", body: input });
 }
 
 export function deleteTransaction(id: string): Promise<void> {
