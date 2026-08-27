@@ -69,7 +69,7 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-svh bg-background">
-      <aside className="hidden w-[224px] flex-none flex-col gap-1 border-r border-divider bg-sidebar p-3.5 md:flex">
+      <aside className="hidden w-[224px] flex-none flex-col gap-1 border-r border-divider bg-sidebar p-3.5 sm:flex">
         <div className="flex items-center gap-2.5 px-2 pb-6 pt-2">
           <div className="flex size-8 flex-none items-center justify-center rounded-[9px] bg-brand">
             <BrandMark className="size-4.5 text-brand-ink" />
@@ -77,6 +77,7 @@ export function AppLayout() {
           <span className="font-heading text-[15px] font-bold tracking-tight text-text">Volta ao Controle</span>
         </div>
 
+        <span className="px-3 pb-1.5 text-[10.5px] font-semibold uppercase tracking-wide text-text-4">Geral</span>
         <nav className="flex flex-1 flex-col gap-0.5">
           {NAV_ITEMS.map((item) => (
             <NavLink
@@ -95,7 +96,7 @@ export function AppLayout() {
           ))}
         </nav>
 
-        {user?.savingsGoalTarget ? <SavingsGoalWidget user={user} /> : null}
+        {user && <SavingsGoalWidget user={user} />}
 
         <div className="flex flex-col gap-2 border-t border-divider pt-3">
           <div className="flex items-center justify-between px-1">
@@ -136,7 +137,7 @@ export function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-divider bg-sidebar px-4 py-3.5 md:hidden">
+        <header className="flex items-center justify-between gap-3 border-b border-divider bg-sidebar px-4 py-3.5 sm:hidden">
           <div className="flex items-center gap-2">
             <div className="flex size-6.5 flex-none items-center justify-center rounded-lg bg-brand">
               <BrandMark className="size-3.5 text-brand-ink" />
@@ -151,13 +152,13 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-7 md:pb-7">
+        <main className="flex-1 overflow-y-auto p-4 pb-24 sm:p-7 sm:pb-7">
           <div key={location.pathname} className="mx-auto w-full max-w-[1780px] animate-in fade-in duration-300">
             <Outlet />
           </div>
         </main>
 
-        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-sidebar py-1.5 md:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-sidebar py-1.5 sm:hidden">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}

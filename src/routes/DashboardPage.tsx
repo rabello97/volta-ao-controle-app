@@ -1,4 +1,5 @@
-import { TrendingUp, TrendingDown, AlertTriangle, CalendarClock, RotateCw, Wallet } from "lucide-react";
+import { useState } from "react";
+import { TrendingUp, TrendingDown, AlertTriangle, CalendarClock, RotateCw } from "lucide-react";
 import { toast } from "sonner";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { StatCard } from "@/components/StatCard";
@@ -6,7 +7,7 @@ import { EmptyState } from "@/components/EmptyState";
 import { MoneyValue } from "@/components/MoneyValue";
 import { DueRow } from "@/components/DueRow";
 import { BalanceTrendChart } from "@/components/BalanceTrendChart";
-import { CategoryBarList } from "@/components/CategoryBarList";
+import { CategoryBreakdown } from "@/components/CategoryBreakdown";
 import { Button } from "@/components/ui/button";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useBalanceSeries, useCategoryInsight, useDashboard } from "@/hooks/useDashboard";
@@ -15,11 +16,18 @@ import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCategorySummaryThisMonth } from "@/hooks/useReports";
 import { cn } from "@/lib/utils";
 
+const PERIODS = [
+  { key: "30d", label: "30d", days: 30 },
+  { key: "6m", label: "6m", days: 182 },
+  { key: "1a", label: "1a", days: 365 },
+] as const;
+
 export function DashboardPage() {
   const { view, partner } = useHouseholdView();
   const partnerId = partner?.id ?? null;
+  const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("30d");
   const dashboard = useDashboard(view, partnerId);
-  const balanceSeries = useBalanceSeries(30);
+  const balanceSeries = useBalanceSeries(PERIODS.find((p) => p.key === period)!.days);
   const categoryInsight = useCategoryInsight();
   const categorySummary = useCategorySummaryThisMonth();
   const { items: upcoming } = useUpcomingDue();
@@ -81,13 +89,20 @@ export function DashboardPage() {
         <div className="flex flex-col justify-between gap-5 rounded-2xl border border-divider bg-surface p-6 shadow-[var(--shadow-card)] lg:col-span-8 lg:row-span-2">
           <div className="flex items-start justify-between gap-4">
             <span className="text-[11px] font-semibold uppercase tracking-wide text-text-4">Saldo atual</span>
-            <div
-              className={cn(
-                "flex size-9 flex-none items-center justify-center rounded-full",
-                inControl ? "bg-positive-tint" : "bg-negative-tint",
-              )}
-            >
-              <Wallet className={cn("size-4", inControl ? "text-positive" : "text-negative")} strokeWidth={1.8} />
+            <div className="flex items-center gap-0.5 rounded-lg bg-track p-0.5">
+              {PERIODS.map((p) => (
+                <button
+                  key={p.key}
+                  type="button"
+                  onClick={() => setPeriod(p.key)}
+                  className={cn(
+                    "rounded-md px-2.5 py-1 text-[12px] font-medium transition-colors",
+                    period === p.key ? "bg-surface text-text shadow-[var(--shadow-card)]" : "text-text-3 hover:text-text",
+                  )}
+                >
+                  {p.label}
+                </button>
+              ))}
             </div>
           </div>
 
@@ -100,7 +115,7 @@ export function DashboardPage() {
             <div className="flex items-center gap-2">
               {trendPct !== null && (
                 <span className={cn("text-[13px] font-medium", trendPct >= 0 ? "text-positive" : "text-negative")}>
-                  {trendPct >= 0 ? "↑" : "↓"} {Math.abs(trendPct)}% vs. 30 dias atrás
+                  {trendPct >= 0 ? "↑" : "↓"} {Math.abs(trendPct)}% vs. período anterior
                 </span>
               )}
               <span className={cn("text-[13px]", inControl ? "text-text-3" : "text-negative")}>
@@ -153,7 +168,7 @@ export function DashboardPage() {
           <h2 className="mb-3 font-heading text-[15px] font-semibold text-text">Para onde foi o dinheiro</h2>
           {categorySummary.data && categorySummary.data.length > 0 ? (
             <div className="flex flex-col gap-4">
-              <CategoryBarList data={categorySummary.data} />
+              <CategoryBreakdown data={categorySummary.data} />
               {categoryInsight.data && (
                 <p className="rounded-xl bg-info-tint px-3.5 py-2.5 text-[13px] text-info">
                   {categoryInsight.data.category} subiu {categoryInsight.data.changePct}% em relação à média dos
