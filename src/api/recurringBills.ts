@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { RecurringBill } from "./types";
+import type { RecurringBill, RecurringBillMonthlyStats, RecurringBillWithStatus, Transaction } from "./types";
 
 export interface RecurringBillInput {
   name: string;
@@ -26,4 +26,16 @@ export function updateRecurringBill(id: string, input: UpdateRecurringBillInput)
 
 export function deleteRecurringBill(id: string): Promise<void> {
   return apiRequest<void>(`/recurring-bills/${id}`, { method: "DELETE" });
+}
+
+export function getRecurringBillStats(): Promise<RecurringBillMonthlyStats> {
+  return apiRequest<RecurringBillMonthlyStats>("/recurring-bills/stats");
+}
+
+export function listRecurringBillsWithStatus(): Promise<RecurringBillWithStatus[]> {
+  return apiRequest<RecurringBillWithStatus[]>("/recurring-bills/with-status");
+}
+
+export function payRecurringBill(id: string): Promise<Transaction> {
+  return apiRequest<Transaction>(`/recurring-bills/${id}/pay`, { method: "POST" });
 }

@@ -1,17 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { Plus, CreditCard as CreditCardIcon } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/EmptyState";
+import { CardTile } from "@/components/CardTile";
 import { CreditCardFormDialog } from "@/components/CreditCardFormDialog";
-import { useCreateCreditCard, useCreditCardsWithCurrentInvoice } from "@/hooks/useCreditCards";
-import { formatCurrency } from "@/lib/format";
+import { useCreateCreditCard, useCreditCards } from "@/hooks/useCreditCards";
 import type { CreditCardInput } from "@/api/creditCards";
 
 export function CreditCardsPage() {
   const [formOpen, setFormOpen] = useState(false);
-  const { cards, isLoading } = useCreditCardsWithCurrentInvoice();
+  const { data: cards, isLoading } = useCreditCards();
   const createMutation = useCreateCreditCard();
 
   async function handleSubmit(input: CreditCardInput) {
@@ -32,7 +31,7 @@ export function CreditCardsPage() {
         </Button>
       </div>
 
-      {!isLoading && cards.length === 0 && (
+      {!isLoading && cards?.length === 0 && (
         <EmptyState
           icon={CreditCardIcon}
           title="Nenhum cartão cadastrado"
@@ -45,25 +44,10 @@ export function CreditCardsPage() {
         />
       )}
 
-      {cards.length > 0 && (
+      {cards && cards.length > 0 && (
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((card) => (
-            <Link
-              key={card.id}
-              to={`/credit-cards/${card.id}`}
-              className="flex flex-col gap-1 rounded-2xl border border-divider/70 bg-surface p-4.5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
-            >
-              <span className="font-heading text-base font-extrabold text-text">{card.nickname}</span>
-              <span className="mt-2 text-[11px] font-semibold uppercase tracking-wide text-text-muted">
-                Fatura atual
-              </span>
-              <span className="font-heading text-xl font-extrabold text-negative">
-                {card.currentInvoiceTotal !== null ? formatCurrency(card.currentInvoiceTotal) : "—"}
-              </span>
-              <span className="mt-2 text-xs text-text-faint">
-                Fecha dia {card.closingDay} · vence dia {card.dueDay}
-              </span>
-            </Link>
+            <CardTile key={card.id} card={card} />
           ))}
         </div>
       )}

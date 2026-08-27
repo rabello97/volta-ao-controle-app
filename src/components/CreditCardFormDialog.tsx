@@ -34,11 +34,11 @@ export function CreditCardFormDialog({ open, onOpenChange, onSubmit, isSubmittin
     formState: { errors },
   } = useForm<FormInput, unknown, FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { nickname: "", closingDay: 1, dueDay: 10 },
+    defaultValues: { nickname: "", closingDay: 1, dueDay: 10, creditLimit: undefined },
   });
 
   useEffect(() => {
-    if (open) reset({ nickname: "", closingDay: 1, dueDay: 10 });
+    if (open) reset({ nickname: "", closingDay: 1, dueDay: 10, creditLimit: undefined });
   }, [open, reset]);
 
   return (
@@ -67,6 +67,12 @@ export function CreditCardFormDialog({ open, onOpenChange, onSubmit, isSubmittin
               <Input id="dueDay" type="number" min={1} max={31} {...register("dueDay")} />
               {errors.dueDay && <span className="text-xs text-negative">{errors.dueDay.message}</span>}
             </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="creditLimit">Limite (opcional)</Label>
+            <Input id="creditLimit" type="number" min={0} step="0.01" placeholder="3000" {...register("creditLimit")} />
+            {errors.creditLimit && <span className="text-xs text-negative">{errors.creditLimit.message}</span>}
           </div>
 
           <DialogFooter>

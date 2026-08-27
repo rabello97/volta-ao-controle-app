@@ -13,6 +13,10 @@ function makeTransaction(overrides: Partial<Transaction> = {}): Transaction {
     description: null,
     creditCardId: null,
     invoiceId: null,
+    recurringBillId: null,
+    installmentNumber: null,
+    installmentTotal: null,
+    installmentGroupId: null,
     createdAt: "2026-03-05",
     ...overrides,
   };

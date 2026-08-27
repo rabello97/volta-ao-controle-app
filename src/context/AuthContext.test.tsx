@@ -4,6 +4,19 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
 import { AuthProvider, useAuth } from "./AuthContext";
 import { clearStoredUser, clearToken, getStoredUser, getToken, setToken } from "@/lib/session";
+import type { User } from "@/api/types";
+
+function makeUser(overrides: Partial<User> = {}): User {
+  return {
+    id: "u1",
+    name: "Ana",
+    email: "ana@example.com",
+    theme: null,
+    savingsGoalTarget: null,
+    savingsGoalSaved: null,
+    ...overrides,
+  };
+}
 
 function wrapper({ children }: { children: ReactNode }) {
   const queryClient = new QueryClient();
@@ -35,7 +48,7 @@ describe("AuthProvider", () => {
     await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
 
     act(() => {
-      result.current.login({ token: "abc123", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+      result.current.login({ token: "abc123", user: makeUser() });
     });
 
     expect(result.current.status).toBe("authenticated");
@@ -50,14 +63,14 @@ describe("AuthProvider", () => {
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ id: "u1", name: "Ana", email: "ana@example.com" }),
+        json: async () => (makeUser()),
       }),
     );
 
     const { result: first } = renderHook(() => useAuth(), { wrapper });
     await waitFor(() => expect(first.current.status).toBe("unauthenticated"));
     act(() => {
-      first.current.login({ token: "abc123", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+      first.current.login({ token: "abc123", user: makeUser() });
     });
 
     const { result: second } = renderHook(() => useAuth(), { wrapper });
@@ -69,7 +82,7 @@ describe("AuthProvider", () => {
     await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
 
     act(() => {
-      result.current.login({ token: "abc123", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+      result.current.login({ token: "abc123", user: makeUser() });
     });
     act(() => {
       result.current.logout();
@@ -87,7 +100,7 @@ describe("AuthProvider", () => {
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ id: "u1", name: "Ana", email: "ana@example.com" }),
+        json: async () => (makeUser()),
       }),
     );
 
@@ -114,7 +127,7 @@ describe("AuthProvider", () => {
       vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({ id: "u1", name: "Ana Atualizada", email: "ana@example.com" }),
+        json: async () => (makeUser({ name: "Ana Atualizada" })),
       }),
     );
 
@@ -128,10 +141,10 @@ describe("AuthProvider", () => {
     await waitFor(() => expect(result.current.status).toBe("unauthenticated"));
 
     act(() => {
-      result.current.login({ token: "abc123", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+      result.current.login({ token: "abc123", user: makeUser() });
     });
     act(() => {
-      result.current.updateUser({ id: "u1", name: "Ana Paula", email: "ana@example.com" });
+      result.current.updateUser(makeUser({ name: "Ana Paula" }));
     });
 
     expect(result.current.user?.name).toBe("Ana Paula");

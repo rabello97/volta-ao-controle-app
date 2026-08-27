@@ -35,7 +35,10 @@ describe("HouseholdViewProvider", () => {
     const { result } = renderHook(() => useTestHooks(), { wrapper });
 
     act(() => {
-      result.current.auth.login({ token: "t", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+      result.current.auth.login({
+        token: "t",
+        user: { id: "u1", name: "Ana", email: "ana@example.com", theme: null, savingsGoalTarget: null, savingsGoalSaved: null },
+      });
     });
 
     await waitFor(() => expect(result.current.view.isLoading).toBe(false));
@@ -54,7 +57,10 @@ describe("HouseholdViewProvider", () => {
     const { result } = renderHook(() => useTestHooks(), { wrapper });
 
     act(() => {
-      result.current.auth.login({ token: "t", user: { id: "u1", name: "Ana", email: "ana@example.com" } });
+      result.current.auth.login({
+        token: "t",
+        user: { id: "u1", name: "Ana", email: "ana@example.com", theme: null, savingsGoalTarget: null, savingsGoalSaved: null },
+      });
     });
 
     await waitFor(() => expect(result.current.view.hasHousehold).toBe(true));

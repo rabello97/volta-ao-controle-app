@@ -8,7 +8,15 @@ vi.mock("@/api/creditCards");
 
 function renderDialog() {
   vi.mocked(creditCardsApi.listCreditCards).mockResolvedValue([
-    { id: "card-1", userId: "u1", nickname: "Nubank", closingDay: 10, dueDay: 17, createdAt: "2026-01-01" },
+    {
+      id: "card-1",
+      nickname: "Nubank",
+      closingDay: 10,
+      dueDay: 17,
+      creditLimit: null,
+      currentInvoiceTotal: 0,
+      utilizationPct: null,
+    },
   ]);
 
   const queryClient = new QueryClient();

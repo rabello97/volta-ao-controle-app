@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getHouseholdDashboard, getMemberDashboard, getMyDashboard } from "@/api/dashboard";
+import { getBalanceSeries, getCategoryInsight, getHouseholdDashboard, getMemberDashboard, getMyDashboard } from "@/api/dashboard";
 import type { HouseholdView } from "@/context/HouseholdViewContext";
 
 export function selectDashboardQueryFn(view: HouseholdView, partnerId: string | null) {
@@ -14,4 +14,12 @@ export function useDashboard(view: HouseholdView, partnerId: string | null) {
     queryFn: selectDashboardQueryFn(view, partnerId),
     enabled: view !== "partner" || Boolean(partnerId),
   });
+}
+
+export function useBalanceSeries(days = 30) {
+  return useQuery({ queryKey: ["balance-series", days], queryFn: () => getBalanceSeries(days) });
+}
+
+export function useCategoryInsight() {
+  return useQuery({ queryKey: ["category-insight"], queryFn: getCategoryInsight });
 }

@@ -1,14 +1,15 @@
 import { apiRequest } from "./client";
-import type { CreditCard, InvoiceDetail } from "./types";
+import type { CreditCard, CreditCardSummary, InvoiceDetail } from "./types";
 
 export interface CreditCardInput {
   nickname: string;
   closingDay: number;
   dueDay: number;
+  creditLimit?: number | null;
 }
 
-export function listCreditCards(): Promise<CreditCard[]> {
-  return apiRequest<CreditCard[]>("/credit-cards");
+export function listCreditCards(): Promise<CreditCardSummary[]> {
+  return apiRequest<CreditCardSummary[]>("/credit-cards");
 }
 
 export function createCreditCard(input: CreditCardInput): Promise<CreditCard> {
