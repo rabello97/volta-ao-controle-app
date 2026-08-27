@@ -174,11 +174,11 @@ export function DashboardPage() {
       <div className="flex flex-col gap-4">
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.55fr_1fr]">
-          <section className="flex flex-col overflow-hidden rounded-[18px] border border-hero-border bg-[image:var(--hero-grad)] px-[26px] pt-6">
-            <div className="flex items-start gap-3.5">
+          <section className="flex flex-col overflow-hidden rounded-[18px] border border-hero-border bg-[image:var(--hero-grad)] px-5 pt-5 sm:px-[26px] sm:pt-6">
+            <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:gap-3.5">
               <div className="flex flex-col gap-3">
                 <span className="text-[11px] font-semibold tracking-[0.14em] text-text-4">SALDO ATUAL</span>
-                <span className="whitespace-nowrap font-mono text-[46px] font-medium leading-none -tracking-[0.035em] text-text">
+                <span className="whitespace-nowrap font-mono text-[34px] font-medium leading-none -tracking-[0.035em] text-text sm:text-[46px]">
                   {reais}
                   <span className="text-text-4">{centavos}</span>
                 </span>
@@ -202,7 +202,7 @@ export function DashboardPage() {
                 </div>
               </div>
 
-              <div className="ml-auto flex flex-none gap-1 rounded-full border border-divider bg-surface-inset p-[3px]">
+              <div className="flex flex-none gap-1 self-end rounded-full border border-divider bg-surface-inset p-[3px] sm:ml-auto sm:self-auto">
                 {PERIODS.map((p) => (
                   <button
                     key={p.key}

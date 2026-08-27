@@ -188,12 +188,15 @@ export function TransactionsPage() {
                   <div
                     key={t.id}
                     className={cn(
-                      "grid grid-cols-1 items-center gap-3 border-b border-divider px-[22px] py-[13px] transition-colors last:border-b-0 hover:bg-surface-2",
+                      "flex items-center gap-3 border-b border-divider px-4 py-3 transition-colors last:border-b-0 hover:bg-surface-2 md:grid md:items-center md:gap-3 md:px-[22px] md:py-[13px]",
                       GRID,
                     )}
                   >
-                    <span className="font-mono text-[12.5px] text-text-3">{formatDate(t.date)}</span>
-                    <div className="flex items-center gap-[11px]">
+                    {/* No mobile a data vira metadado da linha; no desktop ela é a
+                        primeira coluna da grade. */}
+                    <span className="hidden font-mono text-[12.5px] text-text-3 md:inline">{formatDate(t.date)}</span>
+
+                    <div className="flex min-w-0 flex-1 items-center gap-[11px] md:flex-none">
                       <span
                         className={cn(
                           "flex size-[26px] flex-none items-center justify-center rounded-lg text-[11px] font-bold",
@@ -202,27 +205,35 @@ export function TransactionsPage() {
                       >
                         {income ? "+" : "−"}
                       </span>
-                      <span className="truncate text-[13.5px] text-text">
-                        {t.description || t.category}
-                        {t.installmentTotal && t.installmentTotal > 1 && (
-                          <span className="ml-1.5 text-[11px] text-text-5">
-                            {t.installmentNumber} de {t.installmentTotal}
-                          </span>
-                        )}
-                      </span>
+                      <div className="flex min-w-0 flex-col">
+                        <span className="truncate text-[13.5px] text-text">
+                          {t.description || t.category}
+                          {t.installmentTotal && t.installmentTotal > 1 && (
+                            <span className="ml-1.5 text-[11px] text-text-5">
+                              {t.installmentNumber} de {t.installmentTotal}
+                            </span>
+                          )}
+                        </span>
+                        <span className="truncate text-[11.5px] text-text-4 md:hidden">
+                          {formatDate(t.date)} · {t.category} · {origin}
+                        </span>
+                      </div>
                     </div>
-                    <span className="truncate text-xs text-text-3">{t.category}</span>
-                    <span className="truncate text-xs text-text-4">{origin}</span>
+
+                    <span className="hidden truncate text-xs text-text-3 md:inline">{t.category}</span>
+                    <span className="hidden truncate text-xs text-text-4 md:inline">{origin}</span>
+
                     <span
                       className={cn(
-                        "whitespace-nowrap text-right font-mono text-[13.5px]",
+                        "flex-none whitespace-nowrap text-right font-mono text-[13.5px]",
                         income ? "text-positive" : "text-negative",
                       )}
                     >
                       {income ? "+ " : "− "}
                       {formatCurrency(t.amount)}
                     </span>
-                    <div className="flex items-center justify-end gap-1">
+
+                    <div className="flex flex-none items-center justify-end gap-0.5">
                       <button
                         type="button"
                         aria-label="Editar"
@@ -230,7 +241,7 @@ export function TransactionsPage() {
                           setEditing(t);
                           setFormOpen(true);
                         }}
-                        className="p-1 text-text-5 transition-colors hover:text-text"
+                        className="p-1.5 text-text-5 transition-colors hover:text-text"
                       >
                         <Pencil className="size-3.5" />
                       </button>
@@ -238,7 +249,7 @@ export function TransactionsPage() {
                         type="button"
                         aria-label="Excluir"
                         onClick={() => setDeleting(t)}
-                        className="p-1 text-text-5 transition-colors hover:text-negative"
+                        className="p-1.5 text-text-5 transition-colors hover:text-negative"
                       >
                         <Trash2 className="size-3.5" />
                       </button>

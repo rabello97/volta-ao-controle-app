@@ -1,6 +1,7 @@
+import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { LogOut, Users, Settings, ChevronDown } from "lucide-react";
+import { LogOut, Users, Settings, ChevronDown, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { BrandMark } from "@/components/BrandMark";
@@ -96,28 +97,37 @@ function SavingsGoalCard({ saved, target }: { saved: number; target: number }) {
 
 function ThemeSegmented() {
   const { setTheme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  // Antes de montar não sabemos o tema resolvido; um placeholder do mesmo
+  // tamanho evita o "pulo" de layout e o mismatch de hidratação.
+  if (!mounted) return <div className="h-[26px] w-[58px]" aria-hidden="true" />;
+
   const isDark = resolvedTheme === "dark";
 
   return (
     <div className="flex gap-0.5 rounded-full bg-surface-2 p-[3px]">
       {(
         [
-          { key: "dark", label: "Escuro" },
-          { key: "light", label: "Claro" },
+          { key: "light", label: "Tema claro", Icon: Sun },
+          { key: "dark", label: "Tema escuro", Icon: Moon },
         ] as const
-      ).map((opt) => {
-        const active = opt.key === (isDark ? "dark" : "light");
+      ).map(({ key, label, Icon }) => {
+        const active = key === (isDark ? "dark" : "light");
         return (
           <button
-            key={opt.key}
+            key={key}
             type="button"
-            onClick={() => setTheme(opt.key)}
+            aria-label={label}
+            aria-pressed={active}
+            onClick={() => setTheme(key)}
             className={cn(
-              "rounded-full px-[9px] py-[3px] text-[11px] transition-colors",
+              "flex size-[26px] items-center justify-center rounded-full transition-colors",
               active ? "bg-track text-text" : "text-text-5 hover:text-text",
             )}
           >
-            {opt.label}
+            <Icon className="size-3.5" />
           </button>
         );
       })}

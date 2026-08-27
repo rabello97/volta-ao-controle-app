@@ -35,16 +35,16 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
   const monthLabel = `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
 
   return (
-    <header className="mb-6 flex flex-wrap items-center gap-4">
+    <header className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
       <div className="flex flex-col gap-[3px]">
-        <h1 className="text-[23px] font-semibold -tracking-[0.02em] text-text">{title}</h1>
+        <h1 className="text-[21px] font-semibold -tracking-[0.02em] text-text sm:text-[23px]">{title}</h1>
         <span className="text-[12.5px] text-text-4">{subtitle}</span>
       </div>
 
-      <div className="ml-auto flex flex-none flex-wrap items-center gap-2.5">
+      <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:flex-none sm:gap-2.5">
         {aside}
         {onSearchChange !== undefined && (
-          <label className="hidden w-[200px] items-center gap-2 rounded-[10px] border border-divider bg-surface px-3 py-2 text-[12.5px] text-text-4 focus-within:border-divider-strong md:flex">
+          <label className="order-last flex w-full items-center gap-2 rounded-[10px] border border-divider bg-surface px-3 py-2 text-[12.5px] text-text-4 focus-within:border-divider-strong sm:order-none sm:w-[200px]">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="flex-none">
               <circle cx="7" cy="7" r="4.6" />
               <path d="M10.5 10.5 14 14" />
@@ -80,7 +80,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
           <button
             type="button"
             onClick={onCta}
-            className="flex items-center gap-[7px] whitespace-nowrap rounded-[10px] bg-brand px-[15px] py-[9px] text-[12.5px] font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+            className="flex flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] bg-brand px-[15px] py-[9px] text-[12.5px] font-semibold text-brand-ink transition-colors hover:bg-brand-hover sm:flex-none"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M8 3v10M3 8h10" />
