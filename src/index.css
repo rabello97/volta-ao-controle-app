@@ -233,6 +233,39 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Comportamento de app: sem seleção acidental de texto ao segurar, sem
+     realce azul no toque, sem "puxar para atualizar" e rolagem com inércia. */
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* O texto do usuário (valores, descrições) continua selecionável; o que
+   trava é só a cromagem — botões, menus e rótulos. */
+button,
+a,
+label,
+[role="button"],
+nav {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Áreas roláveis ganham inércia como num app nativo. */
+main,
+[data-scrollable] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Respeita quem pediu menos movimento no sistema. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Números, datas e percentuais usam sempre a monoespaçada — é o que dá o
@@ -251,17 +284,32 @@ body {
   color: var(--text);
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+/* Barra de rolagem some no toque (apps nativos não mostram uma) e some
+   também para quem prefere menos movimento; no desktop com mouse ela
+   continua, senão fica difícil saber que a área rola. */
+@media (pointer: coarse) {
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+  * {
+    scrollbar-width: none;
+  }
 }
-::-webkit-scrollbar-thumb {
-  background: var(--divider-strong);
-  border-radius: 99px;
-  border: 2px solid var(--background);
-}
-::-webkit-scrollbar-track {
-  background: transparent;
+
+@media (pointer: fine) {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--divider-strong);
+    border-radius: 99px;
+    border: 2px solid var(--background);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
 }
 
 @layer base {

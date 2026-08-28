@@ -1,5 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { acceptInvite, declineInvite, getHousehold, inviteToHousehold, listInvites } from "@/api/household";
+import {
+  acceptInvite,
+  declineInvite,
+  getHousehold,
+  inviteToHousehold,
+  leaveHousehold,
+  listInvites,
+} from "@/api/household";
 
 export function useHousehold() {
   return useQuery({ queryKey: ["household"], queryFn: getHousehold });
@@ -38,5 +45,17 @@ export function useDeclineInvite() {
   return useMutation({
     mutationFn: (inviteId: string) => declineInvite(inviteId),
     onSuccess: invalidate,
+  });
+}
+
+export function useLeaveHousehold() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: leaveHousehold,
+    onSuccess: () => {
+      // Desfazer o vínculo muda o que o painel e os relatórios podem somar,
+      // então recarregamos tudo que depende da visão do casal.
+      queryClient.invalidateQueries();
+    },
   });
 }

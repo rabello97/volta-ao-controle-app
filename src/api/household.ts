@@ -20,3 +20,7 @@ export function acceptInvite(inviteId: string): Promise<unknown> {
 export function declineInvite(inviteId: string): Promise<HouseholdInvite> {
   return apiRequest<HouseholdInvite>(`/household/invite/${inviteId}/decline`, { method: "POST" });
 }
+
+export function leaveHousehold(): Promise<void> {
+  return apiRequest<void>("/household", { method: "DELETE" });
+}

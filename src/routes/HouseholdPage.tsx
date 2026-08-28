@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
-import { Mail, Check, X, Send } from "lucide-react";
+import { Mail, Check, X, Send, Unlink, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
@@ -14,10 +14,12 @@ import {
   useHousehold,
   useInvites,
   useInviteToHousehold,
+  useLeaveHousehold,
 } from "@/hooks/useHousehold";
 import { useAuth } from "@/context/AuthContext";
 import { ApiError } from "@/api/client";
 import { formatDate } from "@/lib/format";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 
 const inviteSchema = z.object({ toEmail: z.string().email("Informe um e-mail válido") });
 type InviteFormValues = z.infer<typeof inviteSchema>;
@@ -30,6 +32,8 @@ export function HouseholdPage() {
   const acceptMutation = useAcceptInvite();
   const declineMutation = useDeclineInvite();
   const [respondingId, setRespondingId] = useState<string | null>(null);
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const leaveMutation = useLeaveHousehold();
 
   const {
     register,
@@ -75,6 +79,16 @@ export function HouseholdPage() {
     }
   }
 
+  async function handleLeave() {
+    try {
+      await leaveMutation.mutateAsync();
+      setConfirmLeave(false);
+      toast.success("Vínculo desfeito.");
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.message : "Não foi possível desfazer o vínculo.");
+    }
+  }
+
   const pendingReceived = invites.data?.received.filter((i) => i.status === "PENDING") ?? [];
   const pendingSent = invites.data?.sent.filter((i) => i.status === "PENDING") ?? [];
 
@@ -95,8 +109,18 @@ export function HouseholdPage() {
             </div>
           </div>
           <p className="mt-3 text-[13px] text-text-3">
-            Vocês já podem ver a visão unificada e a visão individual um do outro no painel e nos relatórios.
+            No painel e nos relatórios você pode alternar entre "Só eu", "Só {partner.name.split(" ")[0]}" e
+            "Casal (somado)". Os lançamentos continuam separados — cada um é dono dos seus.
           </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3 border-t border-divider pt-4">
+            <Button size="sm" variant="secondary" onClick={() => setConfirmLeave(true)}>
+              <Unlink className="size-3.5" /> Desfazer vínculo
+            </Button>
+            <span className="text-[12px] text-text-4">
+              Qualquer um dos dois pode desfazer. Nenhuma transação é apagada.
+            </span>
+          </div>
         </div>
       )}
 
@@ -140,24 +164,31 @@ export function HouseholdPage() {
       {!hasHousehold && (
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
           <h2 className="mb-3 text-[14.5px] font-semibold text-text">Convidar parceiro(a)</h2>
-          <p className="mb-4 text-[13px] text-text-3">
-            Convide alguém já cadastrado pelo e-mail para formar um household e compartilhar a visão das finanças.
+          <p className="mb-3 text-[13px] text-text-3">
+            O e-mail serve para localizar a conta — ela precisa já ter se cadastrado no app com esse endereço.
+          </p>
+          <p className="mb-4 flex items-start gap-2 rounded-xl bg-warning-tint px-3.5 py-2.5 text-[12.5px] text-warning">
+            <Info className="mt-px size-3.5 flex-none" />
+            <span>
+              Não enviamos e-mail. Avise você mesmo — o convite aparece para ela aqui nesta tela, em
+              "Convites recebidos", assim que ela entrar no app.
+            </span>
           </p>
           <form onSubmit={handleSubmit(onInvite)} className="flex flex-col gap-3 sm:flex-row sm:items-end">
             <div className="flex flex-1 flex-col gap-1.5">
               <Label htmlFor="toEmail">E-mail do parceiro(a)</Label>
-              <Input id="toEmail" type="email" placeholder="nome@example.com" {...register("toEmail")} />
+              <Input id="toEmail" type="email" placeholder="email-da-conta-dela@exemplo.com" {...register("toEmail")} />
               {errors.toEmail && <span className="text-xs text-negative">{errors.toEmail.message}</span>}
             </div>
             <Button type="submit" disabled={inviteMutation.isPending}>
-              <Send className="size-4" /> {inviteMutation.isPending ? "Enviando…" : "Enviar convite"}
+              <Send className="size-4" /> {inviteMutation.isPending ? "Convidando…" : "Convidar"}
             </Button>
           </form>
 
           {pendingSent.length > 0 && (
             <div className="mt-5 flex flex-col gap-2">
               <span className="text-[11px] font-semibold uppercase tracking-wide text-text-4">
-                Convites enviados, aguardando resposta
+                Convites aguardando ela aceitar no app
               </span>
               {pendingSent.map((invite) => (
                 <div
@@ -172,6 +203,15 @@ export function HouseholdPage() {
           )}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmLeave}
+        onOpenChange={setConfirmLeave}
+        title="Desfazer vínculo do casal"
+        description="Vocês voltam a ver apenas os próprios números e cada um fica livre para vincular outra pessoa. Nenhuma transação é apagada."
+        confirmLabel={leaveMutation.isPending ? "Desfazendo…" : "Desfazer vínculo"}
+        onConfirm={handleLeave}
+      />
     </div>
   );
 }

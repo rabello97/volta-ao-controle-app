@@ -244,7 +244,7 @@ export function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-col">
-        <header className="flex items-center justify-between gap-3 border-b border-divider px-4 py-3.5 sm:hidden">
+        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-divider bg-surface/85 px-4 py-3.5 backdrop-blur-md sm:hidden">
           <div className="flex items-center gap-2">
             <div className="flex size-[26px] flex-none items-center justify-center rounded-lg bg-brand">
               <BrandMark className="size-3.5 text-brand-ink" />
@@ -259,20 +259,20 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1780px] flex-1 px-4 pb-24 pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
-          <div key={location.pathname} className="animate-in fade-in duration-300">
+        <main className="mx-auto w-full max-w-[1780px] flex-1 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
+          <div key={location.pathname} className="animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
             <Outlet />
           </div>
         </main>
 
-        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-surface py-1.5 sm:hidden">
+        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-surface pb-[max(0.375rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-sm sm:hidden">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  "flex flex-1 flex-col items-center gap-0.5 py-1.5 transition-colors",
+                  "flex flex-1 flex-col items-center gap-0.5 py-1.5 transition-all active:scale-90",
                   isActive ? "text-brand" : "text-text-5",
                 )
               }
