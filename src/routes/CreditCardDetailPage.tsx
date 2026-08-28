@@ -7,11 +7,15 @@ import { MoneyValue } from "@/components/MoneyValue";
 import { useCreditCards, useInvoice } from "@/hooks/useCreditCards";
 import { currentInvoiceReference, currentYearMonth } from "@/lib/upcomingDue";
 import { formatDate, formatMonthLabel } from "@/lib/format";
+import { ErrorPage } from "@/routes/ErrorPage";
 
 export function CreditCardDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { data: cards } = useCreditCards();
+  const { data: cards, isSuccess } = useCreditCards();
   const card = cards?.find((c) => c.id === id);
+  // Só decidimos que o cartão não existe depois que a lista carregou — antes
+  // disso o `find` retorna undefined só porque os dados ainda não chegaram.
+  const notFound = isSuccess && !card;
 
   const [{ year, month }, setPeriod] = useState(currentYearMonth());
   const invoice = useInvoice(id ?? "", year, month);
@@ -33,6 +37,10 @@ export function CreditCardDetailPage() {
 
   function goToNextMonth() {
     setPeriod((prev) => (prev.month === 12 ? { year: prev.year + 1, month: 1 } : { year: prev.year, month: prev.month + 1 }));
+  }
+
+  if (notFound) {
+    return <ErrorPage kind="not-found" />;
   }
 
   return (

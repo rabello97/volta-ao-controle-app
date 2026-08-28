@@ -7,6 +7,8 @@ import { PageHeader } from "@/components/PageHeader";
 import { EmptyState } from "@/components/EmptyState";
 import { BalanceTrendChart } from "@/components/BalanceTrendChart";
 import { CategoryBreakdown } from "@/components/CategoryBreakdown";
+import { Skeleton } from "@/components/Skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import { TransactionFormDialog } from "@/components/TransactionFormDialog";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useBalanceSeries, useCategoryInsight, useDashboard } from "@/hooks/useDashboard";
@@ -40,6 +42,7 @@ function StatRow({
   color,
   icon,
   trailing,
+  loading = false,
 }: {
   label: string;
   value: number;
@@ -47,6 +50,7 @@ function StatRow({
   color: string;
   icon: React.ReactNode;
   trailing?: React.ReactNode;
+  loading?: boolean;
 }) {
   return (
     <div className="flex items-center gap-3.5 rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
@@ -57,11 +61,15 @@ function StatRow({
       </div>
       <div className="flex min-w-0 flex-col gap-[3px]">
         <span className="text-[10.5px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
-        <span className="whitespace-nowrap font-mono text-xl font-medium -tracking-[0.02em] text-text">
-          {formatCurrency(value)}
-        </span>
+        {loading ? (
+          <Skeleton className="h-6 w-32" />
+        ) : (
+          <span className="whitespace-nowrap font-mono text-xl font-medium -tracking-[0.02em] text-text">
+            {formatCurrency(value)}
+          </span>
+        )}
       </div>
-      {trailing && <span className="ml-auto flex-none whitespace-nowrap">{trailing}</span>}
+      {!loading && trailing && <span className="ml-auto flex-none whitespace-nowrap">{trailing}</span>}
     </div>
   );
 }
@@ -118,7 +126,7 @@ export function DashboardPage() {
   const balanceSeries = useBalanceSeries(PERIODS.find((p) => p.key === period)!.days);
   const categoryInsight = useCategoryInsight();
   const categorySummary = useCategorySummaryThisMonth();
-  const { items: upcoming } = useUpcomingDue();
+  const { items: upcoming, isLoading: upcomingLoading } = useUpcomingDue();
   const payMutation = usePayRecurringBill();
   const createMutation = useCreateTransaction();
 
@@ -171,6 +179,9 @@ export function DashboardPage() {
         aside={<HouseholdViewToggle />}
       />
 
+      {dashboard.isError ? (
+        <ErrorState onRetry={() => dashboard.refetch()} />
+      ) : (
       <div className="flex flex-col gap-4">
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.55fr_1fr]">
@@ -178,10 +189,14 @@ export function DashboardPage() {
             <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:gap-3.5">
               <div className="flex flex-col gap-3">
                 <span className="text-[11px] font-semibold tracking-[0.14em] text-text-4">SALDO ATUAL</span>
-                <span className="whitespace-nowrap font-mono text-[34px] font-medium leading-none -tracking-[0.035em] text-text sm:text-[46px]">
-                  {reais}
-                  <span className="text-text-4">{centavos}</span>
-                </span>
+                {dashboard.isLoading ? (
+                  <Skeleton className="h-[34px] w-56 sm:h-[46px] sm:w-72" />
+                ) : (
+                  <span className="whitespace-nowrap font-mono text-[34px] font-medium leading-none -tracking-[0.035em] text-text sm:text-[46px]">
+                    {reais}
+                    <span className="text-text-4">{centavos}</span>
+                  </span>
+                )}
                 <div className="flex flex-wrap items-center gap-2.5">
                   {trendPct !== null && (
                     <span
@@ -226,6 +241,7 @@ export function DashboardPage() {
 
           <div className="grid gap-3 lg:grid-rows-3">
             <StatRow
+              loading={dashboard.isLoading}
               label="ENTRADAS"
               value={dashboard.data?.income ?? 0}
               tint="bg-brand-tint"
@@ -233,6 +249,7 @@ export function DashboardPage() {
               icon={<path d="M8 13V4M4 7.5 8 3.5l4 4" />}
             />
             <StatRow
+              loading={dashboard.isLoading}
               label="SAÍDAS"
               value={dashboard.data?.expense ?? 0}
               tint="bg-negative-tint"
@@ -240,6 +257,7 @@ export function DashboardPage() {
               icon={<path d="M8 3v9M4 8.5 8 12.5l4-4" />}
             />
             <StatRow
+              loading={dashboard.isLoading}
               label="DÍVIDAS EM ABERTO"
               value={dashboard.data?.debts ?? 0}
               tint="bg-warning-tint"
@@ -269,7 +287,20 @@ export function DashboardPage() {
                 </span>
               )}
             </div>
-            {pending.length === 0 ? (
+            {upcomingLoading ? (
+              <div className="flex flex-col gap-4 py-2">
+                {[0, 1, 2].map((i) => (
+                  <div key={i} className="flex items-center gap-3.5">
+                    <Skeleton className="size-10 flex-none rounded-lg" />
+                    <div className="flex flex-1 flex-col gap-1.5">
+                      <Skeleton className="h-3.5 w-40" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                    <Skeleton className="h-4 w-20" />
+                  </div>
+                ))}
+              </div>
+            ) : pending.length === 0 ? (
               <EmptyState
                 icon={CalendarClock}
                 title="Nenhum vencimento por aqui"
@@ -291,7 +322,18 @@ export function DashboardPage() {
 
           <section className="flex flex-col gap-4 rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
             <h2 className="whitespace-nowrap text-[14.5px] font-semibold text-text">Para onde foi o dinheiro</h2>
-            {categorySummary.data && categorySummary.data.length > 0 ? (
+            {categorySummary.isLoading ? (
+              <div className="flex flex-col gap-3.5">
+                <Skeleton className="h-2 w-full rounded-full" />
+                {[0, 1, 2, 3].map((i) => (
+                  <div key={i} className="flex items-center gap-2.5">
+                    <Skeleton className="size-2 flex-none rounded-[3px]" />
+                    <Skeleton className="h-3.5 w-24" />
+                    <Skeleton className="ml-auto h-3.5 w-20" />
+                  </div>
+                ))}
+              </div>
+            ) : categorySummary.data && categorySummary.data.length > 0 ? (
               <>
                 <CategoryBreakdown data={categorySummary.data} />
                 {categoryInsight.data && (
@@ -325,6 +367,8 @@ export function DashboardPage() {
           </div>
         )}
       </div>
+
+      )}
 
       <TransactionFormDialog
         open={formOpen}

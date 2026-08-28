@@ -10,6 +10,7 @@ import { CreditCardDetailPage } from "@/routes/CreditCardDetailPage";
 import { ReportsPage } from "@/routes/ReportsPage";
 import { HouseholdPage } from "@/routes/HouseholdPage";
 import { SettingsPage } from "@/routes/SettingsPage";
+import { ErrorPage } from "@/routes/ErrorPage";
 
 export function App() {
   return (
@@ -30,7 +31,11 @@ export function App() {
       </Route>
 
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      <Route path="/sem-acesso" element={<ErrorPage kind="forbidden" />} />
+      {/* Rota desconhecida mostra o 404 em vez de mandar em silêncio para o
+          painel — assim um link errado fica visível em vez de parecer que a
+          navegação simplesmente não funcionou. */}
+      <Route path="*" element={<ErrorPage kind="not-found" />} />
     </Routes>
   );
 }

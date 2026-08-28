@@ -15,6 +15,8 @@ import { useCreditCards } from "@/hooks/useCreditCards";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { buildTransactionFilters } from "@/lib/transactionFilters";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/Skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import type { Transaction, TransactionType } from "@/api/types";
 import type { TransactionInput } from "@/api/transactions";
 
@@ -148,7 +150,22 @@ export function TransactionsPage() {
           )}
         </div>
 
-        {result?.items.length === 0 ? (
+        {transactions.isError ? (
+          <ErrorState onRetry={() => transactions.refetch()} />
+        ) : transactions.isLoading ? (
+          <section className="overflow-hidden rounded-[18px] border border-divider bg-surface">
+            {[0, 1, 2, 3, 4].map((i) => (
+              <div key={i} className="flex items-center gap-3 border-b border-divider px-4 py-3.5 last:border-b-0">
+                <Skeleton className="size-[26px] flex-none rounded-lg" />
+                <div className="flex flex-1 flex-col gap-1.5">
+                  <Skeleton className="h-3.5 w-44" />
+                  <Skeleton className="h-3 w-28" />
+                </div>
+                <Skeleton className="h-4 w-24" />
+              </div>
+            ))}
+          </section>
+        ) : result?.items.length === 0 ? (
           <section className="flex flex-col items-center gap-2 rounded-[18px] border border-divider bg-surface px-[22px] py-14">
             <div className="mb-1.5 flex size-[46px] items-center justify-center rounded-[14px] bg-brand-tint text-brand">
               <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -188,7 +205,7 @@ export function TransactionsPage() {
                   <div
                     key={t.id}
                     className={cn(
-                      "flex items-center gap-3 border-b border-divider px-4 py-3 transition-colors last:border-b-0 hover:bg-surface-2 md:grid md:items-center md:gap-3 md:px-[22px] md:py-[13px]",
+                      "flex items-center gap-3 border-b border-divider px-4 py-3 transition-colors last:border-b-0 hover:bg-surface-2 active:bg-surface-2 md:grid md:items-center md:gap-3 md:px-[22px] md:py-[13px]",
                       GRID,
                     )}
                   >

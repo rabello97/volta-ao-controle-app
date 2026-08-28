@@ -15,6 +15,8 @@ import {
 } from "@/hooks/useRecurringBills";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/Skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import type { RecurringBillWithStatus } from "@/api/types";
 import type { RecurringBillInput } from "@/api/recurringBills";
 
@@ -108,7 +110,27 @@ export function RecurringBillsPage() {
       />
 
       <div className="flex flex-col gap-4">
-        {stats.data && (
+        {bills.isError && <ErrorState onRetry={() => bills.refetch()} />}
+
+        {!bills.isError && stats.isLoading && (
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={cn(
+                  "flex flex-col gap-2 rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]",
+                  i === 2 && "col-span-2 sm:col-span-1",
+                )}
+              >
+                <Skeleton className="h-2.5 w-28" />
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-2.5 w-24" />
+              </div>
+            ))}
+          </div>
+        )}
+
+        {!bills.isError && stats.data && (
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             <KpiCard label="CUSTO FIXO MENSAL" value={formatCurrency(stats.data.fixedMonthlyCost)} />
             <KpiCard
@@ -131,11 +153,24 @@ export function RecurringBillsPage() {
           </div>
         )}
 
+        {!bills.isError && (
         <section className="rounded-[18px] border border-divider bg-surface px-[22px] pb-2 pt-5 shadow-[var(--shadow-card)]">
           <div className="mb-1 flex items-center gap-2.5">
             <h2 className="text-[14.5px] font-semibold text-text">Contas fixas</h2>
             <span className="text-xs text-text-4">Cobradas todo mês, na mesma data</span>
           </div>
+
+          {bills.isLoading &&
+            [0, 1, 2].map((i) => (
+              <div key={i} className="flex items-center gap-3 border-b border-divider py-3.5 last:border-b-0">
+                <Skeleton className="size-10 flex-none rounded-xl" />
+                <div className="flex flex-1 flex-col gap-1.5">
+                  <Skeleton className="h-3.5 w-36" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <Skeleton className="h-4 w-20" />
+              </div>
+            ))}
 
           {bills.data?.map((bill) => {
             const ratio = bill.averageLast3Months > 0 ? bill.expectedAmount / bill.averageLast3Months : 1;
@@ -226,6 +261,7 @@ export function RecurringBillsPage() {
             </p>
           )}
         </section>
+        )}
       </div>
 
       <RecurringBillFormDialog

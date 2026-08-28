@@ -6,11 +6,13 @@ import { CardTile } from "@/components/CardTile";
 import { CreditCardFormDialog } from "@/components/CreditCardFormDialog";
 import { useCreateCreditCard, useCreditCards } from "@/hooks/useCreditCards";
 import { formatCurrency } from "@/lib/format";
+import { Skeleton } from "@/components/Skeleton";
+import { ErrorState } from "@/components/ErrorState";
 import type { CreditCardInput } from "@/api/creditCards";
 
 export function CreditCardsPage() {
   const [formOpen, setFormOpen] = useState(false);
-  const { data: cards } = useCreditCards();
+  const { data: cards, isLoading, isError, refetch } = useCreditCards();
   const createMutation = useCreateCreditCard();
 
   const openTotal = (cards ?? []).reduce((sum, c) => sum + c.currentInvoiceTotal, 0);
@@ -33,7 +35,22 @@ export function CreditCardsPage() {
         onCta={() => setFormOpen(true)}
       />
 
+      {isError && <ErrorState onRetry={() => refetch()} />}
+
+      {!isError && (
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+        {isLoading &&
+          [0, 1].map((i) => (
+            <div key={i} className="flex min-h-[168px] flex-col gap-6 rounded-[18px] border border-divider bg-surface p-5">
+              <Skeleton className="h-4 w-32" />
+              <div className="flex flex-col gap-2">
+                <Skeleton className="h-2.5 w-24" />
+                <Skeleton className="h-7 w-40" />
+                <Skeleton className="h-[5px] w-full rounded-full" />
+              </div>
+            </div>
+          ))}
+
         {cards?.map((card, index) => (
           <CardTile key={card.id} card={card} highlight={index === 0} />
         ))}
@@ -52,6 +69,7 @@ export function CreditCardsPage() {
           </span>
         </button>
       </div>
+      )}
 
       <CreditCardFormDialog
         open={formOpen}

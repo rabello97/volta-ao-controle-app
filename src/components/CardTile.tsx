@@ -17,7 +17,7 @@ export function CardTile({ card, highlight = false }: { card: CreditCardSummary;
     <Link
       to={`/credit-cards/${card.id}`}
       className={cn(
-        "flex flex-col gap-[26px] rounded-[18px] border p-5 transition-transform hover:-translate-y-0.5",
+        "flex flex-col gap-[26px] rounded-[18px] border p-5 transition-all hover:-translate-y-0.5 active:scale-[0.98]",
         highlight
           ? "border-hero-border bg-[image:var(--card-grad)]"
           : "border-divider bg-surface shadow-[var(--shadow-card)]",
