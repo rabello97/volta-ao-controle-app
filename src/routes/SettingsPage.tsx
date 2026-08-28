@@ -150,11 +150,11 @@ export function SettingsPage() {
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="savingsGoalSaved">Valor guardado</Label>
-              <Input id="savingsGoalSaved" type="number" step="0.01" {...goalForm.register("savingsGoalSaved")} />
+              <Input id="savingsGoalSaved" type="text" inputMode="decimal" step="0.01" {...goalForm.register("savingsGoalSaved")} />
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="savingsGoalTarget">Meta</Label>
-              <Input id="savingsGoalTarget" type="number" step="0.01" {...goalForm.register("savingsGoalTarget")} />
+              <Input id="savingsGoalTarget" type="text" inputMode="decimal" step="0.01" {...goalForm.register("savingsGoalTarget")} />
             </div>
           </div>
           <Button type="submit" disabled={isSavingGoal} className="w-fit">

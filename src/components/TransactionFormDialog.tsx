@@ -121,7 +121,7 @@ export function TransactionFormDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="amount">Valor</Label>
-              <Input id="amount" type="number" step="0.01" {...register("amount")} />
+              <Input id="amount" type="text" inputMode="decimal" step="0.01" {...register("amount")} />
               {errors.amount && <span className="text-xs text-negative">{errors.amount.message}</span>}
             </div>
             <div className="flex flex-col gap-1.5">
@@ -212,7 +212,7 @@ export function TransactionFormDialog({
 
                   <div className="flex flex-col gap-1.5">
                     <Label htmlFor="installmentTotal">Parcelas (opcional)</Label>
-                    <Input id="installmentTotal" type="number" min={1} max={24} placeholder="1" {...register("installmentTotal")} />
+                    <Input id="installmentTotal" type="text" inputMode="numeric" min={1} max={24} placeholder="1" {...register("installmentTotal")} />
                   </div>
                 </>
               )}

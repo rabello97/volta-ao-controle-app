@@ -88,14 +88,14 @@ export function RecurringBillFormDialog({
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="expectedAmount">Valor esperado</Label>
-              <Input id="expectedAmount" type="number" step="0.01" {...register("expectedAmount")} />
+              <Input id="expectedAmount" type="text" inputMode="decimal" step="0.01" {...register("expectedAmount")} />
               {errors.expectedAmount && (
                 <span className="text-xs text-negative">{errors.expectedAmount.message}</span>
               )}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="dueDay">Dia do vencimento</Label>
-              <Input id="dueDay" type="number" min={1} max={31} {...register("dueDay")} />
+              <Input id="dueDay" type="text" inputMode="numeric" min={1} max={31} {...register("dueDay")} />
               {errors.dueDay && <span className="text-xs text-negative">{errors.dueDay.message}</span>}
             </div>
           </div>

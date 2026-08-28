@@ -59,19 +59,19 @@ export function CreditCardFormDialog({ open, onOpenChange, onSubmit, isSubmittin
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="closingDay">Dia de fechamento</Label>
-              <Input id="closingDay" type="number" min={1} max={31} {...register("closingDay")} />
+              <Input id="closingDay" type="text" inputMode="numeric" min={1} max={31} {...register("closingDay")} />
               {errors.closingDay && <span className="text-xs text-negative">{errors.closingDay.message}</span>}
             </div>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="dueDay">Dia de vencimento</Label>
-              <Input id="dueDay" type="number" min={1} max={31} {...register("dueDay")} />
+              <Input id="dueDay" type="text" inputMode="numeric" min={1} max={31} {...register("dueDay")} />
               {errors.dueDay && <span className="text-xs text-negative">{errors.dueDay.message}</span>}
             </div>
           </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="creditLimit">Limite (opcional)</Label>
-            <Input id="creditLimit" type="number" min={0} step="0.01" placeholder="3000" {...register("creditLimit")} />
+            <Input id="creditLimit" type="text" inputMode="decimal" min={0} step="0.01" placeholder="3000" {...register("creditLimit")} />
             {errors.creditLimit && <span className="text-xs text-negative">{errors.creditLimit.message}</span>}
           </div>
 

@@ -310,7 +310,7 @@ export function TransactionsPage() {
           setEditing(null);
           setFormOpen(true);
         }}
-        className="fixed bottom-20 right-4 z-10 flex size-14 items-center justify-center rounded-full bg-brand text-brand-ink shadow-lg transition-transform active:scale-95 sm:hidden"
+        className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-brand text-brand-ink shadow-lg transition-transform active:scale-95 sm:hidden"
       >
         <Plus className="size-6" />
       </button>

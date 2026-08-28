@@ -162,8 +162,8 @@ export function AppLayout() {
   const cardsAlert = (cards.data ?? []).some((c) => (c.utilizationPct ?? 0) >= 70);
 
   return (
-    <div className="min-h-svh bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
-      <aside className="sticky top-0 hidden h-svh flex-col gap-6 border-r border-divider px-4 py-[22px] sm:flex">
+    <div className="flex h-dvh flex-col overflow-hidden bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
+      <aside className="hidden h-dvh flex-col gap-6 overflow-y-auto border-r border-divider px-4 py-[22px] sm:flex">
         <div className="flex items-center gap-[11px] px-2">
           <div className="flex size-[30px] flex-none items-center justify-center rounded-[9px] bg-brand">
             <BrandMark className="size-[18px] text-brand-ink" />
@@ -243,8 +243,8 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-divider bg-surface/85 px-4 py-3.5 backdrop-blur-md sm:hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+        <header className="flex flex-none items-center justify-between gap-3 border-b border-divider bg-surface px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:hidden">
           <div className="flex items-center gap-2">
             <div className="flex size-[26px] flex-none items-center justify-center rounded-lg bg-brand">
               <BrandMark className="size-3.5 text-brand-ink" />
@@ -259,13 +259,13 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="mx-auto w-full max-w-[1780px] flex-1 px-4 pb-[calc(6rem+env(safe-area-inset-bottom))] pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
-          <div key={location.pathname} className="animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
+        <main className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
+          <div key={location.pathname} className="mx-auto w-full max-w-[1780px] animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
             <Outlet />
           </div>
         </main>
 
-        <nav className="fixed inset-x-0 bottom-0 z-10 flex items-center justify-around border-t border-divider bg-surface pb-[max(0.375rem,env(safe-area-inset-bottom))] pt-1.5 backdrop-blur-sm sm:hidden">
+        <nav className="flex flex-none items-center justify-around border-t border-divider bg-surface pb-[max(0.375rem,env(safe-area-inset-bottom))] pt-1.5 sm:hidden">
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
