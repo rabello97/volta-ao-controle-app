@@ -18,7 +18,7 @@ import { Chip } from "@/components/Chip";
 import { useCreditCards } from "@/hooks/useCreditCards";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import type { Transaction } from "@/api/types";
-import type { TransactionInput } from "@/api/transactions";
+import type { TransactionFormPayload } from "@/api/transactions";
 import {
   transactionFormSchema as schema,
   type TransactionFormInput as FormInput,
@@ -29,7 +29,7 @@ interface TransactionFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   transaction?: Transaction | null;
-  onSubmit: (input: TransactionInput) => Promise<void>;
+  onSubmit: (input: TransactionFormPayload) => Promise<void>;
   isSubmitting: boolean;
 }
 
@@ -72,6 +72,7 @@ export function TransactionFormDialog({
               category: transaction.category,
               description: transaction.description ?? "",
               creditCardId: transaction.creditCardId ?? undefined,
+              invoiceChoice: transaction.creditCardId ? "CURRENT" : undefined,
             }
           : { type: "EXPENSE", amount: 0, date: "", category: "", description: "" },
       );
@@ -86,9 +87,11 @@ export function TransactionFormDialog({
       date: values.date,
       category: values.category,
       description: values.description || undefined,
-      creditCardId: values.type === "EXPENSE" ? values.creditCardId || undefined : undefined,
+      creditCardId: values.type === "EXPENSE" ? (values.creditCardId || (transaction ? null : undefined)) : undefined,
       invoiceChoice: values.type === "EXPENSE" ? values.invoiceChoice : undefined,
-      installmentTotal: values.type === "EXPENSE" && values.creditCardId ? values.installmentTotal : undefined,
+      // Parcelamento só na criação: mudar depois exigiria refazer as parcelas.
+      installmentTotal:
+        !transaction && values.type === "EXPENSE" && values.creditCardId ? values.installmentTotal : undefined,
     });
   }
 
@@ -210,10 +213,19 @@ export function TransactionFormDialog({
                     )}
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <Label htmlFor="installmentTotal">Parcelas (opcional)</Label>
-                    <Input id="installmentTotal" type="text" inputMode="numeric" min={1} max={24} placeholder="1" {...register("installmentTotal")} />
-                  </div>
+                  {!transaction && (
+                    <div className="flex flex-col gap-1.5">
+                      <Label htmlFor="installmentTotal">Parcelas (opcional)</Label>
+                      <Input id="installmentTotal" type="text" inputMode="numeric" min={1} max={24} placeholder="1" {...register("installmentTotal")} />
+                    </div>
+                  )}
+
+                  {transaction?.installmentTotal && transaction.installmentTotal > 1 && (
+                    <p className="text-[11.5px] leading-[1.45] text-text-4">
+                      Compra parcelada ({transaction.installmentNumber} de {transaction.installmentTotal}). Trocar o
+                      cartão move todas as parcelas juntas.
+                    </p>
+                  )}
                 </>
               )}
             </div>

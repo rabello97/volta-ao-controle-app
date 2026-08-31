@@ -24,7 +24,18 @@ export interface TransactionInput {
   installmentTotal?: number;
 }
 
-export type UpdateTransactionInput = Partial<Omit<TransactionInput, "type" | "creditCardId" | "invoiceChoice" | "recurringBillId" | "installmentTotal">>;
+/** O que o formulário devolve: igual à criação, mas o cartão pode vir `null`
+ *  quando o usuário desvincula uma transação existente. */
+export type TransactionFormPayload = Omit<TransactionInput, "creditCardId"> & {
+  creditCardId?: string | null;
+};
+
+export type UpdateTransactionInput = Partial<
+  Omit<TransactionInput, "type" | "recurringBillId" | "installmentTotal" | "creditCardId">
+> & {
+  /** Trocar de cartão; `null` desvincula e vira despesa avulsa. */
+  creditCardId?: string | null;
+};
 
 export function listTransactions(filters: TransactionFilters = {}): Promise<TransactionListResult> {
   return apiRequest<TransactionListResult>("/transactions", { query: { ...filters } });

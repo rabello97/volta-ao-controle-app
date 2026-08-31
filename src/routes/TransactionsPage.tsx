@@ -18,7 +18,7 @@ import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import type { Transaction, TransactionType } from "@/api/types";
-import type { TransactionInput } from "@/api/transactions";
+import type { TransactionFormPayload } from "@/api/transactions";
 
 /** Mesma grade de colunas do mockup. Escrita literal (sem interpolar) porque o
  *  Tailwind precisa enxergar a classe no código-fonte para gerá-la. */
@@ -52,10 +52,14 @@ export function TransactionsPage() {
     };
   }
 
-  async function handleSubmit(input: TransactionInput) {
+  async function handleSubmit(input: TransactionFormPayload) {
     try {
-      if (editing) await updateMutation.mutateAsync({ id: editing.id, input });
-      else await createMutation.mutateAsync(input);
+      if (editing) {
+        await updateMutation.mutateAsync({ id: editing.id, input });
+      } else {
+        // Só a edição pode desvincular (null); na criação isso é "sem cartão".
+        await createMutation.mutateAsync({ ...input, creditCardId: input.creditCardId ?? undefined });
+      }
       setFormOpen(false);
       setEditing(null);
     } catch {

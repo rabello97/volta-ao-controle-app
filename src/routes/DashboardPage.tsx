@@ -18,7 +18,7 @@ import { useCreateTransaction } from "@/hooks/useTransactions";
 import { useCategorySummaryThisMonth } from "@/hooks/useReports";
 import { formatCurrency, formatMonthLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { TransactionInput } from "@/api/transactions";
+import type { TransactionFormPayload } from "@/api/transactions";
 import type { UpcomingDueItem } from "@/api/types";
 
 const PERIODS = [
@@ -158,9 +158,9 @@ export function DashboardPage() {
     }
   }
 
-  async function handleCreate(input: TransactionInput) {
+  async function handleCreate(input: TransactionFormPayload) {
     try {
-      await createMutation.mutateAsync(input);
+      await createMutation.mutateAsync({ ...input, creditCardId: input.creditCardId ?? undefined });
       setFormOpen(false);
     } catch {
       toast.error("Não foi possível salvar a transação.");
