@@ -16,10 +16,16 @@ export function useDashboard(view: HouseholdView, partnerId: string | null) {
   });
 }
 
-export function useBalanceSeries(days = 30) {
-  return useQuery({ queryKey: ["balance-series", days], queryFn: () => getBalanceSeries(days) });
+export function useBalanceSeries(days = 30, scope?: string) {
+  return useQuery({
+    queryKey: ["balance-series", days, scope ?? "self"],
+    queryFn: () => getBalanceSeries(days, scope),
+  });
 }
 
-export function useCategoryInsight() {
-  return useQuery({ queryKey: ["category-insight"], queryFn: getCategoryInsight });
+export function useCategoryInsight(scope?: string) {
+  return useQuery({
+    queryKey: ["category-insight", scope ?? "self"],
+    queryFn: () => getCategoryInsight(scope),
+  });
 }

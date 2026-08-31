@@ -9,6 +9,8 @@ import { formatCurrency } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useRecurringBills } from "@/hooks/useRecurringBills";
 import { useCreditCards } from "@/hooks/useCreditCards";
+import { scopeFor } from "@/lib/scope";
+import { useHouseholdView } from "@/context/HouseholdViewContext";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -151,9 +153,14 @@ export function AppLayout() {
   const navigate = useNavigate();
 
   // Contadores que o mockup mostra à direita de cada item do menu.
-  const transactions = useTransactions({ page: 1, limit: 1 });
-  const bills = useRecurringBills();
-  const cards = useCreditCards();
+  // Os contadores da lateral seguem o mesmo seletor das telas: com "Só a Bruna"
+  // eles têm que contar as contas dela, não as suas.
+  const { view, partner } = useHouseholdView();
+  const scope = scopeFor(view, partner?.id ?? null);
+
+  const transactions = useTransactions({ page: 1, limit: 1, scope });
+  const bills = useRecurringBills(scope);
+  const cards = useCreditCards(scope);
 
   const counts: Record<string, number | undefined> = {
     "/transactions": transactions.data?.total,

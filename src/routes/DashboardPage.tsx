@@ -13,6 +13,7 @@ import { TransactionFormDialog } from "@/components/TransactionFormDialog";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useBalanceSeries, useCategoryInsight, useDashboard } from "@/hooks/useDashboard";
 import { useUpcomingDue } from "@/hooks/useUpcomingDue";
+import { scopeFor } from "@/lib/scope";
 import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { useCategorySummaryThisMonth } from "@/hooks/useReports";
@@ -119,14 +120,15 @@ export function DashboardPage() {
   const { view, partner } = useHouseholdView();
   const navigate = useNavigate();
   const partnerId = partner?.id ?? null;
+  const scope = scopeFor(view, partnerId);
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("30d");
   const [formOpen, setFormOpen] = useState(false);
 
   const dashboard = useDashboard(view, partnerId);
-  const balanceSeries = useBalanceSeries(PERIODS.find((p) => p.key === period)!.days);
-  const categoryInsight = useCategoryInsight();
-  const categorySummary = useCategorySummaryThisMonth();
-  const { items: upcoming, isLoading: upcomingLoading } = useUpcomingDue();
+  const balanceSeries = useBalanceSeries(PERIODS.find((p) => p.key === period)!.days, scope);
+  const categoryInsight = useCategoryInsight(scope);
+  const categorySummary = useCategorySummaryThisMonth(scope);
+  const { items: upcoming, isLoading: upcomingLoading } = useUpcomingDue(scope);
   const payMutation = usePayRecurringBill();
   const createMutation = useCreateTransaction();
 
