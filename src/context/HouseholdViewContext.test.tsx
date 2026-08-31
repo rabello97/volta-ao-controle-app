@@ -37,7 +37,7 @@ describe("HouseholdViewProvider", () => {
     act(() => {
       result.current.auth.login({
         token: "t",
-        user: { id: "u1", name: "Ana", email: "ana@example.com", theme: null, savingsGoalTarget: null, savingsGoalSaved: null },
+        user: { id: "u1", name: "Ana", email: "ana@example.com", theme: null, savingsGoalTarget: null, savingsGoalSaved: null, monthlyIncome: null },
       });
     });
 
@@ -59,7 +59,7 @@ describe("HouseholdViewProvider", () => {
     act(() => {
       result.current.auth.login({
         token: "t",
-        user: { id: "u1", name: "Ana", email: "ana@example.com", theme: null, savingsGoalTarget: null, savingsGoalSaved: null },
+        user: { id: "u1", name: "Ana", email: "ana@example.com", theme: null, savingsGoalTarget: null, savingsGoalSaved: null, monthlyIncome: null },
       });
     });
 

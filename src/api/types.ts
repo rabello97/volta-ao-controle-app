@@ -5,6 +5,7 @@ export interface User {
   theme: "light" | "dark" | null;
   savingsGoalTarget: number | null;
   savingsGoalSaved: number | null;
+  monthlyIncome: number | null;
 }
 
 export interface AuthResult {
@@ -212,4 +213,79 @@ export interface ShoppingListSummary {
   estimatedTotal: number;
   purchasedTotal: number;
   transactionId: string | null;
+}
+
+export interface CategoryBudget {
+  id: string;
+  userId: string;
+  category: string;
+  monthlyLimit: number;
+  createdAt: string;
+}
+
+export interface BudgetCategoryStatus {
+  category: string;
+  limit: number;
+  spent: number;
+  remaining: number;
+  usedPct: number;
+}
+
+export interface BudgetStatus {
+  year: number;
+  month: number;
+  income: number;
+  plannedTotal: number;
+  spentTotal: number;
+  unbudgetedSpent: number;
+  leftFromIncome: number;
+  categories: BudgetCategoryStatus[];
+}
+
+export type HouseTaskStatus = "DONE" | "OVERDUE" | "SOON" | "SCHEDULED";
+
+export interface HouseTask {
+  id: string;
+  userId: string;
+  name: string;
+  category: string;
+  dueDate: string;
+  recurrenceMonths: number | null;
+  estimatedCost: number | null;
+  notes: string | null;
+  completedAt: string | null;
+  createdAt: string;
+  status: HouseTaskStatus;
+  daysUntilDue: number;
+}
+
+export interface InsightAction {
+  titulo: string;
+  economiaMensal: number;
+  comoFazer: string;
+}
+
+export interface MonthlyInsight {
+  resumo: string;
+  vaiFecharNoAzul: boolean;
+  pontosDeAtencao: string[];
+  acoes: InsightAction[];
+  year: number;
+  month: number;
+  generatedAt: string;
+  model: string;
+}
+
+export interface ScanResult {
+  encontrou: boolean;
+  tipo: "EXPENSE" | "INCOME";
+  valor: number;
+  data: string;
+  estabelecimento: string;
+  categoriaSugerida: string;
+  descricao: string;
+  parcelas: number;
+  cartaoSugerido: string;
+  confianca: "alta" | "media" | "baixa";
+  observacao: string;
 }

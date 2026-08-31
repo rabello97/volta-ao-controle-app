@@ -17,6 +17,9 @@ import { buildTransactionFilters } from "@/lib/transactionFilters";
 import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
+import { ScanButton } from "@/components/ScanButton";
+import { useAIStatus } from "@/hooks/useAI";
+import type { ScanResult } from "@/api/types";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
@@ -36,6 +39,7 @@ export function TransactionsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
+  const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
 
   const { view, partner } = useHouseholdView();
   const scope = scopeFor(view, partner?.id ?? null);
@@ -45,6 +49,29 @@ export function TransactionsPage() {
 
   const { data: cards } = useCreditCards(scope);
   const transactions = useTransactions({ ...buildTransactionFilters(type, category, creditCardId, search, page), scope });
+
+  const ai = useAIStatus();
+
+  /** A leitura da imagem abre o formulário preenchido em vez de lançar direto:
+   *  OCR erra, e conferir valor e data leva dois segundos. */
+  function handleScanned(result: ScanResult) {
+    const card = (cards ?? []).find(
+      (c) => result.cartaoSugerido && c.nickname.toLowerCase() === result.cartaoSugerido.toLowerCase(),
+    );
+    setEditing(null);
+    setDraft({
+      type: result.tipo,
+      amount: result.valor,
+      date: result.data || new Date().toISOString().slice(0, 10),
+      category: result.categoriaSugerida,
+      description: result.descricao || result.estabelecimento,
+      ...(card ? { creditCardId: card.id, invoiceChoice: "CURRENT" } : {}),
+    });
+    setFormOpen(true);
+    if (result.confianca !== "alta") {
+      toast.warning(result.observacao || "Confira os valores antes de salvar.");
+    }
+  }
 
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
@@ -97,12 +124,18 @@ export function TransactionsPage() {
             ? undefined
             : () => {
                 setEditing(null);
+                setDraft(null);
                 setFormOpen(true);
               }
         }
         search={search}
         onSearchChange={reset(setSearch)}
-        aside={<HouseholdViewToggle />}
+        aside={
+          <>
+            <HouseholdViewToggle />
+            {!readOnly && ai.data?.enabled && <ScanButton onScanned={handleScanned} label="Escanear" />}
+          </>
+        }
       />
 
       <div className="flex flex-col gap-4">
@@ -339,9 +372,13 @@ export function TransactionsPage() {
         open={formOpen}
         onOpenChange={(open) => {
           setFormOpen(open);
-          if (!open) setEditing(null);
+          if (!open) {
+            setEditing(null);
+            setDraft(null);
+          }
         }}
         transaction={editing}
+        draft={draft}
         onSubmit={handleSubmit}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
       />

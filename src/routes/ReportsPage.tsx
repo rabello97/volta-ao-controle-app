@@ -13,11 +13,16 @@ import {
 } from "@/hooks/useReports";
 import { buildComparisonRows } from "@/lib/comparisonTable";
 import { formatMonthLabel } from "@/lib/format";
+import { BudgetPanel } from "@/components/BudgetPanel";
+import { MonthlyInsightCard } from "@/components/MonthlyInsightCard";
+import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
+import { scopeFor } from "@/lib/scope";
 
 export function ReportsPage() {
-  const { partner, hasHousehold } = useHouseholdView();
-  const evolution = useMonthlyEvolution();
-  const categorySummary = useCategorySummaryThisMonth();
+  const { view, partner, hasHousehold } = useHouseholdView();
+  const scope = scopeFor(view, partner?.id ?? null);
+  const evolution = useMonthlyEvolution(6, scope);
+  const categorySummary = useCategorySummaryThisMonth(scope);
   const projection = useProjection();
 
   const selfDashboard = useSelfDashboard();
@@ -33,8 +38,14 @@ export function ReportsPage() {
 
   return (
     <>
-      <PageHeader title="Relatórios" subtitle="Últimos 6 meses" />
+      <PageHeader title="Relatórios" subtitle="Últimos 6 meses" aside={<HouseholdViewToggle />} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <div className="lg:col-span-2">
+          <MonthlyInsightCard scope={scope} />
+        </div>
+        <div className="lg:col-span-2">
+          <BudgetPanel scope={scope} />
+        </div>
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)] lg:col-span-2">
           <h2 className="mb-4 text-[14.5px] font-semibold text-text">Entradas e saídas — últimos 6 meses</h2>
           {evolution.data && <MonthlyBarChart data={evolution.data} />}

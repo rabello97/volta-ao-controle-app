@@ -5,6 +5,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { User, KeyRound, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BudgetSettings } from "@/components/BudgetSettings";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -137,6 +138,8 @@ export function SettingsPage() {
           </Button>
         </form>
       </div>
+
+      <BudgetSettings />
 
       <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
         <div className="mb-4 flex items-center gap-2">

@@ -14,6 +14,7 @@ function makeUser(overrides: Partial<User> = {}): User {
     theme: null,
     savingsGoalTarget: null,
     savingsGoalSaved: null,
+  monthlyIncome: null,
     ...overrides,
   };
 }

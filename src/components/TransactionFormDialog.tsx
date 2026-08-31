@@ -29,6 +29,9 @@ interface TransactionFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   transaction?: Transaction | null;
+  /** Valores iniciais para uma transação nova — usado pela leitura de nota e
+   *  print, que abre o formulário já preenchido para o usuário conferir. */
+  draft?: Partial<FormInput> | null;
   onSubmit: (input: TransactionFormPayload) => Promise<void>;
   isSubmitting: boolean;
 }
@@ -37,6 +40,7 @@ export function TransactionFormDialog({
   open,
   onOpenChange,
   transaction,
+  draft,
   onSubmit,
   isSubmitting,
 }: TransactionFormDialogProps) {
@@ -74,9 +78,12 @@ export function TransactionFormDialog({
               creditCardId: transaction.creditCardId ?? undefined,
               invoiceChoice: transaction.creditCardId ? "CURRENT" : undefined,
             }
-          : { type: "EXPENSE", amount: 0, date: "", category: "", description: "" },
+          : { type: "EXPENSE", amount: 0, date: "", category: "", description: "", ...draft },
       );
-      setCustomCategory(Boolean(transaction && !EXPENSE_CATEGORIES.concat(INCOME_CATEGORIES).includes(transaction.category)));
+      const categoriaAtual = transaction?.category ?? draft?.category;
+      setCustomCategory(
+        Boolean(categoriaAtual && !EXPENSE_CATEGORIES.concat(INCOME_CATEGORIES).includes(categoriaAtual)),
+      );
     }
   }, [open, transaction, reset]);
 

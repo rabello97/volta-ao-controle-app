@@ -49,8 +49,8 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: "/shopping-lists",
-    label: "Compras",
+    to: "/casa",
+    label: "Casa",
     icon: (
       <>
         <path d="M2 3h1.9l1.7 7.6h6.9l1.6-5.3H4.4" />

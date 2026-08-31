@@ -1,13 +1,9 @@
 import { useState } from "react";
 import { Check, Plus, Trash2, ShoppingBasket } from "lucide-react";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/PageHeader";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
-import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
-import { useHouseholdView } from "@/context/HouseholdViewContext";
-import { scopeFor } from "@/lib/scope";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { itemTotal, parsePrice, sumItems } from "@/lib/shopping";
 import { cn } from "@/lib/utils";
@@ -71,10 +67,7 @@ function ListCard({
   );
 }
 
-export function ShoppingListsPage() {
-  const { view, partner } = useHouseholdView();
-  const scope = scopeFor(view, partner?.id ?? null);
-
+export function ShoppingLists({ scope }: { scope?: string }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [newListName, setNewListName] = useState("");
   const [itemName, setItemName] = useState("");
@@ -184,16 +177,6 @@ export function ShoppingListsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Compras"
-        subtitle={
-          items.length > 0
-            ? `${items.filter((l) => l.status === "OPEN").length} lista(s) em aberto`
-            : "Anote o que falta em casa"
-        }
-        aside={<HouseholdViewToggle />}
-      />
-
       {lists.isError ? (
         <ErrorState onRetry={() => lists.refetch()} />
       ) : (
