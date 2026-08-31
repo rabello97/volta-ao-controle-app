@@ -15,6 +15,9 @@ import {
 } from "@/hooks/useRecurringBills";
 import { formatCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { scopeFor } from "@/lib/scope";
+import { useHouseholdView } from "@/context/HouseholdViewContext";
+import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import type { RecurringBillWithStatus } from "@/api/types";
@@ -44,8 +47,12 @@ export function RecurringBillsPage() {
   const [editing, setEditing] = useState<RecurringBillWithStatus | null>(null);
   const [deleting, setDeleting] = useState<RecurringBillWithStatus | null>(null);
 
-  const bills = useRecurringBillsWithStatus();
-  const stats = useRecurringBillStats();
+  const { view, partner } = useHouseholdView();
+  const scope = scopeFor(view, partner?.id ?? null);
+  const readOnly = scope !== undefined;
+
+  const bills = useRecurringBillsWithStatus(scope);
+  const stats = useRecurringBillStats(scope);
   const createMutation = useCreateRecurringBill();
   const updateMutation = useUpdateRecurringBill();
   const deleteMutation = useDeleteRecurringBill();
@@ -102,11 +109,16 @@ export function RecurringBillsPage() {
             ? `${stats.data.totalActive} contas fixas · ${formatCurrency(stats.data.fixedMonthlyCost)} por mês`
             : "Contas fixas mensais"
         }
-        ctaLabel="Nova conta"
-        onCta={() => {
-          setEditing(null);
-          setFormOpen(true);
-        }}
+        ctaLabel={readOnly ? undefined : "Nova conta"}
+        onCta={
+          readOnly
+            ? undefined
+            : () => {
+                setEditing(null);
+                setFormOpen(true);
+              }
+        }
+        aside={<HouseholdViewToggle />}
       />
 
       <div className="flex flex-col gap-4">
@@ -213,7 +225,7 @@ export function RecurringBillsPage() {
                   <button
                     type="button"
                     onClick={() => handlePay(bill.id)}
-                    disabled={payMutation.isPending}
+                    disabled={payMutation.isPending || readOnly}
                     className="flex-none whitespace-nowrap rounded-full bg-negative-tint px-2.5 py-1 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:justify-self-start"
                   >
                     A pagar
@@ -224,7 +236,8 @@ export function RecurringBillsPage() {
                   {formatCurrency(bill.expectedAmount)}
                 </span>
 
-                <div className="hidden items-center justify-end gap-1 md:flex">
+                {/* Na visão do parceiro a linha é só leitura: sem toggle, editar nem excluir. */}
+                <div className={cn("hidden items-center justify-end gap-1", !readOnly && "md:flex")}>
                   <Switch
                     checked={bill.active}
                     onCheckedChange={(checked) => handleToggle(bill.id, checked)}

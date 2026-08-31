@@ -6,13 +6,20 @@ import { CardTile } from "@/components/CardTile";
 import { CreditCardFormDialog } from "@/components/CreditCardFormDialog";
 import { useCreateCreditCard, useCreditCards } from "@/hooks/useCreditCards";
 import { formatCurrency } from "@/lib/format";
+import { scopeFor } from "@/lib/scope";
+import { useHouseholdView } from "@/context/HouseholdViewContext";
+import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import type { CreditCardInput } from "@/api/creditCards";
 
 export function CreditCardsPage() {
   const [formOpen, setFormOpen] = useState(false);
-  const { data: cards, isLoading, isError, refetch } = useCreditCards();
+  const { view, partner } = useHouseholdView();
+  const scope = scopeFor(view, partner?.id ?? null);
+  const readOnly = scope !== undefined;
+
+  const { data: cards, isLoading, isError, refetch } = useCreditCards(scope);
   const createMutation = useCreateCreditCard();
 
   const openTotal = (cards ?? []).reduce((sum, c) => sum + c.currentInvoiceTotal, 0);
@@ -31,8 +38,9 @@ export function CreditCardsPage() {
       <PageHeader
         title="Cartões"
         subtitle={`${cards?.length ?? 0} cartões · ${formatCurrency(openTotal)} em faturas abertas`}
-        ctaLabel="Novo cartão"
-        onCta={() => setFormOpen(true)}
+        ctaLabel={readOnly ? undefined : "Novo cartão"}
+        onCta={readOnly ? undefined : () => setFormOpen(true)}
+        aside={<HouseholdViewToggle />}
       />
 
       {isError && <ErrorState onRetry={() => refetch()} />}
@@ -55,6 +63,7 @@ export function CreditCardsPage() {
           <CardTile key={card.id} card={card} highlight={index === 0} />
         ))}
 
+        {!readOnly && (
         <button
           type="button"
           onClick={() => setFormOpen(true)}
@@ -68,6 +77,7 @@ export function CreditCardsPage() {
             Vincule transações e acompanhe a fatura fechando em tempo real.
           </span>
         </button>
+        )}
       </div>
       )}
 

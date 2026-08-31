@@ -10,6 +10,7 @@ export interface TransactionFilters {
   search?: string;
   page?: number;
   limit?: number;
+  scope?: string;
 }
 
 export interface TransactionInput {

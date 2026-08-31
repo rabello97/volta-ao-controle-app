@@ -14,6 +14,9 @@ import {
 import { useCreditCards } from "@/hooks/useCreditCards";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { buildTransactionFilters } from "@/lib/transactionFilters";
+import { scopeFor } from "@/lib/scope";
+import { useHouseholdView } from "@/context/HouseholdViewContext";
+import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
@@ -34,8 +37,14 @@ export function TransactionsPage() {
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
 
-  const { data: cards } = useCreditCards();
-  const transactions = useTransactions(buildTransactionFilters(type, category, creditCardId, search, page));
+  const { view, partner } = useHouseholdView();
+  const scope = scopeFor(view, partner?.id ?? null);
+  // Na visão do parceiro ou do casal a tela é só de leitura: editar dados de
+  // outra pessoa continua sendo feito na conta dela.
+  const readOnly = scope !== undefined;
+
+  const { data: cards } = useCreditCards(scope);
+  const transactions = useTransactions({ ...buildTransactionFilters(type, category, creditCardId, search, page), scope });
 
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
@@ -82,13 +91,18 @@ export function TransactionsPage() {
       <PageHeader
         title="Transações"
         subtitle={`${result?.total ?? 0} lançamentos`}
-        ctaLabel="Nova transação"
-        onCta={() => {
-          setEditing(null);
-          setFormOpen(true);
-        }}
+        ctaLabel={readOnly ? undefined : "Nova transação"}
+        onCta={
+          readOnly
+            ? undefined
+            : () => {
+                setEditing(null);
+                setFormOpen(true);
+              }
+        }
         search={search}
         onSearchChange={reset(setSearch)}
+        aside={<HouseholdViewToggle />}
       />
 
       <div className="flex flex-col gap-4">
@@ -254,7 +268,7 @@ export function TransactionsPage() {
                       {formatCurrency(t.amount)}
                     </span>
 
-                    <div className="flex flex-none items-center justify-end gap-0.5">
+                    <div className={cn("flex flex-none items-center justify-end gap-0.5", readOnly && "hidden")}>
                       <button
                         type="button"
                         aria-label="Editar"
@@ -307,6 +321,7 @@ export function TransactionsPage() {
         )}
       </div>
 
+      {!readOnly && (
       <button
         type="button"
         aria-label="Nova transação"
@@ -318,6 +333,7 @@ export function TransactionsPage() {
       >
         <Plus className="size-6" />
       </button>
+      )}
 
       <TransactionFormDialog
         open={formOpen}

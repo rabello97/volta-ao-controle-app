@@ -11,16 +11,22 @@ import {
   type UpdateRecurringBillInput,
 } from "@/api/recurringBills";
 
-export function useRecurringBills() {
-  return useQuery({ queryKey: ["recurring-bills"], queryFn: listRecurringBills });
+export function useRecurringBills(scope?: string) {
+  return useQuery({ queryKey: ["recurring-bills", scope ?? "self"], queryFn: () => listRecurringBills(scope) });
 }
 
-export function useRecurringBillsWithStatus() {
-  return useQuery({ queryKey: ["recurring-bills", "with-status"], queryFn: listRecurringBillsWithStatus });
+export function useRecurringBillsWithStatus(scope?: string) {
+  return useQuery({
+    queryKey: ["recurring-bills", "with-status", scope ?? "self"],
+    queryFn: () => listRecurringBillsWithStatus(scope),
+  });
 }
 
-export function useRecurringBillStats() {
-  return useQuery({ queryKey: ["recurring-bills", "stats"], queryFn: getRecurringBillStats });
+export function useRecurringBillStats(scope?: string) {
+  return useQuery({
+    queryKey: ["recurring-bills", "stats", scope ?? "self"],
+    queryFn: () => getRecurringBillStats(scope),
+  });
 }
 
 export function usePayRecurringBill() {

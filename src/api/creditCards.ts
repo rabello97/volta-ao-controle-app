@@ -8,8 +8,8 @@ export interface CreditCardInput {
   creditLimit?: number | null;
 }
 
-export function listCreditCards(): Promise<CreditCardSummary[]> {
-  return apiRequest<CreditCardSummary[]>("/credit-cards");
+export function listCreditCards(scope?: string): Promise<CreditCardSummary[]> {
+  return apiRequest<CreditCardSummary[]>("/credit-cards", { query: { scope } });
 }
 
 export function createCreditCard(input: CreditCardInput): Promise<CreditCard> {

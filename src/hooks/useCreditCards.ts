@@ -7,8 +7,10 @@ import {
   type CreditCardInput,
 } from "@/api/creditCards";
 
-export function useCreditCards() {
-  return useQuery({ queryKey: ["credit-cards"], queryFn: listCreditCards });
+/** O escopo entra na chave do cache: sem isso os dados do parceiro e os seus
+ *  se sobrescreveriam na mesma entrada. */
+export function useCreditCards(scope?: string) {
+  return useQuery({ queryKey: ["credit-cards", scope ?? "self"], queryFn: () => listCreditCards(scope) });
 }
 
 export function useCreateCreditCard() {

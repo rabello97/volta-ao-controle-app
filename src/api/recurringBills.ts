@@ -12,8 +12,8 @@ export interface UpdateRecurringBillInput extends Partial<RecurringBillInput> {
   active?: boolean;
 }
 
-export function listRecurringBills(): Promise<RecurringBill[]> {
-  return apiRequest<RecurringBill[]>("/recurring-bills");
+export function listRecurringBills(scope?: string): Promise<RecurringBill[]> {
+  return apiRequest<RecurringBill[]>("/recurring-bills", { query: { scope } });
 }
 
 export function createRecurringBill(input: RecurringBillInput): Promise<RecurringBill> {
@@ -28,12 +28,12 @@ export function deleteRecurringBill(id: string): Promise<void> {
   return apiRequest<void>(`/recurring-bills/${id}`, { method: "DELETE" });
 }
 
-export function getRecurringBillStats(): Promise<RecurringBillMonthlyStats> {
-  return apiRequest<RecurringBillMonthlyStats>("/recurring-bills/stats");
+export function getRecurringBillStats(scope?: string): Promise<RecurringBillMonthlyStats> {
+  return apiRequest<RecurringBillMonthlyStats>("/recurring-bills/stats", { query: { scope } });
 }
 
-export function listRecurringBillsWithStatus(): Promise<RecurringBillWithStatus[]> {
-  return apiRequest<RecurringBillWithStatus[]>("/recurring-bills/with-status");
+export function listRecurringBillsWithStatus(scope?: string): Promise<RecurringBillWithStatus[]> {
+  return apiRequest<RecurringBillWithStatus[]>("/recurring-bills/with-status", { query: { scope } });
 }
 
 export function payRecurringBill(id: string): Promise<Transaction> {
