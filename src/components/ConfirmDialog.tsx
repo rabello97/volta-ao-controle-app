@@ -16,6 +16,9 @@ interface ConfirmDialogProps {
   description: string;
   onConfirm: () => void;
   confirmLabel?: string;
+  /** "danger" (padrão) pinta o botão de vermelho; "default" usa a cor da marca,
+   *  para confirmações que não destroem nada (finalizar uma compra, por ex.). */
+  tone?: "danger" | "default";
 }
 
 export function ConfirmDialog({
@@ -25,6 +28,7 @@ export function ConfirmDialog({
   description,
   onConfirm,
   confirmLabel = "Excluir",
+  tone = "danger",
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -35,7 +39,10 @@ export function ConfirmDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm} className="bg-negative hover:bg-negative/90">
+          <AlertDialogAction
+            onClick={onConfirm}
+            className={tone === "danger" ? "bg-negative hover:bg-negative/90" : "bg-brand text-brand-fg hover:bg-brand/90"}
+          >
             {confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

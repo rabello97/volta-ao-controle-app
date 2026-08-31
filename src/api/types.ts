@@ -175,3 +175,41 @@ export interface BalancePoint {
   date: string;
   balance: number;
 }
+
+export type ShoppingListStatus = "OPEN" | "DONE";
+
+export interface ShoppingItem {
+  id: string;
+  listId: string;
+  name: string;
+  quantity: number;
+  estimatedPrice: number | null;
+  actualPrice: number | null;
+  purchased: boolean;
+  addedByUserId: string;
+  createdAt: string;
+}
+
+export interface ShoppingList {
+  id: string;
+  userId: string;
+  name: string;
+  status: ShoppingListStatus;
+  createdAt: string;
+  closedAt: string | null;
+  items: ShoppingItem[];
+}
+
+export interface ShoppingListSummary {
+  id: string;
+  name: string;
+  status: ShoppingListStatus;
+  ownerId: string;
+  createdAt: string;
+  closedAt: string | null;
+  itemCount: number;
+  purchasedCount: number;
+  estimatedTotal: number;
+  purchasedTotal: number;
+  transactionId: string | null;
+}

@@ -49,6 +49,17 @@ const NAV_ITEMS = [
     ),
   },
   {
+    to: "/shopping-lists",
+    label: "Compras",
+    icon: (
+      <>
+        <path d="M2 3h1.9l1.7 7.6h6.9l1.6-5.3H4.4" />
+        <circle cx="6.6" cy="13" r="1" />
+        <circle cx="11.8" cy="13" r="1" />
+      </>
+    ),
+  },
+  {
     to: "/credit-cards",
     label: "Cartões",
     icon: (
