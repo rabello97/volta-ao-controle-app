@@ -299,11 +299,20 @@ main,
   font-variant-numeric: tabular-nums;
 }
 
+/* A casca do app ocupa exatamente a altura da janela. Usamos height: 100%
+   (e não 100dvh) porque no PWA em tela cheia do iOS o dvh fica menor que a
+   tela e sobra uma faixa preta embaixo da barra de navegação. O background
+   fica no html para o caso de a faixa ainda aparecer em algum aparelho: ela
+   sai na cor do app, não em preto. */
 html,
 body,
 #root {
   height: 100%;
   overflow: hidden;
+}
+
+html {
+  background: var(--background);
 }
 
 ::selection {

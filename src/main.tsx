@@ -6,10 +6,13 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import { queryClient } from "@/lib/queryClient";
+import { purgeLegacyCaches } from "@/lib/pwa";
 import { AuthProvider } from "@/context/AuthContext";
 import { HouseholdViewProvider } from "@/context/HouseholdViewContext";
 import { App } from "@/App";
 import "./index.css";
+
+void purgeLegacyCaches();
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? "";
 

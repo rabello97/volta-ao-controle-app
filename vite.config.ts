@@ -16,20 +16,14 @@ export default defineConfig({
         // Rotas do app são client-side: qualquer navegação cai no index.html
         // já em cache, então abrir offline não dá tela de erro do navegador.
         navigateFallback: "/index.html",
+        // As respostas da API NÃO passam por cache do service worker. O cache do
+        // Workbox é indexado só pela URL — ele ignora o Authorization —, então
+        // uma resposta guardada continuava sendo servida depois de os dados
+        // mudarem (e valeria até para outra conta no mesmo aparelho). Era isso
+        // que fazia o PWA mostrar saldo zerado e "Vincular parceiro(a)"
+        // enquanto o Safari, com cache limpo, trazia os números certos.
+        // Sem rede, as telas mostram o estado de erro com "Tentar de novo".
         runtimeCaching: [
-          {
-            // Dados da API: responde da rede quando dá, mas guarda a última
-            // resposta boa para abrir offline com os últimos números conhecidos
-            // em vez de tudo zerado.
-            urlPattern: ({ url }) => /\/(dashboard|transactions|recurring-bills|credit-cards|household|auth)(\/|$)/.test(url.pathname),
-            handler: "NetworkFirst",
-            options: {
-              cacheName: "api",
-              networkTimeoutSeconds: 4,
-              expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 7 },
-              cacheableResponse: { statuses: [200] },
-            },
-          },
           {
             urlPattern: ({ request }) => request.destination === "font",
             handler: "CacheFirst",

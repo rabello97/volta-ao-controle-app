@@ -161,9 +161,12 @@ export function AppLayout() {
   };
   const cardsAlert = (cards.data ?? []).some((c) => (c.utilizationPct ?? 0) >= 70);
 
+  // A casca é fixa nas quatro bordas em vez de ter altura 100dvh: no PWA em tela
+  // cheia do iOS o dvh vem menor que a tela e sobrava uma faixa preta embaixo da
+  // barra de navegação. Com inset-0 ela sempre cobre a viewport inteira.
   return (
-    <div className="flex h-dvh flex-col overflow-hidden bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
-      <aside className="hidden h-dvh flex-col gap-6 overflow-y-auto border-r border-divider px-4 py-[22px] sm:flex">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
+      <aside className="hidden h-full flex-col gap-6 overflow-y-auto border-r border-divider px-4 py-[22px] sm:flex">
         <div className="flex items-center gap-[11px] px-2">
           <div className="flex size-[30px] flex-none items-center justify-center rounded-[9px] bg-brand">
             <BrandMark className="size-[18px] text-brand-ink" />
