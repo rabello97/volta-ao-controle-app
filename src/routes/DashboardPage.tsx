@@ -319,7 +319,14 @@ export function DashboardPage() {
                   <DueItem
                     key={item.id}
                     item={item}
-                    onPay={item.recurringBillId ? () => handlePay(item.recurringBillId as string) : undefined}
+                    // Na visão do parceiro ou do casal o "Pagar" não aparece:
+                    // marcar como paga escreve na conta de quem lançou, então
+                    // o botão só falharia. Ver o vencimento continua valendo.
+                    onPay={
+                      item.recurringBillId && !scope
+                        ? () => handlePay(item.recurringBillId as string)
+                        : undefined
+                    }
                     isPaying={payMutation.isPending && payMutation.variables === item.recurringBillId}
                   />
                 ))}
