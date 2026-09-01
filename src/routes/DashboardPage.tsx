@@ -14,6 +14,7 @@ import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useBalanceSeries, useCategoryInsight, useDashboard } from "@/hooks/useDashboard";
 import { useUpcomingDue } from "@/hooks/useUpcomingDue";
 import { scopeFor } from "@/lib/scope";
+import { WalletCards } from "@/components/WalletCards";
 import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { useCategorySummaryThisMonth } from "@/hooks/useReports";
@@ -278,6 +279,10 @@ export function DashboardPage() {
             />
           </div>
         </div>
+
+        {/* Saldo dos benefícios fica fora do saldo da conta de propósito:
+            é dinheiro que só serve para um tipo de gasto. */}
+        <WalletCards scope={scope} />
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.55fr_1fr]">
           <section className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">

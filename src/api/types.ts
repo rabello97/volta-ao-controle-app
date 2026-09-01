@@ -227,6 +227,7 @@ export interface BudgetCategoryStatus {
   category: string;
   limit: number;
   spent: number;
+  spentFromBenefit: number;
   remaining: number;
   usedPct: number;
 }
@@ -235,8 +236,10 @@ export interface BudgetStatus {
   year: number;
   month: number;
   income: number;
+  benefitIncome: number;
   plannedTotal: number;
   spentTotal: number;
+  spentFromAccount: number;
   unbudgetedSpent: number;
   leftFromIncome: number;
   categories: BudgetCategoryStatus[];
@@ -288,4 +291,19 @@ export interface ScanResult {
   cartaoSugerido: string;
   confianca: "alta" | "media" | "baixa";
   observacao: string;
+}
+
+export interface Wallet {
+  id: string;
+  userId: string;
+  name: string;
+  monthlyCredit: number;
+  creditDay: number;
+  active: boolean;
+  creditsReceived: number;
+  totalCredited: number;
+  spent: number;
+  balance: number;
+  nextCreditDate: string;
+  daysUntilNextCredit: number;
 }

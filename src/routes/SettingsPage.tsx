@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { User, KeyRound, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BudgetSettings } from "@/components/BudgetSettings";
+import { WalletSettings } from "@/components/WalletSettings";
 import { PageHeader } from "@/components/PageHeader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -138,6 +139,8 @@ export function SettingsPage() {
           </Button>
         </form>
       </div>
+
+      <WalletSettings />
 
       <BudgetSettings />
 

@@ -15,7 +15,9 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Chip } from "@/components/Chip";
+import { formatCurrency } from "@/lib/format";
 import { useCreditCards } from "@/hooks/useCreditCards";
+import { useWallets } from "@/hooks/useWallets";
 import { EXPENSE_CATEGORIES, INCOME_CATEGORIES } from "@/lib/categories";
 import type { Transaction } from "@/api/types";
 import type { TransactionFormPayload } from "@/api/transactions";
@@ -45,6 +47,7 @@ export function TransactionFormDialog({
   isSubmitting,
 }: TransactionFormDialogProps) {
   const { data: cards } = useCreditCards();
+  const { data: wallets } = useWallets();
   const [customCategory, setCustomCategory] = useState(false);
 
   const {
@@ -63,6 +66,7 @@ export function TransactionFormDialog({
   const type = watch("type");
   const category = watch("category");
   const creditCardId = watch("creditCardId");
+  const walletId = watch("walletId");
   const presets = type === "INCOME" ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 
   useEffect(() => {
@@ -94,6 +98,7 @@ export function TransactionFormDialog({
       date: values.date,
       category: values.category,
       description: values.description || undefined,
+      walletId: values.type === "EXPENSE" ? values.walletId || undefined : undefined,
       creditCardId: values.type === "EXPENSE" ? (values.creditCardId || (transaction ? null : undefined)) : undefined,
       invoiceChoice: values.type === "EXPENSE" ? values.invoiceChoice : undefined,
       // Parcelamento só na criação: mudar depois exigiria refazer as parcelas.
@@ -170,7 +175,42 @@ export function TransactionFormDialog({
             <Input id="description" {...register("description")} />
           </div>
 
-          {type === "EXPENSE" && (
+          {type === "EXPENSE" && (wallets?.length ?? 0) > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <Label>Pago com benefício (opcional)</Label>
+              <Controller
+                control={control}
+                name="walletId"
+                render={({ field }) => (
+                  <Select
+                    value={field.value ?? "none"}
+                    onValueChange={(v) => {
+                      field.onChange(v === "none" ? undefined : v);
+                      // Benefício e cartão são excludentes: o dinheiro sai de um só.
+                      if (v !== "none") {
+                        setValue("creditCardId", undefined);
+                        setValue("invoiceChoice", undefined);
+                      }
+                    }}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Saiu da conta" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">Saiu da conta</SelectItem>
+                      {wallets?.map((wallet) => (
+                        <SelectItem key={wallet.id} value={wallet.id}>
+                          {wallet.name} · {formatCurrency(wallet.balance)} disponíveis
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+            </div>
+          )}
+
+          {type === "EXPENSE" && !walletId && (
             <div className="flex flex-col gap-3 rounded-xl bg-track p-3">
               <div className="flex flex-col gap-1.5">
                 <Label>Cartão (opcional)</Label>

@@ -23,6 +23,8 @@ export interface TransactionInput {
   invoiceChoice?: InvoiceChoice;
   recurringBillId?: string;
   installmentTotal?: number;
+  /** Pagar com um benefício (VR). Exclui cartão. */
+  walletId?: string;
 }
 
 /** O que o formulário devolve: igual à criação, mas o cartão pode vir `null`
