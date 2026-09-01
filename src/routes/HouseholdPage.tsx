@@ -137,9 +137,16 @@ export function HouseholdPage() {
                   <div className="flex size-9 items-center justify-center rounded-lg bg-brand-tint text-brand">
                     <Mail className="size-4" />
                   </div>
-                  <div>
-                    <div className="text-sm font-medium text-text">Convite pendente</div>
-                    <div className="text-xs text-text-3">Recebido em {formatDate(invite.createdAt)}</div>
+                  <div className="min-w-0">
+                    {/* Antes dizia só "Convite pendente": quem recebia não
+                        fazia ideia de quem tinha convidado. */}
+                    <div className="truncate text-sm font-medium text-text">
+                      {invite.fromUserName} quer juntar as contas com você
+                    </div>
+                    <div className="truncate text-xs text-text-3">
+                      {invite.fromUserEmail && `${invite.fromUserEmail} · `}
+                      recebido em {formatDate(invite.createdAt)}
+                    </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

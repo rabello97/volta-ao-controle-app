@@ -34,9 +34,14 @@ export interface HouseholdInvite {
   createdAt: string;
 }
 
+export interface ReceivedInvite extends HouseholdInvite {
+  fromUserName: string;
+  fromUserEmail: string;
+}
+
 export interface HouseholdInvitesResponse {
   sent: HouseholdInvite[];
-  received: HouseholdInvite[];
+  received: ReceivedInvite[];
 }
 
 export type TransactionType = "INCOME" | "EXPENSE";
