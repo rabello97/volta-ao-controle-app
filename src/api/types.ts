@@ -94,6 +94,7 @@ export interface RecurringBillWithStatus {
   active: boolean;
   paidThisMonth: boolean;
   averageLast3Months: number;
+  ownerId: string;
 }
 
 export interface CreditCard {

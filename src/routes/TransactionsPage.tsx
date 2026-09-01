@@ -13,8 +13,10 @@ import {
 } from "@/hooks/useTransactions";
 import { useCreditCards } from "@/hooks/useCreditCards";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { plural } from "@/lib/plural";
 import { buildTransactionFilters } from "@/lib/transactionFilters";
 import { scopeFor } from "@/lib/scope";
+import { useMonth, monthRange } from "@/context/MonthContext";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { ScanButton } from "@/components/ScanButton";
@@ -42,13 +44,17 @@ export function TransactionsPage() {
   const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
 
   const { view, partner } = useHouseholdView();
+  const month = useMonth();
   const scope = scopeFor(view, partner?.id ?? null);
   // Na visão do parceiro ou do casal a tela é só de leitura: editar dados de
   // outra pessoa continua sendo feito na conta dela.
   const readOnly = scope !== undefined;
 
   const { data: cards } = useCreditCards(scope);
-  const transactions = useTransactions({ ...buildTransactionFilters(type, category, creditCardId, search, page), scope });
+  const transactions = useTransactions({
+    ...buildTransactionFilters(type, category, creditCardId, search, page, monthRange(month.value)),
+    scope,
+  });
 
   const ai = useAIStatus();
 
@@ -117,7 +123,7 @@ export function TransactionsPage() {
     <>
       <PageHeader
         title="Transações"
-        subtitle={`${result?.total ?? 0} lançamentos`}
+        subtitle={`${plural(result?.total ?? 0, "lançamento")} em ${month.label.toLowerCase()}`}
         ctaLabel={readOnly ? undefined : "Nova transação"}
         onCta={
           readOnly
@@ -194,7 +200,7 @@ export function TransactionsPage() {
 
           {result && (
             <div className="ml-auto flex flex-wrap items-center gap-[18px] whitespace-nowrap rounded-[10px] border border-divider bg-surface px-4 py-2">
-              <span className="text-xs text-text-4">{result.total} lançamentos</span>
+              <span className="text-xs text-text-4">{plural(result.total, "lançamento")}</span>
               <span className="font-mono text-[12.5px] text-positive">+ {formatCurrency(result.totals.income)}</span>
               <span className="font-mono text-[12.5px] text-negative">− {formatCurrency(result.totals.expense)}</span>
             </div>
@@ -223,9 +229,17 @@ export function TransactionsPage() {
                 <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />
               </svg>
             </div>
-            <span className="text-[15.5px] font-semibold text-text">Comece registrando um gasto</span>
+            {/* Com o seletor de mês, "lista vazia" quase sempre quer dizer
+                "vazia neste mês" — dizer qual evita procurar o que não sumiu. */}
+            <span className="text-[15.5px] font-semibold text-text">
+              {search || category || creditCardId || type !== "ALL"
+                ? `Nada encontrado em ${month.label.toLowerCase()}`
+                : `Nenhum lançamento em ${month.label.toLowerCase()}`}
+            </span>
             <span className="max-w-[380px] text-center text-[12.5px] leading-[1.5] text-text-3">
-              Cada lançamento alimenta o painel, os relatórios e a projeção de saldo. Leva 10 segundos.
+              {search || category || creditCardId || type !== "ALL"
+                ? "Tente outro mês pelas setas no topo, ou limpe os filtros."
+                : "Cada lançamento alimenta o painel, os relatórios e a projeção de saldo. Leva 10 segundos."}
             </span>
             <button
               type="button"

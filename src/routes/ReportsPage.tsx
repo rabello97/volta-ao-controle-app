@@ -4,7 +4,7 @@ import { CategoryBarList } from "@/components/CategoryBarList";
 import { MoneyValue } from "@/components/MoneyValue";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import {
-  useCategorySummaryThisMonth,
+  useCategorySummary,
   useHouseholdDashboard,
   useMonthlyEvolution,
   usePartnerDashboard,
@@ -17,12 +17,15 @@ import { BudgetPanel } from "@/components/BudgetPanel";
 import { MonthlyInsightCard } from "@/components/MonthlyInsightCard";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { scopeFor } from "@/lib/scope";
+import { useMonth, monthRange } from "@/context/MonthContext";
 
 export function ReportsPage() {
   const { view, partner, hasHousehold } = useHouseholdView();
   const scope = scopeFor(view, partner?.id ?? null);
+  const month = useMonth();
+  const { from, to } = monthRange(month.value);
   const evolution = useMonthlyEvolution(6, scope);
-  const categorySummary = useCategorySummaryThisMonth(scope);
+  const categorySummary = useCategorySummary(from, to, scope);
   const projection = useProjection();
 
   const selfDashboard = useSelfDashboard();
@@ -41,10 +44,10 @@ export function ReportsPage() {
       <PageHeader title="Relatórios" subtitle="Últimos 6 meses" aside={<HouseholdViewToggle />} />
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div className="lg:col-span-2">
-          <MonthlyInsightCard scope={scope} />
+          <MonthlyInsightCard scope={scope} month={month.key} />
         </div>
         <div className="lg:col-span-2">
-          <BudgetPanel scope={scope} />
+          <BudgetPanel scope={scope} month={month.key} />
         </div>
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)] lg:col-span-2">
           <h2 className="mb-4 text-[14.5px] font-semibold text-text">Entradas e saídas — últimos 6 meses</h2>

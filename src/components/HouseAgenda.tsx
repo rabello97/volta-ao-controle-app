@@ -5,6 +5,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { plural } from "@/lib/plural";
 import { parsePrice } from "@/lib/shopping";
 import { cn } from "@/lib/utils";
 import {
@@ -32,9 +33,9 @@ const STATUS_LABEL: Record<HouseTask["status"], { texto: string; classe: string 
 
 function prazoTexto(task: HouseTask): string {
   if (task.status === "DONE") return `Concluído em ${formatDate(task.completedAt ?? task.dueDate)}`;
-  if (task.daysUntilDue < 0) return `Venceu há ${Math.abs(task.daysUntilDue)} dia(s)`;
+  if (task.daysUntilDue < 0) return `Venceu há ${plural(Math.abs(task.daysUntilDue), "dia")}`;
   if (task.daysUntilDue === 0) return "Vence hoje";
-  return `Em ${task.daysUntilDue} dia(s) · ${formatDate(task.dueDate)}`;
+  return `Em ${plural(task.daysUntilDue, "dia")} · ${formatDate(task.dueDate)}`;
 }
 
 /** IPVA, seguro, revisão, troca de filtro: o que a casa cobra em datas, não

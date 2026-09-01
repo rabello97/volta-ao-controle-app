@@ -6,10 +6,10 @@ export function useAIStatus() {
   return useQuery({ queryKey: ["ai-status"], queryFn: getAIStatus, staleTime: 1000 * 60 * 60 });
 }
 
-export function useMonthlyInsight(scope?: string, enabled = true) {
+export function useMonthlyInsight(scope?: string, enabled = true, month?: string) {
   return useQuery({
-    queryKey: ["monthly-insight", scope ?? "self"],
-    queryFn: () => getMonthlyInsight(scope),
+    queryKey: ["monthly-insight", scope ?? "self", month ?? "atual"],
+    queryFn: () => getMonthlyInsight(scope, month),
     enabled,
   });
 }
@@ -17,9 +17,9 @@ export function useMonthlyInsight(scope?: string, enabled = true) {
 export function useGenerateMonthlyInsight() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (scope?: string) => generateMonthlyInsight(scope),
-    onSuccess: (data, scope) => {
-      queryClient.setQueryData(["monthly-insight", scope ?? "self"], data);
+    mutationFn: ({ scope, month }: { scope?: string; month?: string }) => generateMonthlyInsight(scope, month),
+    onSuccess: (data, { scope, month }) => {
+      queryClient.setQueryData(["monthly-insight", scope ?? "self", month ?? "atual"], data);
     },
   });
 }

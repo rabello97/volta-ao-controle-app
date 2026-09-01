@@ -23,9 +23,9 @@ export function useBalanceSeries(days = 30, scope?: string) {
   });
 }
 
-export function useCategoryInsight(scope?: string) {
+export function useCategoryInsight(scope?: string, month?: string) {
   return useQuery({
-    queryKey: ["category-insight", scope ?? "self"],
-    queryFn: () => getCategoryInsight(scope),
+    queryKey: ["category-insight", scope ?? "self", month ?? "atual"],
+    queryFn: () => getCategoryInsight(scope, month),
   });
 }

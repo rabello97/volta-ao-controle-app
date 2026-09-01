@@ -30,3 +30,17 @@ describe("buildTransactionFilters", () => {
     });
   });
 });
+
+describe("recorte de mês", () => {
+  it("passa o período quando o mês é informado", () => {
+    const filtros = buildTransactionFilters("ALL", "", "", "", 1, { from: "2026-09-01", to: "2026-09-30" });
+    expect(filtros.from).toBe("2026-09-01");
+    expect(filtros.to).toBe("2026-09-30");
+  });
+
+  it("sem mês informado não filtra por período", () => {
+    const filtros = buildTransactionFilters("ALL", "", "", "", 1);
+    expect(filtros.from).toBeUndefined();
+    expect(filtros.to).toBeUndefined();
+  });
+});

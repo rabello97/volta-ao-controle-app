@@ -1,35 +1,54 @@
 import { useState } from "react";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { CardTile } from "@/components/CardTile";
 import { CreditCardFormDialog } from "@/components/CreditCardFormDialog";
-import { useCreateCreditCard, useCreditCards } from "@/hooks/useCreditCards";
+import { useCreateCreditCard, useCreditCards, useDeleteCreditCard, useUpdateCreditCard } from "@/hooks/useCreditCards";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { formatCurrency } from "@/lib/format";
+import { plural } from "@/lib/plural";
 import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import type { CreditCardInput } from "@/api/creditCards";
+import type { CreditCardSummary } from "@/api/types";
 
 export function CreditCardsPage() {
   const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState<CreditCardSummary | null>(null);
+  const [deleting, setDeleting] = useState<CreditCardSummary | null>(null);
   const { view, partner } = useHouseholdView();
   const scope = scopeFor(view, partner?.id ?? null);
   const readOnly = scope !== undefined;
 
   const { data: cards, isLoading, isError, refetch } = useCreditCards(scope);
   const createMutation = useCreateCreditCard();
+  const updateMutation = useUpdateCreditCard();
+  const deleteMutation = useDeleteCreditCard();
 
   const openTotal = (cards ?? []).reduce((sum, c) => sum + c.currentInvoiceTotal, 0);
 
   async function handleSubmit(input: CreditCardInput) {
     try {
-      await createMutation.mutateAsync(input);
+      if (editing) await updateMutation.mutateAsync({ id: editing.id, input });
+      else await createMutation.mutateAsync(input);
       setFormOpen(false);
+      setEditing(null);
     } catch {
-      toast.error("Não foi possível cadastrar o cartão.");
+      toast.error("Não foi possível salvar o cartão.");
+    }
+  }
+
+  async function handleDelete() {
+    if (!deleting) return;
+    try {
+      await deleteMutation.mutateAsync(deleting.id);
+      setDeleting(null);
+    } catch {
+      toast.error("Não foi possível excluir o cartão.");
     }
   }
 
@@ -37,9 +56,16 @@ export function CreditCardsPage() {
     <>
       <PageHeader
         title="Cartões"
-        subtitle={`${cards?.length ?? 0} cartões · ${formatCurrency(openTotal)} em faturas abertas`}
+        subtitle={`${plural(cards?.length ?? 0, "cartão", "cartões")} · ${formatCurrency(openTotal)} em faturas abertas`}
         ctaLabel={readOnly ? undefined : "Novo cartão"}
-        onCta={readOnly ? undefined : () => setFormOpen(true)}
+        onCta={
+          readOnly
+            ? undefined
+            : () => {
+                setEditing(null);
+                setFormOpen(true);
+              }
+        }
         aside={<HouseholdViewToggle />}
       />
 
@@ -60,7 +86,35 @@ export function CreditCardsPage() {
           ))}
 
         {cards?.map((card, index) => (
-          <CardTile key={card.id} card={card} highlight={index === 0} />
+          <div key={card.id} className="relative">
+            <CardTile card={card} highlight={index === 0} />
+            {/* Antes não havia como corrigir apelido, fechamento, vencimento ou
+                limite depois de cadastrar — só criar. */}
+            {!readOnly && (
+              // Canto inferior: o topo já é do selo "fecha em Xd".
+              <div className="absolute bottom-3 right-3 flex gap-0.5">
+                <button
+                  type="button"
+                  aria-label={`Editar ${card.nickname}`}
+                  onClick={() => {
+                    setEditing(card);
+                    setFormOpen(true);
+                  }}
+                  className="rounded-lg p-1.5 text-text-5 transition-colors hover:bg-surface-2 hover:text-text"
+                >
+                  <Pencil className="size-3.5" />
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Excluir ${card.nickname}`}
+                  onClick={() => setDeleting(card)}
+                  className="rounded-lg p-1.5 text-text-5 transition-colors hover:bg-surface-2 hover:text-negative"
+                >
+                  <Trash2 className="size-3.5" />
+                </button>
+              </div>
+            )}
+          </div>
         ))}
 
         {!readOnly && (
@@ -83,9 +137,21 @@ export function CreditCardsPage() {
 
       <CreditCardFormDialog
         open={formOpen}
-        onOpenChange={setFormOpen}
+        onOpenChange={(open) => {
+          setFormOpen(open);
+          if (!open) setEditing(null);
+        }}
+        card={editing}
         onSubmit={handleSubmit}
-        isSubmitting={createMutation.isPending}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
+      />
+
+      <ConfirmDialog
+        open={Boolean(deleting)}
+        onOpenChange={(open) => !open && setDeleting(null)}
+        title="Excluir cartão"
+        description="As transações lançadas nele continuam no histórico, mas deixam de ter cartão e fatura."
+        onConfirm={handleDelete}
       />
     </>
   );

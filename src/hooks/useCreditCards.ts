@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createCreditCard,
+  deleteCreditCard,
   getInvoiceByMonth,
   listCreditCards,
   updateCreditCard,
@@ -26,6 +27,20 @@ export function useUpdateCreditCard() {
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: Partial<CreditCardInput> }) => updateCreditCard(id, input),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["credit-cards"] }),
+  });
+}
+
+export function useDeleteCreditCard() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteCreditCard(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["credit-cards"] });
+      // Excluir o cartão desvincula as transações dele.
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+      queryClient.invalidateQueries({ queryKey: ["upcoming-due"] });
+    },
   });
 }
 

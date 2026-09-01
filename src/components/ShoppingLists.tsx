@@ -5,6 +5,7 @@ import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { plural } from "@/lib/plural";
 import { itemTotal, parsePrice, sumItems } from "@/lib/shopping";
 import { cn } from "@/lib/utils";
 import {
@@ -378,7 +379,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
         open={finishing}
         onOpenChange={setFinishing}
         title="Finalizar compra"
-        description={`Vamos lançar uma despesa de ${formatCurrency(purchasedTotal)} na categoria "mercado" com os ${purchased.length} item(ns) marcados. A lista fica salva no histórico.`}
+        description={`Vamos lançar uma despesa de ${formatCurrency(purchasedTotal)} na categoria "mercado" com ${plural(purchased.length, "item", "itens")} marcado${purchased.length === 1 ? "" : "s"}. A lista fica salva no histórico.`}
         confirmLabel="Finalizar e lançar"
         tone="default"
         onConfirm={handleFinish}

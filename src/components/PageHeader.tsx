@@ -1,20 +1,5 @@
 import { useState } from "react";
-import { formatMonthLabel } from "@/lib/format";
-
-const MONTH_NAMES = [
-  "Janeiro",
-  "Fevereiro",
-  "Março",
-  "Abril",
-  "Maio",
-  "Junho",
-  "Julho",
-  "Agosto",
-  "Setembro",
-  "Outubro",
-  "Novembro",
-  "Dezembro",
-];
+import { useMonth, monthLabel as formatMonth, shiftMonth } from "@/context/MonthContext";
 
 interface PageHeaderProps {
   title: string;
@@ -30,9 +15,12 @@ interface PageHeaderProps {
 /** Cabeçalho comum a todas as telas (título + subtítulo à esquerda, busca /
  *  seletor de mês / ação principal à direita), como no mockup aprovado. */
 export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchChange, aside }: PageHeaderProps) {
-  const now = new Date();
+  const month = useMonth();
   const [monthOpen, setMonthOpen] = useState(false);
-  const monthLabel = `${MONTH_NAMES[now.getMonth()]} ${now.getFullYear()}`;
+
+  // Últimos 12 meses mais os 2 seguintes: cobre olhar para trás e planejar as
+  // parcelas que já estão lançadas à frente.
+  const opcoes = Array.from({ length: 15 }, (_, i) => shiftMonth(month.value, 2 - i));
 
   return (
     <header className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
@@ -59,20 +47,78 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
         )}
 
         <div className="relative">
-          <button
-            type="button"
-            onClick={() => setMonthOpen((v) => !v)}
-            className="flex items-center gap-2 whitespace-nowrap rounded-[10px] border border-divider bg-surface px-3 py-2 text-[12.5px] text-text-2 transition-colors hover:border-divider-strong"
-          >
-            {monthLabel}
-            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" className="text-text-5">
-              <path d="M4 6.5 8 10.5l4-4" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-0.5 rounded-[10px] border border-divider bg-surface">
+            <button
+              type="button"
+              onClick={() => month.shift(-1)}
+              aria-label="Mês anterior"
+              className="px-2 py-2 text-text-4 transition-colors hover:text-text"
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M10 3 5 8l5 5" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              onClick={() => setMonthOpen((v) => !v)}
+              className="whitespace-nowrap px-1 py-2 text-[12.5px] text-text-2 transition-colors hover:text-text"
+            >
+              {month.label}
+            </button>
+            <button
+              type="button"
+              onClick={() => month.shift(1)}
+              aria-label="Próximo mês"
+              className="px-2 py-2 text-text-4 transition-colors hover:text-text"
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
+                <path d="M6 3l5 5-5 5" />
+              </svg>
+            </button>
+          </div>
           {monthOpen && (
-            <div className="absolute right-0 top-full z-20 mt-1.5 rounded-[10px] border border-divider bg-surface p-2 text-[12.5px] text-text-3 shadow-[var(--shadow-card)]">
-              Apenas o mês atual ({formatMonthLabel(now.getMonth() + 1)}) por enquanto.
-            </div>
+            <>
+              {/* Clicar fora fecha, sem precisar acertar o botão de novo. */}
+              <button
+                type="button"
+                aria-label="Fechar seleção de mês"
+                onClick={() => setMonthOpen(false)}
+                className="fixed inset-0 z-10 cursor-default"
+              />
+              <div className="absolute right-0 top-full z-20 mt-1.5 max-h-[280px] w-[180px] overflow-y-auto rounded-[10px] border border-divider bg-surface p-1 shadow-[var(--shadow-card)]">
+                {!month.isCurrent && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      month.reset();
+                      setMonthOpen(false);
+                    }}
+                    className="mb-1 w-full rounded-lg bg-brand-tint px-2.5 py-1.5 text-left text-[12.5px] font-semibold text-brand"
+                  >
+                    Voltar para o mês atual
+                  </button>
+                )}
+                {opcoes.map((opcao) => {
+                  const ativo = opcao.year === month.value.year && opcao.month === month.value.month;
+                  return (
+                    <button
+                      key={`${opcao.year}-${opcao.month}`}
+                      type="button"
+                      onClick={() => {
+                        month.set(opcao);
+                        setMonthOpen(false);
+                      }}
+                      className={
+                        "w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] transition-colors " +
+                        (ativo ? "bg-track font-medium text-text" : "text-text-3 hover:text-text")
+                      }
+                    >
+                      {formatMonth(opcao)}
+                    </button>
+                  );
+                })}
+              </div>
+            </>
           )}
         </div>
 

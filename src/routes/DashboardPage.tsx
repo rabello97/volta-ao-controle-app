@@ -14,10 +14,12 @@ import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useBalanceSeries, useCategoryInsight, useDashboard } from "@/hooks/useDashboard";
 import { useUpcomingDue } from "@/hooks/useUpcomingDue";
 import { scopeFor } from "@/lib/scope";
+import { plural } from "@/lib/plural";
 import { WalletCards } from "@/components/WalletCards";
 import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCreateTransaction } from "@/hooks/useTransactions";
-import { useCategorySummaryThisMonth } from "@/hooks/useReports";
+import { useCategorySummary } from "@/hooks/useReports";
+import { useMonth, monthRange } from "@/context/MonthContext";
 import { formatCurrency, formatMonthLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { TransactionFormPayload } from "@/api/transactions";
@@ -122,14 +124,16 @@ export function DashboardPage() {
   const navigate = useNavigate();
   const partnerId = partner?.id ?? null;
   const scope = scopeFor(view, partnerId);
+  const month = useMonth();
+  const { from, to } = monthRange(month.value);
   const [period, setPeriod] = useState<(typeof PERIODS)[number]["key"]>("30d");
   const [formOpen, setFormOpen] = useState(false);
 
   const dashboard = useDashboard(view, partnerId);
   const balanceSeries = useBalanceSeries(PERIODS.find((p) => p.key === period)!.days, scope);
-  const categoryInsight = useCategoryInsight(scope);
-  const categorySummary = useCategorySummaryThisMonth(scope);
-  const { items: upcoming, isLoading: upcomingLoading } = useUpcomingDue(scope);
+  const categoryInsight = useCategoryInsight(scope, month.key);
+  const categorySummary = useCategorySummary(from, to, scope);
+  const { items: upcoming, isLoading: upcomingLoading } = useUpcomingDue(scope, month.key);
   const payMutation = usePayRecurringBill();
   const createMutation = useCreateTransaction();
 
@@ -273,7 +277,7 @@ export function DashboardPage() {
               }
               trailing={
                 <span className="text-[11.5px] text-text-4">
-                  {upcoming.filter((i) => i.status !== "PAID").length} conta(s)
+                  {plural(upcoming.filter((i) => i.status !== "PAID").length, "conta")}
                 </span>
               }
             />
@@ -319,14 +323,7 @@ export function DashboardPage() {
                   <DueItem
                     key={item.id}
                     item={item}
-                    // Na visão do parceiro ou do casal o "Pagar" não aparece:
-                    // marcar como paga escreve na conta de quem lançou, então
-                    // o botão só falharia. Ver o vencimento continua valendo.
-                    onPay={
-                      item.recurringBillId && !scope
-                        ? () => handlePay(item.recurringBillId as string)
-                        : undefined
-                    }
+                    onPay={item.recurringBillId ? () => handlePay(item.recurringBillId as string) : undefined}
                     isPaying={payMutation.isPending && payMutation.variables === item.recurringBillId}
                   />
                 ))}

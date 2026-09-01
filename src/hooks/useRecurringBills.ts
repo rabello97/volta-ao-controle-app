@@ -15,17 +15,17 @@ export function useRecurringBills(scope?: string) {
   return useQuery({ queryKey: ["recurring-bills", scope ?? "self"], queryFn: () => listRecurringBills(scope) });
 }
 
-export function useRecurringBillsWithStatus(scope?: string) {
+export function useRecurringBillsWithStatus(scope?: string, month?: string) {
   return useQuery({
-    queryKey: ["recurring-bills", "with-status", scope ?? "self"],
-    queryFn: () => listRecurringBillsWithStatus(scope),
+    queryKey: ["recurring-bills", "with-status", scope ?? "self", month ?? "atual"],
+    queryFn: () => listRecurringBillsWithStatus(scope, month),
   });
 }
 
-export function useRecurringBillStats(scope?: string) {
+export function useRecurringBillStats(scope?: string, month?: string) {
   return useQuery({
-    queryKey: ["recurring-bills", "stats", scope ?? "self"],
-    queryFn: () => getRecurringBillStats(scope),
+    queryKey: ["recurring-bills", "stats", scope ?? "self", month ?? "atual"],
+    queryFn: () => getRecurringBillStats(scope, month),
   });
 }
 

@@ -8,10 +8,10 @@ function formatGeneratedAt(iso: string): string {
   return new Date(iso).toLocaleString("pt-BR", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
-export function MonthlyInsightCard({ scope }: { scope?: string }) {
+export function MonthlyInsightCard({ scope, month }: { scope?: string; month?: string }) {
   const ai = useAIStatus();
   const enabled = ai.data?.enabled ?? false;
-  const insight = useMonthlyInsight(scope, enabled);
+  const insight = useMonthlyInsight(scope, enabled, month);
   const generate = useGenerateMonthlyInsight();
 
   // Sem chave no servidor a seção some — botão que sempre dá erro é pior que
@@ -20,7 +20,7 @@ export function MonthlyInsightCard({ scope }: { scope?: string }) {
 
   async function handleGenerate() {
     try {
-      await generate.mutateAsync(scope);
+      await generate.mutateAsync({ scope, month });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Não consegui gerar a análise agora.");
     }

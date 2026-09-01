@@ -28,14 +28,14 @@ export function getCategorySummary(from: string, to: string, scope?: string): Pr
   return apiRequest<CategorySummaryEntry[]>("/dashboard/by-category", { query: { from, to, scope } });
 }
 
-export function getUpcomingDue(scope?: string): Promise<UpcomingDueItem[]> {
-  return apiRequest<UpcomingDueItem[]>("/dashboard/upcoming", { query: { scope } });
+export function getUpcomingDue(scope?: string, month?: string): Promise<UpcomingDueItem[]> {
+  return apiRequest<UpcomingDueItem[]>("/dashboard/upcoming", { query: { scope, month } });
 }
 
 export function getBalanceSeries(days = 30, scope?: string): Promise<BalancePoint[]> {
   return apiRequest<BalancePoint[]>("/dashboard/balance-series", { query: { days, scope } });
 }
 
-export function getCategoryInsight(scope?: string): Promise<CategoryInsight | null> {
-  return apiRequest<CategoryInsight | null>("/dashboard/category-insight", { query: { scope } });
+export function getCategoryInsight(scope?: string, month?: string): Promise<CategoryInsight | null> {
+  return apiRequest<CategoryInsight | null>("/dashboard/category-insight", { query: { scope, month } });
 }

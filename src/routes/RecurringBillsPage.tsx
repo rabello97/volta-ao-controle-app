@@ -14,10 +14,13 @@ import {
   useUpdateRecurringBill,
 } from "@/hooks/useRecurringBills";
 import { formatCurrency } from "@/lib/format";
+import { plural } from "@/lib/plural";
 import { cn } from "@/lib/utils";
 import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
+import { useAuth } from "@/context/AuthContext";
+import { useMonth } from "@/context/MonthContext";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import type { RecurringBillWithStatus } from "@/api/types";
@@ -48,11 +51,15 @@ export function RecurringBillsPage() {
   const [deleting, setDeleting] = useState<RecurringBillWithStatus | null>(null);
 
   const { view, partner } = useHouseholdView();
+  const { user } = useAuth();
   const scope = scopeFor(view, partner?.id ?? null);
-  const readOnly = scope !== undefined;
+  // Conta fixa é da casa: na visão do casal os dois marcam como paga e
+  // corrigem nome, valor e vencimento. Só criar e excluir seguem pessoais.
+  const viewingOthers = scope !== undefined;
+  const month = useMonth();
 
-  const bills = useRecurringBillsWithStatus(scope);
-  const stats = useRecurringBillStats(scope);
+  const bills = useRecurringBillsWithStatus(scope, month.key);
+  const stats = useRecurringBillStats(scope, month.key);
   const createMutation = useCreateRecurringBill();
   const updateMutation = useUpdateRecurringBill();
   const deleteMutation = useDeleteRecurringBill();
@@ -106,18 +113,14 @@ export function RecurringBillsPage() {
         title="Contas recorrentes"
         subtitle={
           stats.data
-            ? `${stats.data.totalActive} contas fixas · ${formatCurrency(stats.data.fixedMonthlyCost)} por mês`
+            ? `${plural(stats.data.totalActive, "conta fixa", "contas fixas")} · ${formatCurrency(stats.data.fixedMonthlyCost)} por mês`
             : "Contas fixas mensais"
         }
-        ctaLabel={readOnly ? undefined : "Nova conta"}
-        onCta={
-          readOnly
-            ? undefined
-            : () => {
-                setEditing(null);
-                setFormOpen(true);
-              }
-        }
+        ctaLabel="Nova conta"
+        onCta={() => {
+          setEditing(null);
+          setFormOpen(true);
+        }}
         aside={<HouseholdViewToggle />}
       />
 
@@ -158,7 +161,7 @@ export function RecurringBillsPage() {
               </span>
               {stats.data.nextDue && (
                 <span className="text-[11.5px] text-negative">
-                  em {Math.max(0, stats.data.nextDue.dueDay - new Date().getDate())} dia(s)
+                  em {plural(Math.max(0, stats.data.nextDue.dueDay - new Date().getDate()), "dia")}
                 </span>
               )}
             </div>
@@ -191,18 +194,24 @@ export function RecurringBillsPage() {
               <div
                 key={bill.id}
                 className={cn(
-                  "flex items-center gap-3 border-b border-divider py-3 last:border-b-0 md:grid md:items-center md:gap-3.5 md:py-[15px]",
+                  // No celular: nome em cima, ações numa segunda linha. Tudo
+                  // numa linha só espremia o nome da conta até sumir.
+                  "grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-2 border-b border-divider py-3 last:border-b-0 md:flex md:gap-3.5 md:py-[15px]",
+                  "md:grid",
                   ROW,
                 )}
               >
-                <div className="flex size-10 flex-none flex-col items-center justify-center rounded-xl border border-divider bg-surface-2 md:size-11">
+                <div className="col-start-1 row-span-2 row-start-1 flex size-10 flex-none flex-col items-center justify-center rounded-xl border border-divider bg-surface-2 md:row-span-1 md:size-11">
                   <span className="font-mono text-[13px] font-medium text-text md:text-sm">{bill.dueDay}</span>
                   <span className="text-[9px] tracking-[0.08em] text-text-5">DIA</span>
                 </div>
 
-                <div className="flex min-w-0 flex-1 flex-col gap-[3px] md:flex-none">
+                <div className="col-start-2 row-start-1 flex min-w-0 flex-col gap-[3px] md:flex-1 md:flex-none">
                   <span className="truncate text-[13.5px] font-medium text-text">{bill.name}</span>
-                  <span className="truncate text-[11.5px] capitalize text-text-4">{bill.category}</span>
+                  <span className="truncate text-[11.5px] capitalize text-text-4">
+                    {bill.category}
+                    {viewingOthers && bill.ownerId !== user?.id && partner ? ` · de ${partner.name.split(" ")[0]}` : ""}
+                  </span>
                 </div>
 
                 {/* A barra de variação só cabe no desktop; no mobile o status
@@ -218,26 +227,27 @@ export function RecurringBillsPage() {
                 </div>
 
                 {bill.paidThisMonth ? (
-                  <span className="flex-none whitespace-nowrap rounded-full bg-brand-tint px-2.5 py-1 text-[11px] font-semibold text-brand md:justify-self-start">
+                  <span className="col-start-2 row-start-2 justify-self-start whitespace-nowrap rounded-full bg-brand-tint px-2.5 py-1 text-[11px] font-semibold text-brand md:col-auto md:row-auto md:flex-none md:justify-self-start">
                     Pago
                   </span>
                 ) : (
                   <button
                     type="button"
                     onClick={() => handlePay(bill.id)}
-                    disabled={payMutation.isPending || readOnly}
-                    className="flex-none whitespace-nowrap rounded-full bg-negative-tint px-2.5 py-1 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:justify-self-start"
+                    disabled={payMutation.isPending}
+                    className="col-start-2 row-start-2 justify-self-start whitespace-nowrap rounded-full bg-negative-tint px-2.5 py-1 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:col-auto md:row-auto md:flex-none md:justify-self-start"
                   >
                     A pagar
                   </button>
                 )}
 
-                <span className="flex-none whitespace-nowrap text-right font-mono text-[13px] text-text md:text-sm">
+                <span className="col-start-3 row-start-1 justify-self-end whitespace-nowrap text-right font-mono text-[13px] text-text md:row-auto md:flex-none md:text-sm">
                   {formatCurrency(bill.expectedAmount)}
                 </span>
 
-                {/* Na visão do parceiro a linha é só leitura: sem toggle, editar nem excluir. */}
-                <div className={cn("hidden items-center justify-end gap-1", !readOnly && "md:flex")}>
+                {/* No celular as ações ficavam escondidas atrás do breakpoint:
+                    não dava para renomear, desativar nem excluir pelo telefone. */}
+                <div className="col-start-3 row-start-2 flex items-center justify-end gap-1 md:col-auto md:row-auto">
                   <Switch
                     checked={bill.active}
                     onCheckedChange={(checked) => handleToggle(bill.id, checked)}
@@ -255,14 +265,17 @@ export function RecurringBillsPage() {
                   >
                     <Pencil className="size-3.5" />
                   </button>
-                  <button
-                    type="button"
-                    aria-label="Excluir"
-                    onClick={() => setDeleting(bill)}
-                    className="p-1 text-text-5 transition-colors hover:text-negative"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </button>
+                  {/* Excluir continua sendo só de quem cadastrou. */}
+                  {bill.ownerId === user?.id && (
+                    <button
+                      type="button"
+                      aria-label="Excluir"
+                      onClick={() => setDeleting(bill)}
+                      className="p-1 text-text-5 transition-colors hover:text-negative"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </button>
+                  )}
                 </div>
               </div>
             );

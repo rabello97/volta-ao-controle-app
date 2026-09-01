@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import type { CreditCardInput } from "@/api/creditCards";
+import type { CreditCardSummary } from "@/api/types";
 import {
   creditCardFormSchema as schema,
   type CreditCardFormInput as FormInput,
@@ -22,11 +23,13 @@ import {
 interface CreditCardFormDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  /** Preenchido = edição; vazio = cadastro novo. */
+  card?: CreditCardSummary | null;
   onSubmit: (input: CreditCardInput) => Promise<void>;
   isSubmitting: boolean;
 }
 
-export function CreditCardFormDialog({ open, onOpenChange, onSubmit, isSubmitting }: CreditCardFormDialogProps) {
+export function CreditCardFormDialog({ open, onOpenChange, card, onSubmit, isSubmitting }: CreditCardFormDialogProps) {
   const {
     register,
     handleSubmit,
@@ -38,15 +41,29 @@ export function CreditCardFormDialog({ open, onOpenChange, onSubmit, isSubmittin
   });
 
   useEffect(() => {
-    if (open) reset({ nickname: "", closingDay: 1, dueDay: 10, creditLimit: undefined });
-  }, [open, reset]);
+    if (!open) return;
+    reset(
+      card
+        ? {
+            nickname: card.nickname,
+            closingDay: card.closingDay,
+            dueDay: card.dueDay,
+            creditLimit: card.creditLimit ?? undefined,
+          }
+        : { nickname: "", closingDay: 1, dueDay: 10, creditLimit: undefined },
+    );
+  }, [open, card, reset]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Novo cartão</DialogTitle>
-          <DialogDescription>Cadastre um cartão de crédito para vincular transações.</DialogDescription>
+          <DialogTitle>{card ? "Editar cartão" : "Novo cartão"}</DialogTitle>
+          <DialogDescription>
+            {card
+              ? "Mudar o fechamento não move as faturas já geradas."
+              : "Cadastre um cartão de crédito para vincular transações."}
+          </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5">

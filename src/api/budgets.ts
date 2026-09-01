@@ -5,8 +5,8 @@ export function listBudgets(scope?: string): Promise<CategoryBudget[]> {
   return apiRequest<CategoryBudget[]>("/budgets", { query: { scope } });
 }
 
-export function getBudgetStatus(scope?: string): Promise<BudgetStatus> {
-  return apiRequest<BudgetStatus>("/budgets/status", { query: { scope } });
+export function getBudgetStatus(scope?: string, month?: string): Promise<BudgetStatus> {
+  return apiRequest<BudgetStatus>("/budgets/status", { query: { scope, month } });
 }
 
 export function upsertBudget(category: string, monthlyLimit: number): Promise<CategoryBudget> {

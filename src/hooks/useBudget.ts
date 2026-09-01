@@ -19,8 +19,11 @@ export function useBudgets(scope?: string) {
   return useQuery({ queryKey: ["budgets", scope ?? "self"], queryFn: () => listBudgets(scope) });
 }
 
-export function useBudgetStatus(scope?: string) {
-  return useQuery({ queryKey: ["budget-status", scope ?? "self"], queryFn: () => getBudgetStatus(scope) });
+export function useBudgetStatus(scope?: string, month?: string) {
+  return useQuery({
+    queryKey: ["budget-status", scope ?? "self", month ?? "atual"],
+    queryFn: () => getBudgetStatus(scope, month),
+  });
 }
 
 export function useUpsertBudget() {

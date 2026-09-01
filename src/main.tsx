@@ -9,6 +9,7 @@ import { queryClient } from "@/lib/queryClient";
 import { purgeLegacyCaches } from "@/lib/pwa";
 import { AuthProvider } from "@/context/AuthContext";
 import { HouseholdViewProvider } from "@/context/HouseholdViewContext";
+import { MonthProvider } from "@/context/MonthContext";
 import { App } from "@/App";
 import "./index.css";
 
@@ -24,8 +25,10 @@ createRoot(document.getElementById("root")!).render(
           <BrowserRouter>
             <AuthProvider>
               <HouseholdViewProvider>
+                <MonthProvider>
                 <App />
                 <Toaster />
+                </MonthProvider>
               </HouseholdViewProvider>
             </AuthProvider>
           </BrowserRouter>

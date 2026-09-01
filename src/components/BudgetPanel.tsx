@@ -36,8 +36,8 @@ function CategoryRow({ item }: { item: BudgetCategoryStatus }) {
   );
 }
 
-export function BudgetPanel({ scope }: { scope?: string }) {
-  const status = useBudgetStatus(scope);
+export function BudgetPanel({ scope, month }: { scope?: string; month?: string }) {
+  const status = useBudgetStatus(scope, month);
 
   if (status.isLoading) {
     return (

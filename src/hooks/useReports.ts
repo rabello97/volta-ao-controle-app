@@ -12,10 +12,7 @@ export function useMonthlyEvolution(months = 6, scope?: string) {
   });
 }
 
-export function useCategorySummaryThisMonth(scope?: string) {
-  const now = new Date();
-  const from = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().slice(0, 10);
-  const to = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().slice(0, 10);
+export function useCategorySummary(from: string, to: string, scope?: string) {
   return useQuery({
     queryKey: ["category-summary", from, to, scope ?? "self"],
     queryFn: () => getCategorySummary(from, to, scope),
