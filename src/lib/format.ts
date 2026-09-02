@@ -34,3 +34,11 @@ const MONTH_LABELS = [
 export function formatMonthLabel(month: number): string {
   return MONTH_LABELS[month - 1] ?? String(month);
 }
+
+/** Separa reais e centavos para o número do painel, onde os centavos são
+ *  exibidos menores e mais apagados. */
+export function splitCurrency(value: number): [string, string] {
+  const formatted = formatCurrency(value);
+  const idx = formatted.lastIndexOf(",");
+  return idx === -1 ? [formatted, ""] : [formatted.slice(0, idx), formatted.slice(idx)];
+}

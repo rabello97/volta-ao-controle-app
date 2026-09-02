@@ -16,11 +16,12 @@ import { useUpcomingDue } from "@/hooks/useUpcomingDue";
 import { scopeFor } from "@/lib/scope";
 import { plural } from "@/lib/plural";
 import { WalletCards } from "@/components/WalletCards";
+import { MonthStatusCard } from "@/components/MonthStatusCard";
 import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { useCategorySummary } from "@/hooks/useReports";
 import { useMonth, monthRange } from "@/context/MonthContext";
-import { formatCurrency, formatMonthLabel } from "@/lib/format";
+import { formatCurrency, formatMonthLabel, splitCurrency } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { TransactionFormPayload } from "@/api/transactions";
 import type { UpcomingDueItem } from "@/api/types";
@@ -33,50 +34,6 @@ const PERIODS = [
 
 /** Separa o valor formatado em "R$ 8.427" + ",50" para os centavos ficarem
  *  esmaecidos, como no mockup. */
-function splitCurrency(value: number): [string, string] {
-  const formatted = formatCurrency(value);
-  const idx = formatted.lastIndexOf(",");
-  return idx === -1 ? [formatted, ""] : [formatted.slice(0, idx), formatted.slice(idx)];
-}
-
-function StatRow({
-  label,
-  value,
-  tint,
-  color,
-  icon,
-  trailing,
-  loading = false,
-}: {
-  label: string;
-  value: number;
-  tint: string;
-  color: string;
-  icon: React.ReactNode;
-  trailing?: React.ReactNode;
-  loading?: boolean;
-}) {
-  return (
-    <div className="flex items-center gap-3.5 rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
-      <div className={cn("flex size-9 flex-none items-center justify-center rounded-[10px]", tint, color)}>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7">
-          {icon}
-        </svg>
-      </div>
-      <div className="flex min-w-0 flex-col gap-[3px]">
-        <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
-        {loading ? (
-          <Skeleton className="h-6 w-32" />
-        ) : (
-          <span className="whitespace-nowrap font-mono text-xl font-medium -tracking-[0.02em] text-text">
-            {formatCurrency(value)}
-          </span>
-        )}
-      </div>
-      {!loading && trailing && <span className="ml-auto flex-none whitespace-nowrap">{trailing}</span>}
-    </div>
-  );
-}
 
 function DueItem({ item, onPay, isPaying }: { item: UpcomingDueItem; onPay?: () => void; isPaying?: boolean }) {
   const due = new Date(item.dueDate);
@@ -154,7 +111,11 @@ export function DashboardPage() {
       : null;
 
   const [reais, centavos] = splitCurrency(balance);
-  const now = new Date();
+
+  // Dívidas em aberto do mês selecionado, derivadas dos próprios vencimentos —
+  // assim o número acompanha o seletor, ao contrário do total vitalício antigo.
+  const aPagar = upcoming.filter((i) => i.status !== "PAID");
+  const totalAPagar = aPagar.reduce((soma, i) => soma + i.amount, 0);
 
   async function handlePay(id: string) {
     try {
@@ -178,11 +139,9 @@ export function DashboardPage() {
     <>
       <PageHeader
         title="Painel"
-        subtitle={`${["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"][now.getMonth()]} de ${now.getFullYear()}`}
+        subtitle={month.isCurrent ? `${month.label} · mês atual` : month.label}
         ctaLabel="Nova transação"
         onCta={() => setFormOpen(true)}
-        search=""
-        onSearchChange={(v) => navigate(`/transactions?search=${encodeURIComponent(v)}`)}
         aside={<HouseholdViewToggle />}
       />
 
@@ -191,102 +150,15 @@ export function DashboardPage() {
       ) : (
       <div className="flex flex-col gap-4">
 
-        <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.55fr_1fr]">
-          <section className="flex flex-col overflow-hidden rounded-[18px] border border-hero-border bg-[image:var(--hero-grad)] px-5 pt-5 sm:px-[26px] sm:pt-6">
-            <div className="flex flex-col-reverse items-start gap-3 sm:flex-row sm:gap-3.5">
-              <div className="flex flex-col gap-3">
-                <span className="text-[11px] font-semibold tracking-[0.14em] text-text-4">SALDO ATUAL</span>
-                {dashboard.isLoading ? (
-                  <Skeleton className="h-[34px] w-56 sm:h-[46px] sm:w-72" />
-                ) : (
-                  <span className="whitespace-nowrap font-mono text-[34px] font-medium leading-none -tracking-[0.035em] text-text sm:text-[46px]">
-                    {reais}
-                    <span className="text-text-4">{centavos}</span>
-                  </span>
-                )}
-                <div className="flex flex-wrap items-center gap-2.5">
-                  {trendPct !== null && (
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold",
-                        trendPct >= 0 ? "bg-brand-tint text-brand" : "bg-negative-tint text-negative",
-                      )}
-                    >
-                      <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                        {trendPct >= 0 ? <path d="M8 13V4M4 7.5 8 3.5l4 4" /> : <path d="M8 3v9M4 8.5 8 12.5l4-4" />}
-                      </svg>
-                      {Math.abs(trendPct)}% vs. período anterior
-                    </span>
-                  )}
-                  <span className="whitespace-nowrap text-xs text-text-4">
-                    {inControl ? "No controle — saldo positivo" : "Atenção — saldo negativo"}
-                  </span>
-                </div>
-              </div>
-
-              <div className="flex flex-none gap-1 self-end rounded-full border border-divider bg-surface-inset p-[3px] sm:ml-auto sm:self-auto">
-                {PERIODS.map((p) => (
-                  <button
-                    key={p.key}
-                    type="button"
-                    onClick={() => setPeriod(p.key)}
-                    className={cn(
-                      "rounded-full px-[11px] py-1 text-[11px] transition-colors",
-                      period === p.key ? "bg-track text-text" : "text-text-5 hover:text-text",
-                    )}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-[22px]">
-              <BalanceTrendChart data={series} positive={inControl} />
-            </div>
-          </section>
-
-          <div className="grid gap-3 lg:grid-rows-3">
-            <StatRow
-              loading={dashboard.isLoading}
-              label="ENTRADAS"
-              value={dashboard.data?.income ?? 0}
-              tint="bg-brand-tint"
-              color="text-brand"
-              icon={<path d="M8 13V4M4 7.5 8 3.5l4 4" />}
-            />
-            <StatRow
-              loading={dashboard.isLoading}
-              label="SAÍDAS"
-              value={dashboard.data?.expense ?? 0}
-              tint="bg-negative-tint"
-              color="text-negative"
-              icon={<path d="M8 3v9M4 8.5 8 12.5l4-4" />}
-            />
-            <StatRow
-              loading={dashboard.isLoading}
-              label="DÍVIDAS EM ABERTO"
-              value={dashboard.data?.debts ?? 0}
-              tint="bg-warning-tint"
-              color="text-warning"
-              icon={
-                <>
-                  <rect x="2" y="3.4" width="12" height="10.2" rx="2" />
-                  <path d="M2 6.6h12M5.4 2v2.4M10.6 2v2.4" />
-                </>
-              }
-              trailing={
-                <span className="text-[12px] text-text-4">
-                  {plural(upcoming.filter((i) => i.status !== "PAID").length, "conta")}
-                </span>
-              }
-            />
-          </div>
-        </div>
-
-        {/* Saldo dos benefícios fica fora do saldo da conta de propósito:
-            é dinheiro que só serve para um tipo de gasto. */}
-        <WalletCards scope={scope} />
+        {/* A pergunta que faz a pessoa abrir o app é "posso gastar?". Saldo
+            acumulado não responde isso; sobra do mês, sim. */}
+        <MonthStatusCard
+          scope={scope}
+          monthKey={month.key}
+          month={month.value}
+          isCurrent={month.isCurrent}
+          onCadastrarRenda={() => navigate("/settings")}
+        />
 
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.55fr_1fr]">
           <section className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
@@ -329,9 +201,80 @@ export function DashboardPage() {
                 ))}
               </div>
             )}
+
+            {/* "Dívidas em aberto" morava num tile solto no topo. Aqui, ao lado
+                dos botões "Pagar", ela vira informação acionável. */}
+            {aPagar.length > 0 && (
+              <div className="mt-3 flex flex-wrap items-baseline justify-between gap-2 border-t border-divider pt-3">
+                <span className="text-[12px] text-text-4">
+                  {plural(aPagar.length, "conta")} em aberto{overdue.length > 0 ? ` · ${plural(overdue.length, "atrasada")}` : ""}
+                </span>
+                <span className="font-mono text-[15px] text-text">{formatCurrency(totalAPagar)}</span>
+              </div>
+            )}
           </section>
 
-          <section className="flex flex-col gap-4 rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+          <div className="flex flex-col gap-4">
+            <section className="flex flex-col gap-3 rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                {/* Rótulo honesto: este número é vitalício e não segue o
+                    seletor de mês, ao contrário do resto da tela. */}
+                <span className="text-[11px] font-semibold tracking-[0.14em] text-text-4">SALDO EM CONTA</span>
+                <span className="text-[11px] text-text-5">acumulado</span>
+              </div>
+
+              {dashboard.isLoading ? (
+                <Skeleton className="h-[23px] w-40" />
+              ) : (
+                <span
+                  className={cn(
+                    "whitespace-nowrap font-mono text-[23px] font-medium leading-none -tracking-[0.02em]",
+                    inControl ? "text-text" : "text-negative",
+                  )}
+                >
+                  {reais}
+                  <span className={inControl ? "text-text-4" : "text-negative/70"}>{centavos}</span>
+                </span>
+              )}
+
+              <div className="flex flex-wrap items-center gap-2">
+                {trendPct !== null && (
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold",
+                      trendPct >= 0 ? "bg-brand-tint text-brand" : "bg-negative-tint text-negative",
+                    )}
+                  >
+                    {trendPct >= 0 ? "+" : "−"}
+                    {Math.abs(trendPct)}%
+                  </span>
+                )}
+                <div className="ml-auto flex flex-none gap-1 rounded-full border border-divider bg-surface-inset p-[3px]">
+                  {PERIODS.map((p) => (
+                    <button
+                      key={p.key}
+                      type="button"
+                      onClick={() => setPeriod(p.key)}
+                      className={cn(
+                        "rounded-full px-[11px] py-1 text-[11px] transition-colors",
+                        period === p.key ? "bg-track text-text" : "text-text-5 hover:text-text",
+                      )}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <BalanceTrendChart data={series} positive={inControl} />
+            </section>
+
+            {/* Benefício é dinheiro separado do saldo da conta, de propósito. */}
+            <WalletCards scope={scope} />
+          </div>
+        </div>
+
+        <section className="flex flex-col gap-4 rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
             <h2 className="whitespace-nowrap text-[15px] font-semibold text-text">Para onde foi o dinheiro</h2>
             {categorySummary.isLoading ? (
               <div className="flex flex-col gap-3.5">
@@ -362,8 +305,7 @@ export function DashboardPage() {
             ) : (
               <p className="text-sm text-text-3">Nenhum gasto registrado neste mês.</p>
             )}
-          </section>
-        </div>
+        </section>
 
         {overdue.length > 0 && (
           <div className="flex flex-col gap-2">
