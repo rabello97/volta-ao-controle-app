@@ -39,8 +39,8 @@ const NAV_ITEMS = [
     icon: <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />,
   },
   {
-    to: "/recurring-bills",
-    label: "Recorrentes",
+    to: "/contas",
+    label: "Contas",
     icon: (
       <>
         <path d="M2.6 8a5.4 5.4 0 0 1 9.2-3.8M13.4 8a5.4 5.4 0 0 1-9.2 3.8" />

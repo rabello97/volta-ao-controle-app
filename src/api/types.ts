@@ -313,3 +313,21 @@ export interface Wallet {
   nextCreditDate: string;
   daysUntilNextCredit: number;
 }
+
+export interface InstallmentPlan {
+  groupId: string;
+  description: string;
+  category: string;
+  ownerId: string;
+  creditCardId: string | null;
+  creditCardName: string | null;
+  installmentTotal: number;
+  paidCount: number;
+  remainingCount: number;
+  installmentAmount: number;
+  total: number;
+  remainingTotal: number;
+  firstDate: string;
+  lastDate: string;
+  finished: boolean;
+}

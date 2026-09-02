@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { PageHeader } from "@/components/PageHeader";
 import { RecurringBillFormDialog } from "@/components/RecurringBillFormDialog";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Switch } from "@/components/ui/switch";
@@ -16,12 +15,8 @@ import {
 import { formatCurrency } from "@/lib/format";
 import { plural } from "@/lib/plural";
 import { cn } from "@/lib/utils";
-import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
-import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
-import { Fab } from "@/components/Fab";
 import { useAuth } from "@/context/AuthContext";
-import { useMonth } from "@/context/MonthContext";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
 import type { RecurringBillWithStatus } from "@/api/types";
@@ -46,21 +41,36 @@ function KpiCard({ label, value, hint, accent }: { label: string; value: string;
   );
 }
 
-export function RecurringBillsPage() {
+export function RecurringBills({
+  scope,
+  month,
+  abrirFormulario,
+}: {
+  scope?: string;
+  month: string;
+  abrirFormulario: number;
+}) {
   const [formOpen, setFormOpen] = useState(false);
+
+  // A página-mãe é dona do botão "Nova conta"; um contador que muda abre o
+  // formulário aqui dentro sem precisar levantar todo o estado do form.
+  useEffect(() => {
+    if (abrirFormulario > 0) {
+      setEditing(null);
+      setFormOpen(true);
+    }
+  }, [abrirFormulario]);
   const [editing, setEditing] = useState<RecurringBillWithStatus | null>(null);
   const [deleting, setDeleting] = useState<RecurringBillWithStatus | null>(null);
 
-  const { view, partner } = useHouseholdView();
+  const { partner } = useHouseholdView();
   const { user } = useAuth();
-  const scope = scopeFor(view, partner?.id ?? null);
   // Conta fixa é da casa: na visão do casal os dois marcam como paga e
   // corrigem nome, valor e vencimento. Só criar e excluir seguem pessoais.
   const viewingOthers = scope !== undefined;
-  const month = useMonth();
 
-  const bills = useRecurringBillsWithStatus(scope, month.key);
-  const stats = useRecurringBillStats(scope, month.key);
+  const bills = useRecurringBillsWithStatus(scope, month);
+  const stats = useRecurringBillStats(scope, month);
   const createMutation = useCreateRecurringBill();
   const updateMutation = useUpdateRecurringBill();
   const deleteMutation = useDeleteRecurringBill();
@@ -110,21 +120,6 @@ export function RecurringBillsPage() {
 
   return (
     <>
-      <PageHeader
-        title="Contas recorrentes"
-        subtitle={
-          stats.data
-            ? `${plural(stats.data.totalActive, "conta fixa", "contas fixas")} · ${formatCurrency(stats.data.fixedMonthlyCost)} por mês`
-            : "Contas fixas mensais"
-        }
-        ctaLabel="Nova conta"
-        onCta={() => {
-          setEditing(null);
-          setFormOpen(true);
-        }}
-        aside={<HouseholdViewToggle />}
-      />
-
       <div className="flex flex-col gap-4">
         {bills.isError && <ErrorState onRetry={() => bills.refetch()} />}
 
@@ -317,14 +312,6 @@ export function RecurringBillsPage() {
         </section>
         )}
       </div>
-
-      <Fab
-        label="Nova conta"
-        onClick={() => {
-          setEditing(null);
-          setFormOpen(true);
-        }}
-      />
 
       <RecurringBillFormDialog
         open={formOpen}

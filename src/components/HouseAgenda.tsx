@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Check, Plus, Trash2, CalendarClock } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, X, CalendarClock } from "lucide-react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Skeleton } from "@/components/Skeleton";
@@ -13,6 +13,7 @@ import {
   useCreateHouseTask,
   useDeleteHouseTask,
   useHouseTasks,
+  useUpdateHouseTask,
 } from "@/hooks/useHouseTasks";
 import type { HouseTask } from "@/api/types";
 
@@ -45,6 +46,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
   const tasks = useHouseTasks(scope);
   const create = useCreateHouseTask();
   const complete = useCompleteHouseTask();
+  const update = useUpdateHouseTask();
   const remove = useDeleteHouseTask();
 
   const [name, setName] = useState("");
@@ -55,27 +57,45 @@ export function HouseAgenda({ scope }: { scope?: string }) {
   const [cost, setCost] = useState("");
   const [recurrence, setRecurrence] = useState("12");
   const [deleting, setDeleting] = useState<HouseTask | null>(null);
+  // Quando preenchido, o formulário acima vira edição desse compromisso.
+  const [editando, setEditando] = useState<HouseTask | null>(null);
 
   const pendentes = (tasks.data ?? []).filter((task) => task.status !== "DONE");
   const concluidos = (tasks.data ?? []).filter((task) => task.status === "DONE");
   const totalPrevisto = pendentes.reduce((sum, task) => sum + (task.estimatedCost ?? 0), 0);
 
-  async function handleCreate() {
+  function limparFormulario() {
+    setEditando(null);
+    setName("");
+    setCost("");
+    setDueDate("");
+    setRecurrence("12");
+  }
+
+  function abrirEdicao(task: HouseTask) {
+    setEditando(task);
+    setName(task.name);
+    setDueDate(task.dueDate.slice(0, 10));
+    setCost(task.estimatedCost === null ? "" : String(task.estimatedCost));
+    setRecurrence(task.recurrenceMonths ? String(task.recurrenceMonths) : "0");
+  }
+
+  async function handleSubmit() {
     if (!name.trim() || !dueDate) {
       toast.error("Informe o nome e a data.");
       return;
     }
+    const dados = {
+      name: name.trim(),
+      category: category.trim() || "casa",
+      dueDate,
+      recurrenceMonths: recurrence === "0" ? null : Number(recurrence),
+      estimatedCost: parsePrice(cost),
+    };
     try {
-      await create.mutateAsync({
-        name: name.trim(),
-        category: category.trim() || "casa",
-        dueDate,
-        recurrenceMonths: recurrence === "0" ? null : Number(recurrence),
-        estimatedCost: parsePrice(cost),
-      });
-      setName("");
-      setCost("");
-      setDueDate("");
+      if (editando) await update.mutateAsync({ id: editando.id, input: dados });
+      else await create.mutateAsync(dados);
+      limparFormulario();
     } catch {
       toast.error("Não foi possível salvar o compromisso.");
     }
@@ -149,13 +169,24 @@ export function HouseAgenda({ scope }: { scope?: string }) {
         </label>
         <button
           type="button"
-          onClick={handleCreate}
-          disabled={create.isPending}
+          onClick={handleSubmit}
+          disabled={create.isPending || update.isPending}
           className="flex flex-none items-center gap-1.5 rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
-          <Plus className="size-4" />
-          Agendar
+          {editando ? <Check className="size-4" /> : <Plus className="size-4" />}
+          {editando ? "Salvar" : "Agendar"}
         </button>
+
+        {editando && (
+          <button
+            type="button"
+            onClick={limparFormulario}
+            className="flex flex-none items-center gap-1.5 rounded-[10px] border border-divider px-3 py-2 text-[13px] text-text-3 transition-colors hover:text-text"
+          >
+            <X className="size-4" />
+            Cancelar
+          </button>
+        )}
       </section>
 
       <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
@@ -198,6 +229,15 @@ export function HouseAgenda({ scope }: { scope?: string }) {
             >
               {STATUS_LABEL[task.status].texto}
             </span>
+
+            <button
+              type="button"
+              onClick={() => abrirEdicao(task)}
+              aria-label={`Editar ${task.name}`}
+              className="flex size-11 flex-none items-center justify-center rounded-[10px] text-text-5 transition-colors hover:bg-surface-2 hover:text-text md:size-9"
+            >
+              <Pencil className="size-3.5" />
+            </button>
 
             <button
               type="button"

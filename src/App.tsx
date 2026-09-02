@@ -5,7 +5,7 @@ import { AppLayout } from "@/routes/AppLayout";
 import { DashboardPage } from "@/routes/DashboardPage";
 import { TransactionsPage } from "@/routes/TransactionsPage";
 import { HousePage } from "@/routes/HousePage";
-import { RecurringBillsPage } from "@/routes/RecurringBillsPage";
+import { BillsPage } from "@/routes/BillsPage";
 import { CreditCardsPage } from "@/routes/CreditCardsPage";
 import { CreditCardDetailPage } from "@/routes/CreditCardDetailPage";
 import { ReportsPage } from "@/routes/ReportsPage";
@@ -22,7 +22,9 @@ export function App() {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/recurring-bills" element={<RecurringBillsPage />} />
+          <Route path="/contas" element={<BillsPage />} />
+          {/* Rota antiga, mantida para quem salvou o link. */}
+          <Route path="/recurring-bills" element={<Navigate to="/contas" replace />} />
           <Route path="/casa" element={<HousePage />} />
           {/* Rota antiga da aba Compras, mantida para quem salvou o link. */}
           <Route path="/shopping-lists" element={<Navigate to="/casa" replace />} />
