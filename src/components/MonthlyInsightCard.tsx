@@ -40,7 +40,7 @@ export function MonthlyInsightCard({ scope, month }: { scope?: string; month?: s
           disabled={loading}
           className={cn(
             "flex flex-none items-center gap-1.5 rounded-[10px] px-3 py-1.5 text-[12px] font-semibold transition-opacity disabled:opacity-60",
-            data ? "border border-divider bg-surface text-text-3" : "bg-brand text-brand-fg",
+            data ? "border border-divider bg-surface text-text-3" : "bg-brand text-brand-ink",
           )}
         >
           {loading ? (

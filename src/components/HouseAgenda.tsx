@@ -151,7 +151,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           type="button"
           onClick={handleCreate}
           disabled={create.isPending}
-          className="flex flex-none items-center gap-1.5 rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-fg transition-opacity disabled:opacity-50"
+          className="flex flex-none items-center gap-1.5 rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           <Plus className="size-4" />
           Agendar

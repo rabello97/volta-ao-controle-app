@@ -196,7 +196,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                 onClick={handleCreateList}
                 disabled={!newListName.trim() || createList.isPending}
                 aria-label="Criar lista"
-                className="flex size-7 flex-none items-center justify-center rounded-lg bg-brand text-brand-fg transition-opacity disabled:opacity-40"
+                className="flex size-7 flex-none items-center justify-center rounded-lg bg-brand text-brand-ink transition-opacity disabled:opacity-40"
               >
                 <Plus className="size-4" />
               </button>
@@ -272,7 +272,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                       type="button"
                       onClick={handleAddItem}
                       disabled={!itemName.trim() || addItem.isPending}
-                      className="flex-none rounded-lg bg-brand px-3 py-1.5 text-[12.5px] font-semibold text-brand-fg transition-opacity disabled:opacity-40"
+                      className="flex-none rounded-lg bg-brand px-3 py-1.5 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-40"
                     >
                       Anotar
                     </button>
@@ -292,7 +292,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                         aria-label={item.purchased ? "Desmarcar" : "Marcar como comprado"}
                         className={cn(
                           "flex size-5 flex-none items-center justify-center rounded-md border transition-colors",
-                          item.purchased ? "border-brand bg-brand text-brand-fg" : "border-divider-strong text-transparent",
+                          item.purchased ? "border-brand bg-brand text-brand-ink" : "border-divider-strong text-transparent",
                         )}
                       >
                         <Check className="size-3.5" />
@@ -358,7 +358,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                     type="button"
                     onClick={() => setFinishing(true)}
                     disabled={purchased.length === 0}
-                    className="mt-1 rounded-xl bg-brand px-4 py-2.5 text-[13px] font-semibold text-brand-fg transition-opacity disabled:opacity-40"
+                    className="mt-1 rounded-xl bg-brand px-4 py-2.5 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-40"
                   >
                     Finalizar compra · {formatCurrency(purchasedTotal)}
                   </button>

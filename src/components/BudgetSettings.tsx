@@ -71,7 +71,7 @@ export function BudgetSettings() {
           type="button"
           onClick={handleSaveIncome}
           disabled={saveIncome.isPending}
-          className="rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-fg transition-opacity disabled:opacity-50"
+          className="rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           Salvar
         </button>
