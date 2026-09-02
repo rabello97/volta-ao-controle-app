@@ -280,7 +280,9 @@ export function AppLayout() {
           </div>
         </header>
 
-        <main className="min-h-0 flex-1 overflow-y-auto px-4 pb-8 pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
+        <main /* pb-24 no celular reserva o espaço do FAB: sem isso ele fica
+             permanentemente por cima da última linha da lista. */
+          className="min-h-0 flex-1 overflow-y-auto px-4 pb-24 pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
           <div key={location.pathname} className="mx-auto w-full max-w-[1780px] animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
             <Outlet />
           </div>

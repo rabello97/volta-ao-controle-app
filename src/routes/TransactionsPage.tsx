@@ -20,6 +20,7 @@ import { useMonth, monthRange } from "@/context/MonthContext";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { ScanButton } from "@/components/ScanButton";
+import { Fab } from "@/components/Fab";
 import { useAIStatus } from "@/hooks/useAI";
 import type { ScanResult } from "@/api/types";
 import { cn } from "@/lib/utils";
@@ -369,17 +370,14 @@ export function TransactionsPage() {
       </div>
 
       {!readOnly && (
-      <button
-        type="button"
-        aria-label="Nova transação"
-        onClick={() => {
-          setEditing(null);
-          setFormOpen(true);
-        }}
-        className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] right-4 z-20 flex size-14 items-center justify-center rounded-full bg-brand text-brand-ink shadow-lg transition-transform active:scale-95 sm:hidden"
-      >
-        <Plus className="size-6" />
-      </button>
+        <Fab
+          label="Nova transação"
+          onClick={() => {
+            setEditing(null);
+            setDraft(null);
+            setFormOpen(true);
+          }}
+        />
       )}
 
       <TransactionFormDialog

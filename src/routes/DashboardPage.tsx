@@ -17,6 +17,7 @@ import { scopeFor } from "@/lib/scope";
 import { plural } from "@/lib/plural";
 import { WalletCards } from "@/components/WalletCards";
 import { MonthStatusCard } from "@/components/MonthStatusCard";
+import { Fab } from "@/components/Fab";
 import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { useCategorySummary } from "@/hooks/useReports";
@@ -322,6 +323,8 @@ export function DashboardPage() {
       </div>
 
       )}
+
+      <Fab label="Nova transação" onClick={() => setFormOpen(true)} />
 
       <TransactionFormDialog
         open={formOpen}

@@ -6,6 +6,7 @@ import { CardTile } from "@/components/CardTile";
 import { CreditCardFormDialog } from "@/components/CreditCardFormDialog";
 import { useCreateCreditCard, useCreditCards, useDeleteCreditCard, useUpdateCreditCard } from "@/hooks/useCreditCards";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { Fab } from "@/components/Fab";
 import { formatCurrency } from "@/lib/format";
 import { plural } from "@/lib/plural";
 import { scopeFor } from "@/lib/scope";
@@ -133,6 +134,16 @@ export function CreditCardsPage() {
         </button>
         )}
       </div>
+      )}
+
+      {!readOnly && (
+        <Fab
+          label="Novo cartão"
+          onClick={() => {
+            setEditing(null);
+            setFormOpen(true);
+          }}
+        />
       )}
 
       <CreditCardFormDialog

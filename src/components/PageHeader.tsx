@@ -126,7 +126,9 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
           <button
             type="button"
             onClick={onCta}
-            className="flex flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] bg-brand px-[15px] py-[9px] text-[13px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95 sm:flex-none"
+            /* Escondido no celular: lá a ação principal é o FAB, e este botão
+               ocupava uma faixa inteira acima do conteúdo mais importante. */
+            className="hidden items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] bg-brand px-[15px] py-[9px] text-[13px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95 sm:flex sm:flex-none"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M8 3v10M3 8h10" />

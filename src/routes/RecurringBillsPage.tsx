@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
+import { Fab } from "@/components/Fab";
 import { useAuth } from "@/context/AuthContext";
 import { useMonth } from "@/context/MonthContext";
 import { Skeleton } from "@/components/Skeleton";
@@ -188,8 +189,13 @@ export function RecurringBillsPage() {
             ))}
 
           {bills.data?.map((bill) => {
-            const ratio = bill.averageLast3Months > 0 ? bill.expectedAmount / bill.averageLast3Months : 1;
-            const above = ratio > 1.05;
+            // Nulo quando não há 3 meses de histórico — melhor dizer isso do
+            // que desenhar uma barra pela metade sugerindo uma variação que
+            // ninguém calculou.
+            const variacaoPct =
+              bill.averageLast3Months > 0
+                ? Math.round(((bill.expectedAmount - bill.averageLast3Months) / bill.averageLast3Months) * 100)
+                : null;
             return (
               <div
                 key={bill.id}
@@ -215,16 +221,28 @@ export function RecurringBillsPage() {
                   </span>
                 </div>
 
-                {/* A barra de variação só cabe no desktop; no mobile o status
-                    e o valor já dão a informação essencial. */}
-                <div className="hidden flex-col gap-[5px] md:flex">
-                  <span className="text-[11px] text-text-5">Variação vs. média</span>
-                  <div className="h-1 overflow-hidden rounded-[4px] bg-track">
-                    <div
-                      className={cn("h-full rounded-[4px]", above ? "bg-negative" : "bg-brand")}
-                      style={{ width: `${Math.min(100, Math.max(8, Math.round(ratio * 50)))}%` }}
-                    />
-                  </div>
+                {/* Antes era uma barra sem escala e sem número: ocupava uma
+                    coluna inteira e não dizia se subiu 5% ou 80%. Agora é o
+                    número, com a média que serve de base. */}
+                <div className="hidden flex-col gap-[3px] md:flex">
+                  {variacaoPct === null ? (
+                    <span className="text-[12px] text-text-5">Sem histórico</span>
+                  ) : (
+                    <>
+                      <span
+                        className={cn(
+                          "font-mono text-[13px]",
+                          variacaoPct > 5 ? "text-negative" : variacaoPct < -5 ? "text-positive" : "text-text-3",
+                        )}
+                      >
+                        {variacaoPct > 0 ? "+" : variacaoPct < 0 ? "−" : ""}
+                        {Math.abs(variacaoPct)}%
+                      </span>
+                      <span className="text-[11px] text-text-5">
+                        vs. média de {formatCurrency(bill.averageLast3Months)}
+                      </span>
+                    </>
+                  )}
                 </div>
 
                 {/* No celular status e ações ficam numa faixa própria de largura
@@ -299,6 +317,14 @@ export function RecurringBillsPage() {
         </section>
         )}
       </div>
+
+      <Fab
+        label="Nova conta"
+        onClick={() => {
+          setEditing(null);
+          setFormOpen(true);
+        }}
+      />
 
       <RecurringBillFormDialog
         open={formOpen}
