@@ -268,7 +268,7 @@ export function TransactionFormDialog({
                   )}
 
                   {transaction?.installmentTotal && transaction.installmentTotal > 1 && (
-                    <p className="text-[11.5px] leading-[1.45] text-text-4">
+                    <p className="text-[12px] leading-[1.45] text-text-4">
                       Compra parcelada ({transaction.installmentNumber} de {transaction.installmentTotal}). Trocar o
                       cartão move todas as parcelas juntas.
                     </p>

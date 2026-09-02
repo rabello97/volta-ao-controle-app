@@ -37,7 +37,7 @@ export function HousePage() {
             type="button"
             onClick={() => setAba(opt.key)}
             className={cn(
-              "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[12.5px] transition-colors",
+              "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] transition-colors",
               aba === opt.key ? "bg-track font-medium text-text" : "text-text-3 hover:text-text",
             )}
           >

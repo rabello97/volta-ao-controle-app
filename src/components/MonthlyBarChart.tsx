@@ -21,7 +21,7 @@ export function MonthlyBarChart({ data }: { data: MonthlyTotal[] }) {
           const sobra = item.income - item.expense;
           return (
             <div key={`${item.year}-${item.month}`} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-              <MoneyValue value={sobra} tone={sobra >= 0 ? "positive" : "negative"} signed className="text-[10.5px] font-medium" />
+              <MoneyValue value={sobra} tone={sobra >= 0 ? "positive" : "negative"} signed className="text-[11px] font-medium" />
               <div className="flex h-full w-full items-end gap-1">
                 <motion.div
                   initial={{ height: 0 }}

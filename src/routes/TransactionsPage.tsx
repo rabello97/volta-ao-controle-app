@@ -159,7 +159,7 @@ export function TransactionsPage() {
                 type="button"
                 onClick={() => reset(setType)(opt.key)}
                 className={cn(
-                  "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[12.5px] transition-colors",
+                  "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] transition-colors",
                   type === opt.key ? "bg-track font-medium text-text" : "text-text-3 hover:text-text",
                 )}
               >
@@ -169,7 +169,7 @@ export function TransactionsPage() {
           </div>
 
           <Select value={category || "all"} onValueChange={(v) => reset(setCategory)(v === "all" ? "" : v)}>
-            <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[12.5px] text-text-3">
+            <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[13px] text-text-3">
               <SelectValue placeholder="Categoria: todas" />
             </SelectTrigger>
             <SelectContent>
@@ -184,7 +184,7 @@ export function TransactionsPage() {
 
           {cards && cards.length > 0 && (
             <Select value={creditCardId || "all"} onValueChange={(v) => reset(setCreditCardId)(v === "all" ? "" : v)}>
-              <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[12.5px] text-text-3">
+              <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[13px] text-text-3">
                 <SelectValue placeholder="Cartão: todos" />
               </SelectTrigger>
               <SelectContent>
@@ -201,8 +201,8 @@ export function TransactionsPage() {
           {result && (
             <div className="ml-auto flex flex-wrap items-center gap-[18px] whitespace-nowrap rounded-[10px] border border-divider bg-surface px-4 py-2">
               <span className="text-xs text-text-4">{plural(result.total, "lançamento")}</span>
-              <span className="font-mono text-[12.5px] text-positive">+ {formatCurrency(result.totals.income)}</span>
-              <span className="font-mono text-[12.5px] text-negative">− {formatCurrency(result.totals.expense)}</span>
+              <span className="font-mono text-[13px] text-positive">+ {formatCurrency(result.totals.income)}</span>
+              <span className="font-mono text-[13px] text-negative">− {formatCurrency(result.totals.expense)}</span>
             </div>
           )}
         </div>
@@ -231,12 +231,12 @@ export function TransactionsPage() {
             </div>
             {/* Com o seletor de mês, "lista vazia" quase sempre quer dizer
                 "vazia neste mês" — dizer qual evita procurar o que não sumiu. */}
-            <span className="text-[15.5px] font-semibold text-text">
+            <span className="text-[15px] font-semibold text-text">
               {search || category || creditCardId || type !== "ALL"
                 ? `Nada encontrado em ${month.label.toLowerCase()}`
                 : `Nenhum lançamento em ${month.label.toLowerCase()}`}
             </span>
-            <span className="max-w-[380px] text-center text-[12.5px] leading-[1.5] text-text-3">
+            <span className="max-w-[380px] text-center text-[13px] leading-[1.5] text-text-3">
               {search || category || creditCardId || type !== "ALL"
                 ? "Tente outro mês pelas setas no topo, ou limpe os filtros."
                 : "Cada lançamento alimenta o painel, os relatórios e a projeção de saldo. Leva 10 segundos."}
@@ -244,7 +244,7 @@ export function TransactionsPage() {
             <button
               type="button"
               onClick={() => setFormOpen(true)}
-              className="mt-3 flex items-center gap-[7px] rounded-[10px] bg-brand px-4 py-[9px] text-[12.5px] font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
+              className="mt-3 flex items-center gap-[7px] rounded-[10px] bg-brand px-4 py-[9px] text-[13px] font-semibold text-brand-ink transition-colors hover:bg-brand-hover"
             >
               <Plus className="size-3.5" /> Nova transação
             </button>
@@ -254,11 +254,11 @@ export function TransactionsPage() {
             <section className="overflow-hidden rounded-[18px] border border-divider bg-surface">
               <div className={cn("hidden gap-3 border-b border-divider bg-surface-inset px-[22px] py-3 md:grid", GRID)}>
                 {["DATA", "DESCRIÇÃO", "CATEGORIA", "ORIGEM"].map((h) => (
-                  <span key={h} className="text-[10.5px] font-semibold tracking-[0.1em] text-text-5">
+                  <span key={h} className="text-[11px] font-semibold tracking-[0.1em] text-text-5">
                     {h}
                   </span>
                 ))}
-                <span className="text-right text-[10.5px] font-semibold tracking-[0.1em] text-text-5">VALOR</span>
+                <span className="text-right text-[11px] font-semibold tracking-[0.1em] text-text-5">VALOR</span>
                 <span />
               </div>
 
@@ -276,7 +276,7 @@ export function TransactionsPage() {
                   >
                     {/* No mobile a data vira metadado da linha; no desktop ela é a
                         primeira coluna da grade. */}
-                    <span className="hidden font-mono text-[12.5px] text-text-3 md:inline">{formatDate(t.date)}</span>
+                    <span className="hidden font-mono text-[13px] text-text-3 md:inline">{formatDate(t.date)}</span>
 
                     <div className="flex min-w-0 flex-1 items-center gap-[11px] md:flex-none">
                       <span
@@ -288,7 +288,7 @@ export function TransactionsPage() {
                         {income ? "+" : "−"}
                       </span>
                       <div className="flex min-w-0 flex-col">
-                        <span className="truncate text-[13.5px] text-text">
+                        <span className="truncate text-[13px] text-text">
                           {t.description || t.category}
                           {t.installmentTotal && t.installmentTotal > 1 && (
                             <span className="ml-1.5 text-[11px] text-text-5">
@@ -296,7 +296,7 @@ export function TransactionsPage() {
                             </span>
                           )}
                         </span>
-                        <span className="truncate text-[11.5px] text-text-4 md:hidden">
+                        <span className="truncate text-[12px] text-text-4 md:hidden">
                           {formatDate(t.date)} · {t.category} · {origin}
                         </span>
                       </div>
@@ -307,7 +307,7 @@ export function TransactionsPage() {
 
                     <span
                       className={cn(
-                        "flex-none whitespace-nowrap text-right font-mono text-[13.5px]",
+                        "flex-none whitespace-nowrap text-right font-mono text-[13px]",
                         income ? "text-positive" : "text-negative",
                       )}
                     >
@@ -323,7 +323,7 @@ export function TransactionsPage() {
                           setEditing(t);
                           setFormOpen(true);
                         }}
-                        className="p-1.5 text-text-5 transition-colors hover:text-text"
+                        className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-surface-2 hover:text-text"
                       >
                         <Pencil className="size-3.5" />
                       </button>
@@ -331,7 +331,7 @@ export function TransactionsPage() {
                         type="button"
                         aria-label="Excluir"
                         onClick={() => setDeleting(t)}
-                        className="p-1.5 text-text-5 transition-colors hover:text-negative"
+                        className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
                       >
                         <Trash2 className="size-3.5" />
                       </button>

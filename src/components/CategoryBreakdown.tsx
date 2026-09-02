@@ -35,11 +35,11 @@ export function CategoryBreakdown({ data }: { data: CategorySummaryEntry[] }) {
         {rows.map((item, index) => (
           <div key={item.category} className="flex items-center gap-2.5">
             <span
-              className="size-2 flex-none rounded-[3px]"
+              className="size-2 flex-none rounded-[4px]"
               style={{ background: SEGMENT_COLORS[index] }}
             />
             <span className="truncate text-[13px] capitalize text-text">{item.category}</span>
-            <span className="ml-auto flex-none whitespace-nowrap font-mono text-[12.5px] text-text-2">
+            <span className="ml-auto flex-none whitespace-nowrap font-mono text-[13px] text-text-2">
               {formatCurrency(item.total)}
             </span>
             <span className="w-[34px] flex-none text-right font-mono text-xs text-text-5">

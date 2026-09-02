@@ -25,14 +25,14 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
   return (
     <header className="mb-5 flex flex-col gap-3 sm:mb-6 sm:flex-row sm:items-center sm:gap-4">
       <div className="flex flex-col gap-[3px]">
-        <h1 className="text-[21px] font-semibold -tracking-[0.02em] text-text sm:text-[23px]">{title}</h1>
-        <span className="text-[12.5px] text-text-4">{subtitle}</span>
+        <h1 className="text-[23px] font-semibold -tracking-[0.02em] text-text sm:text-[23px]">{title}</h1>
+        <span className="text-[13px] text-text-4">{subtitle}</span>
       </div>
 
       <div className="flex flex-wrap items-center gap-2 sm:ml-auto sm:flex-none sm:gap-2.5">
         {aside}
         {onSearchChange !== undefined && (
-          <label className="order-last flex w-full items-center gap-2 rounded-[10px] border border-divider bg-surface px-3 py-2 text-[12.5px] text-text-4 focus-within:border-divider-strong sm:order-none sm:w-[200px]">
+          <label className="order-last flex w-full items-center gap-2 rounded-[10px] border border-divider bg-surface px-3 py-2 text-[13px] text-text-4 focus-within:border-divider-strong sm:order-none sm:w-[200px]">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="flex-none">
               <circle cx="7" cy="7" r="4.6" />
               <path d="M10.5 10.5 14 14" />
@@ -52,7 +52,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
               type="button"
               onClick={() => month.shift(-1)}
               aria-label="Mês anterior"
-              className="px-2 py-2 text-text-4 transition-colors hover:text-text"
+              className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-4 hover:bg-surface-2 hover:text-text"
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M10 3 5 8l5 5" />
@@ -61,7 +61,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
             <button
               type="button"
               onClick={() => setMonthOpen((v) => !v)}
-              className="whitespace-nowrap px-1 py-2 text-[12.5px] text-text-2 transition-colors hover:text-text"
+              className="whitespace-nowrap px-1 py-2 text-[13px] text-text-2 transition-colors hover:text-text"
             >
               {month.label}
             </button>
@@ -69,7 +69,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
               type="button"
               onClick={() => month.shift(1)}
               aria-label="Próximo mês"
-              className="px-2 py-2 text-text-4 transition-colors hover:text-text"
+              className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-4 hover:bg-surface-2 hover:text-text"
             >
               <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
                 <path d="M6 3l5 5-5 5" />
@@ -93,7 +93,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
                       month.reset();
                       setMonthOpen(false);
                     }}
-                    className="mb-1 w-full rounded-lg bg-brand-tint px-2.5 py-1.5 text-left text-[12.5px] font-semibold text-brand"
+                    className="mb-1 w-full rounded-lg bg-brand-tint px-2.5 py-1.5 text-left text-[13px] font-semibold text-brand"
                   >
                     Voltar para o mês atual
                   </button>
@@ -109,7 +109,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
                         setMonthOpen(false);
                       }}
                       className={
-                        "w-full rounded-lg px-2.5 py-1.5 text-left text-[12.5px] transition-colors " +
+                        "w-full rounded-lg px-2.5 py-1.5 text-left text-[13px] transition-colors " +
                         (ativo ? "bg-track font-medium text-text" : "text-text-3 hover:text-text")
                       }
                     >
@@ -126,7 +126,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
           <button
             type="button"
             onClick={onCta}
-            className="flex flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] bg-brand px-[15px] py-[9px] text-[12.5px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95 sm:flex-none"
+            className="flex flex-1 items-center justify-center gap-[7px] whitespace-nowrap rounded-[10px] bg-brand px-[15px] py-[9px] text-[13px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95 sm:flex-none"
           >
             <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8">
               <path d="M8 3v10M3 8h10" />

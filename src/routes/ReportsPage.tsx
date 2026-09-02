@@ -50,12 +50,12 @@ export function ReportsPage() {
           <BudgetPanel scope={scope} month={month.key} />
         </div>
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)] lg:col-span-2">
-          <h2 className="mb-4 text-[14.5px] font-semibold text-text">Entradas e saídas — últimos 6 meses</h2>
+          <h2 className="mb-4 text-[15px] font-semibold text-text">Entradas e saídas — últimos 6 meses</h2>
           {evolution.data && <MonthlyBarChart data={evolution.data} />}
         </div>
 
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-4 text-[14.5px] font-semibold text-text">Gastos por categoria (mês atual)</h2>
+          <h2 className="mb-4 text-[15px] font-semibold text-text">Gastos por categoria (mês atual)</h2>
           {categorySummary.data && categorySummary.data.length > 0 ? (
             <CategoryBarList data={categorySummary.data} />
           ) : (
@@ -64,7 +64,7 @@ export function ReportsPage() {
         </div>
 
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-4 text-[14.5px] font-semibold text-text">Projeção de saldo</h2>
+          <h2 className="mb-4 text-[15px] font-semibold text-text">Projeção de saldo</h2>
           <div className="flex flex-col gap-2.5 text-sm text-text">
             <div className="flex justify-between">
               <span>Saldo atual</span>
@@ -98,7 +98,7 @@ export function ReportsPage() {
 
         {hasHousehold && (
           <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)] lg:col-span-2">
-            <h2 className="mb-4 text-[14.5px] font-semibold text-text">Individual vs. unificado</h2>
+            <h2 className="mb-4 text-[15px] font-semibold text-text">Individual vs. unificado</h2>
             {comparisonRows ? (
               <table className="w-full border-collapse text-sm">
                 <thead>

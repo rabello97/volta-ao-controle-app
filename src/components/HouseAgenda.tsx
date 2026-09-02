@@ -106,7 +106,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
     <div className="flex flex-col gap-4">
       <section className="flex flex-wrap items-end gap-2.5 rounded-[18px] border border-divider bg-surface px-4 py-4 shadow-[var(--shadow-card)] sm:px-[22px]">
         <label className="flex min-w-[150px] flex-1 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">O que é</span>
+          <span className="text-[12px] text-text-4">O que é</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -115,7 +115,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           />
         </label>
         <label className="flex w-[132px] flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Quando vence</span>
+          <span className="text-[12px] text-text-4">Quando vence</span>
           <input
             type="date"
             value={dueDate}
@@ -124,7 +124,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           />
         </label>
         <label className="flex w-24 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Previsto</span>
+          <span className="text-[12px] text-text-4">Previsto</span>
           <input
             value={cost}
             onChange={(e) => setCost(e.target.value)}
@@ -134,7 +134,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           />
         </label>
         <label className="flex w-[136px] flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Repete</span>
+          <span className="text-[12px] text-text-4">Repete</span>
           <select
             value={recurrence}
             onChange={(e) => setRecurrence(e.target.value)}
@@ -151,7 +151,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           type="button"
           onClick={handleCreate}
           disabled={create.isPending}
-          className="flex flex-none items-center gap-1.5 rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
+          className="flex flex-none items-center gap-1.5 rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           <Plus className="size-4" />
           Agendar
@@ -160,7 +160,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
 
       <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
         <div className="mb-1 flex flex-wrap items-baseline gap-2.5">
-          <h2 className="text-[14.5px] font-semibold text-text">A vencer</h2>
+          <h2 className="text-[15px] font-semibold text-text">A vencer</h2>
           {totalPrevisto > 0 && (
             <span className="text-xs text-text-4">{formatCurrency(totalPrevisto)} previstos ao todo</span>
           )}
@@ -180,12 +180,12 @@ export function HouseAgenda({ scope }: { scope?: string }) {
             </button>
 
             <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
-              <span className="truncate text-[13.5px] font-medium text-text">{task.name}</span>
-              <span className="truncate text-[11.5px] text-text-4">{prazoTexto(task)}</span>
+              <span className="truncate text-[13px] font-medium text-text">{task.name}</span>
+              <span className="truncate text-[12px] text-text-4">{prazoTexto(task)}</span>
             </div>
 
             {task.estimatedCost !== null && (
-              <span className="flex-none font-mono text-[12.5px] text-text-3">
+              <span className="flex-none font-mono text-[13px] text-text-3">
                 {formatCurrency(task.estimatedCost)}
               </span>
             )}
@@ -203,7 +203,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
               type="button"
               onClick={() => setDeleting(task)}
               aria-label={`Excluir ${task.name}`}
-              className="flex-none p-1 text-text-5 transition-colors hover:text-negative"
+              className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
             >
               <Trash2 className="size-3.5" />
             </button>
@@ -214,7 +214,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           <div className="flex flex-col items-center gap-2 py-12 text-center">
             <CalendarClock className="size-7 text-text-5" />
             <span className="text-[13px] text-text-3">Nada agendado</span>
-            <span className="max-w-[280px] text-[11.5px] text-text-4">
+            <span className="max-w-[280px] text-[12px] text-text-4">
               IPVA, seguro, revisão do carro, troca de filtro — o que a casa cobra em data, não todo mês.
             </span>
           </div>
@@ -223,11 +223,11 @@ export function HouseAgenda({ scope }: { scope?: string }) {
 
       {concluidos.length > 0 && (
         <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
-          <h2 className="mb-1 text-[14.5px] font-semibold text-text">Já resolvidos</h2>
+          <h2 className="mb-1 text-[15px] font-semibold text-text">Já resolvidos</h2>
           {concluidos.map((task) => (
             <div key={task.id} className="flex items-center gap-3 border-b border-divider py-2.5 last:border-b-0">
               <span className="min-w-0 flex-1 truncate text-[13px] text-text-4 line-through">{task.name}</span>
-              <span className="flex-none text-[11.5px] text-text-5">{prazoTexto(task)}</span>
+              <span className="flex-none text-[12px] text-text-5">{prazoTexto(task)}</span>
             </div>
           ))}
         </section>

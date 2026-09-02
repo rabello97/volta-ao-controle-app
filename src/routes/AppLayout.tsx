@@ -95,8 +95,8 @@ function SavingsGoalCard({ saved, target }: { saved: number; target: number }) {
   return (
     <div className="flex flex-col gap-[9px] rounded-[14px] border border-divider bg-surface p-3.5 shadow-[var(--shadow-card)]">
       <div className="flex items-baseline justify-between">
-        <span className="text-[11.5px] text-text-3">Meta de reserva</span>
-        <span className="font-mono text-[11.5px] text-brand">{pct}%</span>
+        <span className="text-[12px] text-text-3">Meta de reserva</span>
+        <span className="font-mono text-[12px] text-brand">{pct}%</span>
       </div>
       <div className="h-[5px] overflow-hidden rounded-[4px] bg-track">
         <div className="h-full rounded-[4px] bg-[image:var(--meter-grad)]" style={{ width: `${pct}%` }} />
@@ -136,7 +136,7 @@ function ThemeSegmented() {
             aria-pressed={active}
             onClick={() => setTheme(key)}
             className={cn(
-              "flex size-[26px] items-center justify-center rounded-full transition-colors",
+              "flex size-9 items-center justify-center rounded-full transition-colors",
               active ? "bg-track text-text" : "text-text-5 hover:text-text",
             )}
           >
@@ -186,24 +186,24 @@ export function AppLayout() {
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
       <aside className="hidden h-full flex-col gap-6 overflow-y-auto border-r border-divider px-4 py-[22px] sm:flex">
         <div className="flex items-center gap-[11px] px-2">
-          <div className="flex size-[30px] flex-none items-center justify-center rounded-[9px] bg-brand">
+          <div className="flex size-[30px] flex-none items-center justify-center rounded-[10px] bg-brand">
             <BrandMark className="size-[18px] text-brand-ink" />
           </div>
           <div className="flex flex-col leading-[1.15]">
-            <span className="whitespace-nowrap text-[14.5px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
+            <span className="whitespace-nowrap text-[15px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
             <span className="text-[11px] text-text-5">Finanças pessoais</span>
           </div>
         </div>
 
         <nav className="flex flex-col gap-[3px]">
-          <span className="px-[10px] pb-2 text-[10px] font-semibold tracking-[0.12em] text-text-5">GERAL</span>
+          <span className="px-[10px] pb-2 text-[11px] font-semibold tracking-[0.12em] text-text-5">GERAL</span>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
               to={item.to}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-[11px] rounded-[10px] px-[10px] py-[9px] text-[13.5px] transition-colors",
+                  "flex items-center gap-[11px] rounded-[10px] px-[10px] py-[9px] text-[13px] transition-colors",
                   isActive
                     ? "bg-nav-active-bg font-semibold text-nav-active-fg"
                     : "text-nav-idle-fg hover:text-text",
@@ -242,8 +242,8 @@ export function AppLayout() {
                   {initials(user?.name)}
                 </div>
                 <div className="min-w-0 flex-1 text-left leading-[1.2]">
-                  <div className="truncate text-[12.5px] font-medium text-text">{user?.name ?? "Sessão ativa"}</div>
-                  <div className="text-[10.5px] text-text-5">Conta</div>
+                  <div className="truncate text-[13px] font-medium text-text">{user?.name ?? "Sessão ativa"}</div>
+                  <div className="text-[11px] text-text-5">Conta</div>
                 </div>
                 <ChevronDown className="size-3.5 flex-none text-text-5" />
               </button>
@@ -267,14 +267,14 @@ export function AppLayout() {
       <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <header className="flex flex-none items-center justify-between gap-3 border-b border-divider bg-surface px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:hidden">
           <div className="flex items-center gap-2">
-            <div className="flex size-[26px] flex-none items-center justify-center rounded-lg bg-brand">
+            <div className="flex size-9 flex-none items-center justify-center rounded-lg bg-brand">
               <BrandMark className="size-3.5 text-brand-ink" />
             </div>
-            <span className="text-[14px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
+            <span className="text-[15px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
           </div>
           <div className="flex items-center gap-1">
             <ThemeSegmented />
-            <button type="button" onClick={logout} aria-label="Sair" className="p-1 text-text-5">
+            <button type="button" onClick={logout} aria-label="Sair" className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-surface-2 hover:text-text">
               <LogOut className="size-[18px]" />
             </button>
           </div>
@@ -301,7 +301,7 @@ export function AppLayout() {
               <svg width="19" height="19" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                 {item.icon}
               </svg>
-              <span className="text-[10.5px] font-medium">{item.label}</span>
+              <span className="text-[11px] font-medium">{item.label}</span>
             </NavLink>
           ))}
         </nav>

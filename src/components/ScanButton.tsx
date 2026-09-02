@@ -53,7 +53,7 @@ export function ScanButton({ onScanned, className, label = "Escanear nota ou pri
         onClick={() => inputRef.current?.click()}
         disabled={busy}
         className={cn(
-          "flex flex-none items-center gap-2 whitespace-nowrap rounded-[10px] border border-divider bg-surface px-3 py-2 text-[12.5px] text-text-3 transition-colors hover:text-text disabled:opacity-60",
+          "flex flex-none items-center gap-2 whitespace-nowrap rounded-[10px] border border-divider bg-surface px-3 py-2 text-[13px] text-text-3 transition-colors hover:text-text disabled:opacity-60",
           className,
         )}
       >

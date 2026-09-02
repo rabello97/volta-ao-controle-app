@@ -20,7 +20,7 @@ export function DueRow({ item, onPay, isPaying }: DueRowProps) {
       <div className="flex min-w-0 items-center gap-3">
         <div
           className={cn(
-            "flex size-10 flex-none flex-col items-center justify-center rounded-lg text-[10px] font-semibold leading-none",
+            "flex size-10 flex-none flex-col items-center justify-center rounded-lg text-[11px] font-semibold leading-none",
             item.status === "OVERDUE" ? "bg-negative-tint text-negative" : "bg-track text-text-3",
           )}
         >

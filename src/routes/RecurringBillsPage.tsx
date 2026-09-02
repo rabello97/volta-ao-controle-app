@@ -31,16 +31,16 @@ const ROW = "md:grid-cols-[56px_1fr_150px_110px_120px_110px]";
 function KpiCard({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
   return (
     <div className="flex flex-col gap-[5px] rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
-      <span className="text-[10.5px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
+      <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
       <span
         className={cn(
-          "font-mono text-[22px] font-medium -tracking-[0.02em]",
+          "font-mono text-[23px] font-medium -tracking-[0.02em]",
           accent ? "text-brand" : "text-text",
         )}
       >
         {value}
       </span>
-      {hint && <span className="text-[11.5px] text-text-4">{hint}</span>}
+      {hint && <span className="text-[12px] text-text-4">{hint}</span>}
     </div>
   );
 }
@@ -155,12 +155,12 @@ export function RecurringBillsPage() {
               accent
             />
             <div className="col-span-2 flex flex-col gap-[5px] rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)] sm:col-span-1">
-              <span className="text-[10.5px] font-semibold tracking-[0.13em] text-text-4">PRÓXIMA A VENCER</span>
+              <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">PRÓXIMA A VENCER</span>
               <span className="text-[19px] font-semibold -tracking-[0.01em] text-text">
                 {stats.data.nextDue ? `${stats.data.nextDue.name} · dia ${stats.data.nextDue.dueDay}` : "—"}
               </span>
               {stats.data.nextDue && (
-                <span className="text-[11.5px] text-negative">
+                <span className="text-[12px] text-negative">
                   em {plural(Math.max(0, stats.data.nextDue.dueDay - new Date().getDate()), "dia")}
                 </span>
               )}
@@ -171,7 +171,7 @@ export function RecurringBillsPage() {
         {!bills.isError && (
         <section className="rounded-[18px] border border-divider bg-surface px-[22px] pb-2 pt-5 shadow-[var(--shadow-card)]">
           <div className="mb-1 flex items-center gap-2.5">
-            <h2 className="text-[14.5px] font-semibold text-text">Contas fixas</h2>
+            <h2 className="text-[15px] font-semibold text-text">Contas fixas</h2>
             <span className="text-xs text-text-4">Cobradas todo mês, na mesma data</span>
           </div>
 
@@ -194,21 +194,22 @@ export function RecurringBillsPage() {
               <div
                 key={bill.id}
                 className={cn(
-                  // No celular: nome em cima, ações numa segunda linha. Tudo
-                  // numa linha só espremia o nome da conta até sumir.
-                  "grid grid-cols-[auto_1fr_auto] items-center gap-x-3 gap-y-2 border-b border-divider py-3 last:border-b-0 md:flex md:gap-3.5 md:py-[15px]",
-                  "md:grid",
+                  // No celular a linha quebra em duas: identificação e valor em
+                  // cima, status e ações embaixo (via order-last). No desktop
+                  // vira a grade de colunas da tabela.
+                  "flex flex-wrap items-center gap-x-3 gap-y-2 border-b border-divider py-3 last:border-b-0",
+                  "md:grid md:flex-nowrap md:gap-3.5 md:py-[15px]",
                   ROW,
                 )}
               >
-                <div className="col-start-1 row-span-2 row-start-1 flex size-10 flex-none flex-col items-center justify-center rounded-xl border border-divider bg-surface-2 md:row-span-1 md:size-11">
+                <div className="flex size-10 flex-none flex-col items-center justify-center rounded-xl border border-divider bg-surface-2 md:size-11">
                   <span className="font-mono text-[13px] font-medium text-text md:text-sm">{bill.dueDay}</span>
-                  <span className="text-[9px] tracking-[0.08em] text-text-5">DIA</span>
+                  <span className="text-[11px] tracking-[0.08em] text-text-5">DIA</span>
                 </div>
 
-                <div className="col-start-2 row-start-1 flex min-w-0 flex-col gap-[3px] md:flex-1 md:flex-none">
-                  <span className="truncate text-[13.5px] font-medium text-text">{bill.name}</span>
-                  <span className="truncate text-[11.5px] capitalize text-text-4">
+                <div className="flex min-w-0 flex-1 flex-col gap-[3px] md:flex-none">
+                  <span className="truncate text-[13px] font-medium text-text">{bill.name}</span>
+                  <span className="truncate text-[12px] capitalize text-text-4">
                     {bill.category}
                     {viewingOthers && bill.ownerId !== user?.id && partner ? ` · de ${partner.name.split(" ")[0]}` : ""}
                   </span>
@@ -218,42 +219,50 @@ export function RecurringBillsPage() {
                     e o valor já dão a informação essencial. */}
                 <div className="hidden flex-col gap-[5px] md:flex">
                   <span className="text-[11px] text-text-5">Variação vs. média</span>
-                  <div className="h-1 overflow-hidden rounded-[3px] bg-track">
+                  <div className="h-1 overflow-hidden rounded-[4px] bg-track">
                     <div
-                      className={cn("h-full rounded-[3px]", above ? "bg-negative" : "bg-brand")}
+                      className={cn("h-full rounded-[4px]", above ? "bg-negative" : "bg-brand")}
                       style={{ width: `${Math.min(100, Math.max(8, Math.round(ratio * 50)))}%` }}
                     />
                   </div>
                 </div>
 
-                {bill.paidThisMonth ? (
-                  <span className="col-start-2 row-start-2 justify-self-start whitespace-nowrap rounded-full bg-brand-tint px-2.5 py-1 text-[11px] font-semibold text-brand md:col-auto md:row-auto md:flex-none md:justify-self-start">
-                    Pago
-                  </span>
-                ) : (
-                  <button
-                    type="button"
-                    onClick={() => handlePay(bill.id)}
-                    disabled={payMutation.isPending}
-                    className="col-start-2 row-start-2 justify-self-start whitespace-nowrap rounded-full bg-negative-tint px-2.5 py-1 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:col-auto md:row-auto md:flex-none md:justify-self-start"
-                  >
-                    A pagar
-                  </button>
-                )}
+                {/* No celular status e ações ficam numa faixa própria de largura
+                    total; no desktop o agrupador vira `contents` e os dois voltam
+                    a ser colunas da grade. */}
+                <div className="flex w-full items-center gap-2 pl-[52px] md:contents">
+                  {bill.paidThisMonth ? (
+                    <span className="flex-none whitespace-nowrap rounded-full bg-brand-tint px-2.5 py-1 text-[11px] font-semibold text-brand md:justify-self-start">
+                      Pago
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handlePay(bill.id)}
+                      disabled={payMutation.isPending}
+                      className="flex-none whitespace-nowrap rounded-full bg-negative-tint px-2.5 py-1 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:justify-self-start"
+                    >
+                      A pagar
+                    </button>
+                  )}
 
-                <span className="col-start-3 row-start-1 justify-self-end whitespace-nowrap text-right font-mono text-[13px] text-text md:row-auto md:flex-none md:text-sm">
+                <span className="flex-none whitespace-nowrap text-right font-mono text-[13px] text-text md:text-sm">
                   {formatCurrency(bill.expectedAmount)}
                 </span>
 
                 {/* No celular as ações ficavam escondidas atrás do breakpoint:
                     não dava para renomear, desativar nem excluir pelo telefone. */}
-                <div className="col-start-3 row-start-2 flex items-center justify-end gap-1 md:col-auto md:row-auto">
-                  <Switch
-                    checked={bill.active}
-                    onCheckedChange={(checked) => handleToggle(bill.id, checked)}
-                    aria-label="Ativa"
-                    className="scale-90"
-                  />
+                <div className="ml-auto flex flex-none items-center justify-end gap-1 md:ml-0">
+                  {/* O switch tem 29×17; a área de toque cresce no invólucro,
+                      sem mudar o desenho do controle. */}
+                  <span className="flex size-11 flex-none items-center justify-center md:size-9">
+                    <Switch
+                      checked={bill.active}
+                      onCheckedChange={(checked) => handleToggle(bill.id, checked)}
+                      aria-label={`${bill.name} ativa`}
+                      className="scale-90"
+                    />
+                  </span>
                   <button
                     type="button"
                     aria-label="Editar"
@@ -261,7 +270,7 @@ export function RecurringBillsPage() {
                       setEditing(bill);
                       setFormOpen(true);
                     }}
-                    className="p-1 text-text-5 transition-colors hover:text-text"
+                    className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-surface-2 hover:text-text"
                   >
                     <Pencil className="size-3.5" />
                   </button>
@@ -271,11 +280,12 @@ export function RecurringBillsPage() {
                       type="button"
                       aria-label="Excluir"
                       onClick={() => setDeleting(bill)}
-                      className="p-1 text-text-5 transition-colors hover:text-negative"
+                      className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
                     >
                       <Trash2 className="size-3.5" />
                     </button>
                   )}
+                  </div>
                 </div>
               </div>
             );

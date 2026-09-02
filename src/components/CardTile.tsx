@@ -25,25 +25,25 @@ export function CardTile({ card, highlight = false }: { card: CreditCardSummary;
     >
       <div className="flex items-start">
         <div className="flex flex-col gap-[3px]">
-          <span className="text-[13.5px] font-semibold text-text">{card.nickname}</span>
-          <span className="font-mono text-[11.5px] text-text-4">
+          <span className="text-[13px] font-semibold text-text">{card.nickname}</span>
+          <span className="font-mono text-[12px] text-text-4">
             fecha dia {card.closingDay} · vence dia {card.dueDay}
           </span>
         </div>
         {high ? (
-          <span className="ml-auto flex-none rounded-full bg-negative-tint px-2.5 py-[3px] text-[10.5px] font-semibold text-negative">
+          <span className="ml-auto flex-none rounded-full bg-negative-tint px-2.5 py-[3px] text-[11px] font-semibold text-negative">
             Limite alto
           </span>
         ) : daysToClose >= 0 && daysToClose <= 5 ? (
-          <span className="ml-auto flex-none rounded-full bg-brand-tint px-2.5 py-[3px] text-[10.5px] font-semibold text-brand">
+          <span className="ml-auto flex-none rounded-full bg-brand-tint px-2.5 py-[3px] text-[11px] font-semibold text-brand">
             Fecha em {daysToClose}d
           </span>
         ) : null}
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="text-[10.5px] font-semibold tracking-[0.13em] text-text-4">FATURA ATUAL</span>
-        <span className="font-mono text-[27px] font-medium -tracking-[0.03em] text-text">
+        <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">FATURA ATUAL</span>
+        <span className="font-mono text-[34px] font-medium -tracking-[0.03em] text-text">
           {formatCurrency(card.currentInvoiceTotal)}
         </span>
         {hasLimit && (

@@ -100,7 +100,7 @@ export function CreditCardsPage() {
                     setEditing(card);
                     setFormOpen(true);
                   }}
-                  className="rounded-lg p-1.5 text-text-5 transition-colors hover:bg-surface-2 hover:text-text"
+                  className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-surface-2 hover:text-text"
                 >
                   <Pencil className="size-3.5" />
                 </button>
@@ -108,7 +108,7 @@ export function CreditCardsPage() {
                   type="button"
                   aria-label={`Excluir ${card.nickname}`}
                   onClick={() => setDeleting(card)}
-                  className="rounded-lg p-1.5 text-text-5 transition-colors hover:bg-surface-2 hover:text-negative"
+                  className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
                 >
                   <Trash2 className="size-3.5" />
                 </button>
@@ -126,8 +126,8 @@ export function CreditCardsPage() {
           <div className="flex size-[38px] items-center justify-center rounded-xl bg-brand-tint text-brand">
             <Plus className="size-4" />
           </div>
-          <span className="text-[13.5px] font-semibold text-text">Adicionar cartão</span>
-          <span className="max-w-[220px] text-center text-[11.5px] leading-[1.5] text-text-4">
+          <span className="text-[13px] font-semibold text-text">Adicionar cartão</span>
+          <span className="max-w-[220px] text-center text-[12px] leading-[1.5] text-text-4">
             Vincule transações e acompanhe a fatura fechando em tempo real.
           </span>
         </button>

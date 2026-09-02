@@ -102,11 +102,11 @@ export function LoginPage() {
       <div className="flex flex-1 items-start justify-center px-4 pb-16 sm:items-center sm:pb-24">
         <div className="flex w-full max-w-[380px] flex-col gap-7 rounded-[18px] border border-hero-border bg-[image:var(--hero-grad)] p-7 sm:p-8">
           <div className="flex flex-col items-center gap-2.5 text-center">
-            <div className="flex size-[42px] items-center justify-center rounded-[13px] bg-brand">
+            <div className="flex size-[42px] items-center justify-center rounded-[14px] bg-brand">
               <BrandMark className="size-6 text-brand-ink" />
             </div>
             <h1 className="text-[19px] font-semibold -tracking-[0.01em] text-text">Volta ao Controle</h1>
-            <p className="text-[12.5px] text-text-4">Finanças do casal, sem perder o rumo.</p>
+            <p className="text-[13px] text-text-4">Finanças do casal, sem perder o rumo.</p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3.5">
@@ -119,9 +119,9 @@ export function LoginPage() {
                 type="email"
                 autoComplete="email"
                 {...register("email")}
-                className="rounded-[10px] border border-divider bg-surface px-3 py-2.5 text-[13.5px] text-text outline-none transition-colors placeholder:text-text-5 focus:border-brand"
+                className="rounded-[10px] border border-divider bg-surface px-3 py-2.5 text-[13px] text-text outline-none transition-colors placeholder:text-text-5 focus:border-brand"
               />
-              {errors.email && <span className="text-[11.5px] text-negative">{errors.email.message}</span>}
+              {errors.email && <span className="text-[12px] text-negative">{errors.email.message}</span>}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -133,13 +133,13 @@ export function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 {...register("password")}
-                className="rounded-[10px] border border-divider bg-surface px-3 py-2.5 text-[13.5px] text-text outline-none transition-colors placeholder:text-text-5 focus:border-brand"
+                className="rounded-[10px] border border-divider bg-surface px-3 py-2.5 text-[13px] text-text outline-none transition-colors placeholder:text-text-5 focus:border-brand"
               />
-              {errors.password && <span className="text-[11.5px] text-negative">{errors.password.message}</span>}
+              {errors.password && <span className="text-[12px] text-negative">{errors.password.message}</span>}
             </div>
 
             {serverError && (
-              <p className="rounded-[10px] bg-negative-tint px-3 py-2 text-[12.5px] text-negative">{serverError}</p>
+              <p className="rounded-[10px] bg-negative-tint px-3 py-2 text-[13px] text-negative">{serverError}</p>
             )}
 
             <button
@@ -151,7 +151,7 @@ export function LoginPage() {
             </button>
           </form>
 
-          <div className="flex items-center gap-3 text-[11.5px] text-text-5">
+          <div className="flex items-center gap-3 text-[12px] text-text-5">
             <span className="h-px flex-1 bg-divider" />
             ou
             <span className="h-px flex-1 bg-divider" />

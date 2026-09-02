@@ -70,13 +70,13 @@ export function WalletSettings() {
     <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
       <div className="mb-1 flex flex-wrap items-center gap-2.5">
         <WalletIcon className="size-4 text-text-4" />
-        <h2 className="text-[14.5px] font-semibold text-text">Benefícios</h2>
+        <h2 className="text-[15px] font-semibold text-text">Benefícios</h2>
         <span className="text-xs text-text-4">VR, VA, vale-combustível — dinheiro que não é da conta</span>
       </div>
 
       <div className="mt-4 flex flex-wrap items-end gap-2.5">
         <label className="flex min-w-[110px] flex-1 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Nome</span>
+          <span className="text-[12px] text-text-4">Nome</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -84,7 +84,7 @@ export function WalletSettings() {
           />
         </label>
         <label className="flex w-28 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Cai por mês</span>
+          <span className="text-[12px] text-text-4">Cai por mês</span>
           <input
             value={credit}
             onChange={(e) => setCredit(e.target.value)}
@@ -94,7 +94,7 @@ export function WalletSettings() {
           />
         </label>
         <label className="flex w-16 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Dia</span>
+          <span className="text-[12px] text-text-4">Dia</span>
           <input
             value={day}
             onChange={(e) => setDay(e.target.value)}
@@ -103,7 +103,7 @@ export function WalletSettings() {
           />
         </label>
         <label className="flex w-28 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Tem hoje</span>
+          <span className="text-[12px] text-text-4">Tem hoje</span>
           <input
             value={balance}
             onChange={(e) => setBalance(e.target.value)}
@@ -116,7 +116,7 @@ export function WalletSettings() {
           type="button"
           onClick={handleCreate}
           disabled={create.isPending}
-          className="rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
+          className="rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           Cadastrar
         </button>
@@ -127,7 +127,7 @@ export function WalletSettings() {
           <div key={wallet.id} className="flex flex-wrap items-center gap-3 border-b border-divider py-3 last:border-b-0">
             <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
               <span className="truncate text-[13px] text-text">{wallet.name}</span>
-              <span className="text-[11.5px] text-text-4">
+              <span className="text-[12px] text-text-4">
                 {formatCurrency(wallet.monthlyCredit)} no dia {wallet.creditDay} · saldo{" "}
                 {formatCurrency(wallet.balance)}
               </span>
@@ -146,7 +146,7 @@ export function WalletSettings() {
                 inputMode="decimal"
                 placeholder="R$"
                 aria-label={`Corrigir saldo de ${wallet.name}`}
-                className="w-24 rounded-lg border border-divider bg-surface-2 px-2 py-1 text-right font-mono text-[12.5px] text-text outline-none placeholder:text-text-4"
+                className="w-24 rounded-lg border border-divider bg-surface-2 px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
               />
             </label>
 
@@ -154,7 +154,7 @@ export function WalletSettings() {
               type="button"
               onClick={() => setDeleting(wallet)}
               aria-label={`Excluir ${wallet.name}`}
-              className="flex-none p-1 text-text-5 transition-colors hover:text-negative"
+              className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
             >
               <Trash2 className="size-3.5" />
             </button>

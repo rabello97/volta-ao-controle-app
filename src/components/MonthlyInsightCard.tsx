@@ -33,7 +33,7 @@ export function MonthlyInsightCard({ scope, month }: { scope?: string; month?: s
     <section className="flex flex-col gap-3 rounded-[18px] border border-divider bg-surface px-4 py-5 shadow-[var(--shadow-card)] sm:px-[22px]">
       <div className="flex flex-wrap items-center gap-2">
         <Sparkles className="size-4 flex-none text-brand" />
-        <h2 className="flex-1 text-[14.5px] font-semibold text-text">Análise do mês</h2>
+        <h2 className="flex-1 text-[15px] font-semibold text-text">Análise do mês</h2>
         <button
           type="button"
           onClick={handleGenerate}
@@ -53,7 +53,7 @@ export function MonthlyInsightCard({ scope, month }: { scope?: string; month?: s
       </div>
 
       {!data && !loading && (
-        <p className="text-[12.5px] text-text-4">
+        <p className="text-[13px] text-text-4">
           A IA lê seus números do mês — renda, tetos, contas fixas e cartões — e aponta onde cortar para fechar no
           azul. Cada análise é gerada sob demanda e fica guardada até você pedir de novo.
         </p>
@@ -72,10 +72,10 @@ export function MonthlyInsightCard({ scope, month }: { scope?: string; month?: s
 
           {data.pontosDeAtencao.length > 0 && (
             <div className="flex flex-col gap-1.5">
-              <span className="text-[10.5px] font-semibold tracking-[0.12em] text-text-4">PONTOS DE ATENÇÃO</span>
+              <span className="text-[11px] font-semibold tracking-[0.12em] text-text-4">PONTOS DE ATENÇÃO</span>
               <ul className="flex flex-col gap-1.5">
                 {data.pontosDeAtencao.map((ponto) => (
-                  <li key={ponto} className="flex gap-2 text-[12.5px] text-text-3">
+                  <li key={ponto} className="flex gap-2 text-[13px] text-text-3">
                     <span className="mt-[7px] size-1 flex-none rounded-full bg-text-5" />
                     <span>{ponto}</span>
                   </li>
@@ -86,13 +86,13 @@ export function MonthlyInsightCard({ scope, month }: { scope?: string; month?: s
 
           {data.acoes.length > 0 && (
             <div className="flex flex-col gap-2">
-              <span className="text-[10.5px] font-semibold tracking-[0.12em] text-text-4">ONDE CORTAR</span>
+              <span className="text-[11px] font-semibold tracking-[0.12em] text-text-4">ONDE CORTAR</span>
               {data.acoes.map((acao) => (
                 <div key={acao.titulo} className="flex flex-col gap-1 rounded-xl border border-divider bg-surface-2 px-3.5 py-3">
                   <div className="flex flex-wrap items-baseline gap-2">
                     <span className="flex-1 text-[13px] font-medium text-text">{acao.titulo}</span>
                     {acao.economiaMensal > 0 && (
-                      <span className="font-mono text-[12.5px] text-positive">
+                      <span className="font-mono text-[13px] text-positive">
                         + {formatCurrency(acao.economiaMensal)}/mês
                       </span>
                     )}

@@ -42,27 +42,27 @@ function ListCard({
       )}
     >
       <div className="flex items-center gap-2">
-        <span className="min-w-0 flex-1 truncate text-[13.5px] font-medium text-text">{list.name}</span>
+        <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text">{list.name}</span>
         {done ? (
-          <span className="flex-none rounded-full bg-brand-tint px-2 py-0.5 text-[10.5px] font-semibold text-brand">
+          <span className="flex-none rounded-full bg-brand-tint px-2 py-0.5 text-[11px] font-semibold text-brand">
             Finalizada
           </span>
         ) : (
-          <span className="flex-none font-mono text-[12.5px] text-text-3">
+          <span className="flex-none font-mono text-[13px] text-text-3">
             {list.purchasedCount}/{list.itemCount}
           </span>
         )}
       </div>
 
-      <div className="h-1 overflow-hidden rounded-[3px] bg-track">
-        <div className="h-full rounded-[3px] bg-brand" style={{ width: `${Math.round(progress)}%` }} />
+      <div className="h-1 overflow-hidden rounded-[4px] bg-track">
+        <div className="h-full rounded-[4px] bg-brand" style={{ width: `${Math.round(progress)}%` }} />
       </div>
 
       <div className="flex items-center justify-between">
         <span className="text-[11px] text-text-4">
           {done && list.closedAt ? formatDate(list.closedAt) : `Previsto ${formatCurrency(list.estimatedTotal)}`}
         </span>
-        <span className="font-mono text-[12.5px] text-text">{formatCurrency(list.purchasedTotal)}</span>
+        <span className="font-mono text-[13px] text-text">{formatCurrency(list.purchasedTotal)}</span>
       </div>
     </button>
   );
@@ -215,7 +215,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
             ))}
 
             {!lists.isLoading && items.length === 0 && (
-              <p className="rounded-2xl border border-dashed border-divider px-4 py-8 text-center text-[12.5px] text-text-4">
+              <p className="rounded-2xl border border-dashed border-divider px-4 py-8 text-center text-[13px] text-text-4">
                 Nenhuma lista ainda. Crie uma acima e vá anotando o que precisa comprar.
               </p>
             )}
@@ -238,7 +238,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                     type="button"
                     onClick={() => setDeleting(items.find((l) => l.id === list.id) ?? null)}
                     aria-label="Excluir lista"
-                    className="p-1 text-text-5 transition-colors hover:text-negative"
+                    className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
                   >
                     <Trash2 className="size-4" />
                   </button>
@@ -258,7 +258,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                       onChange={(e) => setItemQty(e.target.value)}
                       inputMode="numeric"
                       aria-label="Quantidade"
-                      className="w-12 rounded-lg border border-divider bg-surface px-2 py-1 text-center font-mono text-[12.5px] text-text outline-none"
+                      className="w-12 rounded-lg border border-divider bg-surface px-2 py-1 text-center font-mono text-[13px] text-text outline-none"
                     />
                     <input
                       value={itemPrice}
@@ -266,13 +266,13 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                       inputMode="decimal"
                       placeholder="R$"
                       aria-label="Preço estimado"
-                      className="w-20 rounded-lg border border-divider bg-surface px-2 py-1 text-right font-mono text-[12.5px] text-text outline-none placeholder:text-text-4"
+                      className="w-20 rounded-lg border border-divider bg-surface px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
                     />
                     <button
                       type="button"
                       onClick={handleAddItem}
                       disabled={!itemName.trim() || addItem.isPending}
-                      className="flex-none rounded-lg bg-brand px-3 py-1.5 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-40"
+                      className="flex-none rounded-lg bg-brand px-3 py-1.5 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-40"
                     >
                       Anotar
                     </button>
@@ -301,7 +301,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                       <div className="flex min-w-0 flex-1 flex-col">
                         <span
                           className={cn(
-                            "truncate text-[13.5px] text-text",
+                            "truncate text-[13px] text-text",
                             item.purchased && "text-text-4 line-through",
                           )}
                         >
@@ -325,10 +325,10 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                           inputMode="decimal"
                           placeholder="R$"
                           aria-label={`Preço de ${item.name}`}
-                          className="w-20 flex-none rounded-lg border border-divider bg-surface px-2 py-1 text-right font-mono text-[12.5px] text-text outline-none placeholder:text-text-4"
+                          className="w-20 flex-none rounded-lg border border-divider bg-surface px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
                         />
                       ) : (
-                        <span className="w-20 flex-none text-right font-mono text-[12.5px] text-text-3">
+                        <span className="w-20 flex-none text-right font-mono text-[13px] text-text-3">
                           {itemTotal(item) > 0 ? formatCurrency(itemTotal(item)) : "—"}
                         </span>
                       )}
@@ -338,7 +338,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                           type="button"
                           onClick={() => removeItem.mutateAsync({ listId: list.id, itemId: item.id })}
                           aria-label="Remover item"
-                          className="flex-none p-1 text-text-5 transition-colors hover:text-negative"
+                          className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
                         >
                           <Trash2 className="size-3.5" />
                         </button>
@@ -347,7 +347,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                   ))}
 
                   {list.items.length === 0 && (
-                    <p className="py-10 text-center text-[12.5px] text-text-4">
+                    <p className="py-10 text-center text-[13px] text-text-4">
                       Lista vazia. Anote o primeiro item aí em cima.
                     </p>
                   )}
@@ -365,7 +365,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                 )}
 
                 {!open && (
-                  <p className="rounded-xl border border-divider bg-surface-2 px-3 py-2.5 text-[12.5px] text-text-3">
+                  <p className="rounded-xl border border-divider bg-surface-2 px-3 py-2.5 text-[13px] text-text-3">
                     Compra finalizada e lançada como despesa de {formatCurrency(purchasedTotal)}.
                   </p>
                 )}

@@ -120,7 +120,7 @@ export function SettingsPage() {
       <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
         <div className="mb-4 flex items-center gap-2">
           <User className="size-4 text-text-4" />
-          <h2 className="text-[14.5px] font-semibold text-text">Seu perfil</h2>
+          <h2 className="text-[15px] font-semibold text-text">Seu perfil</h2>
         </div>
         <form onSubmit={profileForm.handleSubmit(onSaveProfile)} className="flex flex-col gap-3.5 sm:max-w-sm">
           <div className="flex flex-col gap-1.5">
@@ -147,7 +147,7 @@ export function SettingsPage() {
       <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
         <div className="mb-4 flex items-center gap-2">
           <Target className="size-4 text-text-4" />
-          <h2 className="text-[14.5px] font-semibold text-text">Meta de reserva</h2>
+          <h2 className="text-[15px] font-semibold text-text">Meta de reserva</h2>
         </div>
         <p className="mb-4 text-[13px] text-text-3">
           Aparece como barra de progresso na sidebar. Atualizado manualmente — não tem vínculo com transações.
@@ -172,7 +172,7 @@ export function SettingsPage() {
       <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
         <div className="mb-4 flex items-center gap-2">
           <KeyRound className="size-4 text-text-4" />
-          <h2 className="text-[14.5px] font-semibold text-text">Senha</h2>
+          <h2 className="text-[15px] font-semibold text-text">Senha</h2>
         </div>
         <p className="mb-4 text-[13px] text-text-3">
           Se sua conta foi criada com Google e ainda não tem senha, deixe "Senha atual" em branco para definir a

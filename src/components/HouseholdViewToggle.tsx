@@ -13,7 +13,7 @@ export function HouseholdViewToggle() {
     return (
       <Link
         to="/household"
-        className="flex items-center gap-2 whitespace-nowrap rounded-[10px] border border-dashed border-divider-strong px-3 py-2 text-[12.5px] text-text-4 transition-colors hover:border-brand hover:text-brand"
+        className="flex items-center gap-2 whitespace-nowrap rounded-[10px] border border-dashed border-divider-strong px-3 py-2 text-[13px] text-text-4 transition-colors hover:border-brand hover:text-brand"
       >
         <Users className="size-3.5" />
         Vincular parceiro(a)
@@ -25,7 +25,7 @@ export function HouseholdViewToggle() {
 
   return (
     <Select value={view} onValueChange={(v) => setView(v as HouseholdView)}>
-      <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[12.5px] text-text-2">
+      <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[13px] text-text-2">
         <Users className="size-3.5 text-text-5" />
         <SelectValue />
       </SelectTrigger>

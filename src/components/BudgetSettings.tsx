@@ -52,13 +52,13 @@ export function BudgetSettings() {
   return (
     <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
       <div className="mb-1 flex flex-wrap items-baseline gap-2.5">
-        <h2 className="text-[14.5px] font-semibold text-text">Orçamento</h2>
+        <h2 className="text-[15px] font-semibold text-text">Orçamento</h2>
         <span className="text-xs text-text-4">Quanto entra por mês e quanto você pretende gastar</span>
       </div>
 
       <div className="mt-4 flex flex-wrap items-end gap-2.5">
         <label className="flex flex-1 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Renda mensal</span>
+          <span className="text-[12px] text-text-4">Renda mensal</span>
           <input
             value={income}
             onChange={(e) => setIncome(e.target.value)}
@@ -71,7 +71,7 @@ export function BudgetSettings() {
           type="button"
           onClick={handleSaveIncome}
           disabled={saveIncome.isPending}
-          className="rounded-[10px] bg-brand px-4 py-2 text-[12.5px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
+          className="rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           Salvar
         </button>
@@ -79,7 +79,7 @@ export function BudgetSettings() {
 
       <div className="mt-5 flex flex-wrap items-end gap-2.5">
         <label className="flex min-w-[140px] flex-1 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Categoria</span>
+          <span className="text-[12px] text-text-4">Categoria</span>
           <input
             list="categorias-orcamento"
             value={category}
@@ -93,7 +93,7 @@ export function BudgetSettings() {
           </datalist>
         </label>
         <label className="flex w-28 flex-col gap-1.5">
-          <span className="text-[11.5px] text-text-4">Teto por mês</span>
+          <span className="text-[12px] text-text-4">Teto por mês</span>
           <input
             value={limit}
             onChange={(e) => setLimit(e.target.value)}
@@ -106,7 +106,7 @@ export function BudgetSettings() {
           type="button"
           onClick={handleAddBudget}
           disabled={upsert.isPending}
-          className="rounded-[10px] border border-divider bg-surface px-4 py-2 text-[12.5px] font-semibold text-text transition-colors hover:border-divider-strong disabled:opacity-50"
+          className="rounded-[10px] border border-divider bg-surface px-4 py-2 text-[13px] font-semibold text-text transition-colors hover:border-divider-strong disabled:opacity-50"
         >
           Definir
         </button>
@@ -116,14 +116,14 @@ export function BudgetSettings() {
         {(budgets.data ?? []).map((budget) => (
           <div key={budget.id} className="flex items-center gap-3 border-b border-divider py-2.5 last:border-b-0">
             <span className="flex-1 truncate text-[13px] capitalize text-text">{budget.category}</span>
-            <span className="flex-none font-mono text-[12.5px] text-text-3">
+            <span className="flex-none font-mono text-[13px] text-text-3">
               {formatCurrency(Number(budget.monthlyLimit))}
             </span>
             <button
               type="button"
               onClick={() => remove.mutate(budget.id)}
               aria-label={`Remover teto de ${budget.category}`}
-              className="flex-none p-1 text-text-5 transition-colors hover:text-negative"
+              className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
             >
               <Trash2 className="size-3.5" />
             </button>

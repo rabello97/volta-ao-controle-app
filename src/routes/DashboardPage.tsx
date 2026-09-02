@@ -58,13 +58,13 @@ function StatRow({
 }) {
   return (
     <div className="flex items-center gap-3.5 rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
-      <div className={cn("flex size-9 flex-none items-center justify-center rounded-[11px]", tint, color)}>
+      <div className={cn("flex size-9 flex-none items-center justify-center rounded-[10px]", tint, color)}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.7">
           {icon}
         </svg>
       </div>
       <div className="flex min-w-0 flex-col gap-[3px]">
-        <span className="text-[10.5px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
+        <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
         {loading ? (
           <Skeleton className="h-6 w-32" />
         ) : (
@@ -87,14 +87,14 @@ function DueItem({ item, onPay, isPaying }: { item: UpcomingDueItem; onPay?: () 
     <div className="flex items-center gap-3.5 border-b border-divider py-3.5 last:border-b-0">
       <div className="flex w-[42px] flex-none flex-col items-center gap-px">
         <span className="font-mono text-base font-medium text-text">{due.getUTCDate()}</span>
-        <span className="text-[10px] uppercase tracking-[0.1em] text-text-5">
+        <span className="text-[11px] uppercase tracking-[0.1em] text-text-5">
           {formatMonthLabel(due.getUTCMonth() + 1)}
         </span>
       </div>
       <div className={cn("h-[30px] w-px flex-none rounded-sm", barColor)} />
       <div className="flex min-w-0 flex-col gap-0.5">
-        <span className="truncate text-[13.5px] font-medium text-text">{item.name}</span>
-        <span className="truncate text-[11.5px] text-text-4">{item.category}</span>
+        <span className="truncate text-[13px] font-medium text-text">{item.name}</span>
+        <span className="truncate text-[12px] text-text-4">{item.category}</span>
       </div>
       <span className="ml-auto flex-none whitespace-nowrap font-mono text-sm text-text">
         {formatCurrency(item.amount)}
@@ -208,7 +208,7 @@ export function DashboardPage() {
                   {trendPct !== null && (
                     <span
                       className={cn(
-                        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[11.5px] font-semibold",
+                        "inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-2.5 py-1 text-[12px] font-semibold",
                         trendPct >= 0 ? "bg-brand-tint text-brand" : "bg-negative-tint text-negative",
                       )}
                     >
@@ -276,7 +276,7 @@ export function DashboardPage() {
                 </>
               }
               trailing={
-                <span className="text-[11.5px] text-text-4">
+                <span className="text-[12px] text-text-4">
                   {plural(upcoming.filter((i) => i.status !== "PAID").length, "conta")}
                 </span>
               }
@@ -291,9 +291,9 @@ export function DashboardPage() {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.55fr_1fr]">
           <section className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
             <div className="mb-1.5 flex items-center gap-2.5">
-              <h2 className="whitespace-nowrap text-[14.5px] font-semibold text-text">Próximos vencimentos</h2>
+              <h2 className="whitespace-nowrap text-[15px] font-semibold text-text">Próximos vencimentos</h2>
               {dueThisWeek.length > 0 && (
-                <span className="whitespace-nowrap rounded-full bg-negative-tint px-2 py-0.5 text-[10.5px] font-semibold text-negative">
+                <span className="whitespace-nowrap rounded-full bg-negative-tint px-2 py-0.5 text-[11px] font-semibold text-negative">
                   {dueThisWeek.length} nesta semana
                 </span>
               )}
@@ -332,13 +332,13 @@ export function DashboardPage() {
           </section>
 
           <section className="flex flex-col gap-4 rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
-            <h2 className="whitespace-nowrap text-[14.5px] font-semibold text-text">Para onde foi o dinheiro</h2>
+            <h2 className="whitespace-nowrap text-[15px] font-semibold text-text">Para onde foi o dinheiro</h2>
             {categorySummary.isLoading ? (
               <div className="flex flex-col gap-3.5">
                 <Skeleton className="h-2 w-full rounded-full" />
                 {[0, 1, 2, 3].map((i) => (
                   <div key={i} className="flex items-center gap-2.5">
-                    <Skeleton className="size-2 flex-none rounded-[3px]" />
+                    <Skeleton className="size-2 flex-none rounded-[4px]" />
                     <Skeleton className="h-3.5 w-24" />
                     <Skeleton className="ml-auto h-3.5 w-20" />
                   </div>
@@ -349,7 +349,7 @@ export function DashboardPage() {
                 <CategoryBreakdown data={categorySummary.data} />
                 {categoryInsight.data && (
                   <div className="mt-auto flex items-start gap-[11px] rounded-xl border border-divider bg-surface-2 px-3.5 py-[13px]">
-                    <span className="flex size-[22px] flex-none items-center justify-center rounded-[7px] bg-brand-tint text-xs font-bold text-brand">
+                    <span className="flex size-[22px] flex-none items-center justify-center rounded-[10px] bg-brand-tint text-xs font-bold text-brand">
                       i
                     </span>
                     <span className="text-xs leading-[1.45] text-text-3">

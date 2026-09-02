@@ -98,7 +98,7 @@ export function HouseholdPage() {
 
       {hasHousehold && partner && (
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-3 text-[14.5px] font-semibold text-text">Vocês formam um household</h2>
+          <h2 className="mb-3 text-[15px] font-semibold text-text">Vocês formam um household</h2>
           <div className="flex items-center gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3">
             <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-semibold text-brand">
               {partner.name.charAt(0).toUpperCase()}
@@ -126,7 +126,7 @@ export function HouseholdPage() {
 
       {!hasHousehold && pendingReceived.length > 0 && (
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-3 text-[14.5px] font-semibold text-text">Convites recebidos</h2>
+          <h2 className="mb-3 text-[15px] font-semibold text-text">Convites recebidos</h2>
           <ul className="flex flex-col gap-2.5">
             {pendingReceived.map((invite) => (
               <li
@@ -170,11 +170,11 @@ export function HouseholdPage() {
 
       {!hasHousehold && (
         <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
-          <h2 className="mb-3 text-[14.5px] font-semibold text-text">Convidar parceiro(a)</h2>
+          <h2 className="mb-3 text-[15px] font-semibold text-text">Convidar parceiro(a)</h2>
           <p className="mb-3 text-[13px] text-text-3">
             O e-mail serve para localizar a conta — ela precisa já ter se cadastrado no app com esse endereço.
           </p>
-          <p className="mb-4 flex items-start gap-2 rounded-xl bg-warning-tint px-3.5 py-2.5 text-[12.5px] text-warning">
+          <p className="mb-4 flex items-start gap-2 rounded-xl bg-warning-tint px-3.5 py-2.5 text-[13px] text-warning">
             <Info className="mt-px size-3.5 flex-none" />
             <span>
               Não enviamos e-mail. Avise você mesmo — o convite aparece para ela aqui nesta tela, em

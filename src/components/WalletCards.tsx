@@ -26,7 +26,7 @@ export function WalletCards({ scope }: { scope?: string }) {
           >
             <div className="flex items-center gap-2">
               <WalletIcon className="size-3.5 flex-none text-text-4" />
-              <span className="flex-1 truncate text-[10.5px] font-semibold tracking-[0.13em] text-text-4">
+              <span className="flex-1 truncate text-[11px] font-semibold tracking-[0.13em] text-text-4">
                 {wallet.name.toUpperCase()}
               </span>
               <span className="flex-none text-[11px] text-text-5">
@@ -38,23 +38,23 @@ export function WalletCards({ scope }: { scope?: string }) {
 
             <span
               className={cn(
-                "font-mono text-[22px] font-medium -tracking-[0.02em]",
+                "font-mono text-[23px] font-medium -tracking-[0.02em]",
                 wallet.balance < 0 ? "text-negative" : acabando ? "text-warning" : "text-text",
               )}
             >
               {formatCurrency(wallet.balance)}
             </span>
 
-            <div className="h-1 overflow-hidden rounded-[3px] bg-track">
+            <div className="h-1 overflow-hidden rounded-[4px] bg-track">
               <div
-                className={cn("h-full rounded-[3px]", acabando ? "bg-warning" : "bg-brand")}
+                className={cn("h-full rounded-[4px]", acabando ? "bg-warning" : "bg-brand")}
                 style={{
                   width: `${Math.max(0, Math.min(100, Math.round((wallet.balance / wallet.monthlyCredit) * 100)))}%`,
                 }}
               />
             </div>
 
-            <span className="text-[11.5px] text-text-4">
+            <span className="text-[12px] text-text-4">
               {formatCurrency(wallet.monthlyCredit)} por mês · dia {wallet.creditDay}
             </span>
           </div>

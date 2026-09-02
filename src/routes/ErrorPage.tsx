@@ -32,30 +32,30 @@ export function ErrorPage({ kind = "not-found" }: { kind?: ErrorKind }) {
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-background px-6 text-center">
       <div className="flex items-center gap-2.5">
-        <div className="flex size-[30px] items-center justify-center rounded-[9px] bg-brand">
+        <div className="flex size-[30px] items-center justify-center rounded-[10px] bg-brand">
           <BrandMark className="size-[18px] text-brand-ink" />
         </div>
-        <span className="text-[14.5px] font-semibold -tracking-[0.01em] text-text">Volta ao Controle</span>
+        <span className="text-[15px] font-semibold -tracking-[0.01em] text-text">Volta ao Controle</span>
       </div>
 
       <div className="flex w-full max-w-[380px] flex-col items-center gap-3 rounded-[18px] border border-divider bg-surface px-6 py-8 shadow-[var(--shadow-card)]">
         <div className="flex size-[46px] items-center justify-center rounded-[14px] bg-brand-tint text-brand">
           <Icon className="size-5" />
         </div>
-        <h1 className="text-[17px] font-semibold text-text">{title}</h1>
-        <p className="text-[12.5px] leading-[1.5] text-text-3">{description}</p>
+        <h1 className="text-[19px] font-semibold text-text">{title}</h1>
+        <p className="text-[13px] leading-[1.5] text-text-3">{description}</p>
 
         <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1.5 rounded-[10px] border border-divider px-3.5 py-2 text-[12.5px] text-text-2 transition-all hover:border-divider-strong active:scale-95"
+            className="flex items-center gap-1.5 rounded-[10px] border border-divider px-3.5 py-2 text-[13px] text-text-2 transition-all hover:border-divider-strong active:scale-95"
           >
             <ArrowLeft className="size-3.5" /> Voltar
           </button>
           <Link
             to="/dashboard"
-            className="rounded-[10px] bg-brand px-3.5 py-2 text-[12.5px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95"
+            className="rounded-[10px] bg-brand px-3.5 py-2 text-[13px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95"
           >
             Ir para o painel
           </Link>

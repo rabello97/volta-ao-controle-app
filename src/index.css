@@ -57,7 +57,9 @@
   --cat-4: #3E76A6;
   --cat-5: #C6D0CE;
 
-  --radius: 1.125rem;
+  /* Degrau de controle. O shadcn deriva lg/md/sm daqui, então isso alinha
+     botões, inputs e selects com o resto da escala (4 / 10 / 14 / 18 / pill). */
+  --radius: 0.625rem;
   --shadow-card: 0 1px 2px rgba(20, 40, 36, 0.05);
 
 
@@ -103,8 +105,8 @@
   --text: #E6EAEA;
   --text-2: #C6D0D0;
   --text-3: #9AA6A7;
-  --text-4: #7C8A8B;
-  --text-5: #6C7A7C;
+  --text-4: #8A9899;
+  --text-5: #7E8C8E;
   --divider: #1C2225;
   --divider-strong: #2C3639;
   --track: #1F2629;
@@ -221,11 +223,11 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --radius-lg: var(--radius);
-  --radius-sm: calc(var(--radius) * 0.5);
-  --radius-md: calc(var(--radius) * 0.75);
-  --radius-xl: calc(var(--radius) * 1.35);
-  --radius-2xl: calc(var(--radius) * 1.7);
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+  --radius-2xl: 18px;
 }
 
 body {
@@ -318,6 +320,33 @@ html {
 ::selection {
   background: var(--brand-tint-2);
   color: var(--text);
+}
+
+/* O Tailwind v4 deixou de aplicar cursor: pointer em botões. Sem isso, metade
+   da interface responde com a seta de "nada aqui" — o clique funciona, mas o
+   mouse diz que não. Vale para tudo que é clicável, inclusive o que só parece
+   botão (abas, itens de menu, switches). */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="tab"],
+[role="menuitem"],
+[role="option"],
+[role="switch"],
+a[href],
+label:has(input[type="file"]),
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
+/* Campo de texto merece cursor de texto mesmo dentro de área clicável. */
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+textarea {
+  cursor: text;
 }
 
 /* Barra de rolagem some no toque (apps nativos não mostram uma) e some
