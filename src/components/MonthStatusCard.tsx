@@ -59,8 +59,11 @@ export function MonthStatusCard({ scope, monthKey, month, isCurrent, onCadastrar
     <section className="flex flex-col gap-4 overflow-hidden rounded-[18px] border border-hero-border bg-[image:var(--hero-grad)] px-5 py-5 sm:px-[26px]">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
         <div className="flex flex-col gap-3">
+          {/* "Prevista" porque a base é a renda cadastrada, não a recebida: no
+              dia 1º o salário ainda não caiu e mesmo assim há sobra a planejar.
+              Sem essa palavra, o número promete dinheiro que não chegou. */}
           <span className="text-[11px] font-semibold tracking-[0.14em] text-text-4">
-            {semRenda ? "GASTO DESTE MÊS" : noAzul ? "SOBRA DESTE MÊS" : "ESTOUROU ESTE MÊS"}
+            {semRenda ? "GASTO DESTE MÊS" : noAzul ? "SOBRA PREVISTA" : "ESTOURO PREVISTO"}
           </span>
 
           {semRenda ? (
@@ -92,19 +95,20 @@ export function MonthStatusCard({ scope, monthKey, month, isCurrent, onCadastrar
             </button>
           ) : noAzul ? (
             <span className="text-[13px] text-text-3">
-              Dá para gastar <strong className="font-semibold text-text">{formatCurrency(porDia)} por dia</strong>
+              Dá para gastar até{" "}
+              <strong className="font-semibold text-text">{formatCurrency(porDia)} por dia</strong>
               {isCurrent ? ` nos ${dias} dias que faltam` : " ao longo do mês"}
             </span>
           ) : (
             <span className="text-[13px] text-negative">
-              As saídas passaram a renda em {formatCurrency(Math.abs(sobra))} neste mês
+              As saídas já passaram a renda prevista em {formatCurrency(Math.abs(sobra))}
             </span>
           )}
         </div>
 
         {!semRenda && (
           <div className="flex flex-none flex-row flex-wrap items-baseline gap-x-2 gap-y-1 sm:flex-col sm:items-end">
-            <span className="text-[11px] uppercase tracking-[0.12em] text-text-4">Renda</span>
+            <span className="text-[11px] uppercase tracking-[0.12em] text-text-4">Renda prevista</span>
             <span className="font-mono text-[15px] text-text">{formatCurrency(data.income)}</span>
             {data.benefitIncome > 0 && (
               <span className="text-[11px] text-text-4">+ {formatCurrency(data.benefitIncome)} em benefícios</span>
@@ -132,7 +136,7 @@ export function MonthStatusCard({ scope, monthKey, month, isCurrent, onCadastrar
           </div>
           <div className="flex flex-wrap justify-between gap-2 text-[11px] text-text-4">
             <span>
-              {formatCurrency(data.spentFromAccount)} saíram da conta · {consumido}% da renda
+              {formatCurrency(data.spentFromAccount)} saíram da conta · {consumido}% da renda prevista
             </span>
             {isCurrent && <span>{corrido}% do mês corrido</span>}
           </div>
