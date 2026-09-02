@@ -286,7 +286,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
                 </div>
               ) : (
               <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <span className="min-w-0 flex-1 truncate text-[13px] font-medium capitalize text-text">
+                <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-text">
                   {plano.description}
                 </span>
                 <span className="font-mono text-[13px] text-text">
@@ -352,7 +352,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
           <h2 className="mb-1 text-[15px] font-semibold text-text">Já quitadas</h2>
           {encerradas.map((plano) => (
             <div key={plano.groupId} className="flex items-center gap-3 border-b border-divider py-2.5 last:border-b-0">
-              <span className="min-w-0 flex-1 truncate text-[13px] capitalize text-text-4">{plano.description}</span>
+              <span className="min-w-0 flex-1 truncate text-[13px] text-text-4">{plano.description}</span>
               <span className="flex-none text-[12px] text-text-5">
                 {plano.installmentTotal}x · quitada em {terminaEm(plano.lastDate)}
               </span>
