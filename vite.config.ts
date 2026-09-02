@@ -10,11 +10,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      // "prompt" em vez de "autoUpdate": o app pergunta antes de trocar de
-      // versão. Com autoUpdate a troca acontecia em silêncio e num momento
-      // imprevisível — às vezes só no segundo acesso —, o que fazia parecer
-      // que a mudança não tinha subido.
-      registerType: "prompt",
+      // "autoUpdate" de volta. Tentei "prompt" para o app perguntar antes de
+      // trocar de versão, e criei um impasse: no modo prompt o service worker
+      // novo fica esperando, mas quem mostra o botão de confirmar é justamente
+      // ele — a versão em execução é a antiga e não tem botão. Sem fechar todas
+      // as abas, não havia saída pela interface.
+      // Com autoUpdate o worker novo assume sozinho; o aviso de "atualizado"
+      // acontece depois, comparando o identificador do build.
+      registerType: "autoUpdate",
       includeAssets: ["favicon.svg"],
       workbox: {
         // Rotas do app são client-side: qualquer navegação cai no index.html
@@ -57,6 +60,10 @@ export default defineConfig({
       },
     }),
   ],
+  // Identificador do build, para o app perceber que trocou de versão.
+  define: {
+    __BUILD_ID__: JSON.stringify(new Date().toISOString()),
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

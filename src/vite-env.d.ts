@@ -9,3 +9,6 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+/** Injetado pelo Vite a cada build. */
+declare const __BUILD_ID__: string;

@@ -12,12 +12,12 @@ import { ReportsPage } from "@/routes/ReportsPage";
 import { HouseholdPage } from "@/routes/HouseholdPage";
 import { SettingsPage } from "@/routes/SettingsPage";
 import { ErrorPage } from "@/routes/ErrorPage";
-import { UpdatePrompt } from "@/components/UpdatePrompt";
+import { UpdateWatcher } from "@/components/UpdateWatcher";
 
 export function App() {
   return (
     <>
-      <UpdatePrompt />
+      <UpdateWatcher />
       <Routes>
       <Route path="/login" element={<LoginPage />} />
 
