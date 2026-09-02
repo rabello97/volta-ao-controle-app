@@ -10,7 +10,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
+      // "prompt" em vez de "autoUpdate": o app pergunta antes de trocar de
+      // versão. Com autoUpdate a troca acontecia em silêncio e num momento
+      // imprevisível — às vezes só no segundo acesso —, o que fazia parecer
+      // que a mudança não tinha subido.
+      registerType: "prompt",
       includeAssets: ["favicon.svg"],
       workbox: {
         // Rotas do app são client-side: qualquer navegação cai no index.html

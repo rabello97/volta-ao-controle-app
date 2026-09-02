@@ -12,10 +12,13 @@ import { ReportsPage } from "@/routes/ReportsPage";
 import { HouseholdPage } from "@/routes/HouseholdPage";
 import { SettingsPage } from "@/routes/SettingsPage";
 import { ErrorPage } from "@/routes/ErrorPage";
+import { UpdatePrompt } from "@/components/UpdatePrompt";
 
 export function App() {
   return (
-    <Routes>
+    <>
+      <UpdatePrompt />
+      <Routes>
       <Route path="/login" element={<LoginPage />} />
 
       <Route element={<RequireAuth />}>
@@ -42,6 +45,7 @@ export function App() {
           painel — assim um link errado fica visível em vez de parecer que a
           navegação simplesmente não funcionou. */}
       <Route path="*" element={<ErrorPage kind="not-found" />} />
-    </Routes>
+      </Routes>
+    </>
   );
 }
