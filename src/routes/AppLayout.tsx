@@ -278,7 +278,7 @@ export function AppLayout() {
             className="mt-auto flex items-center gap-2.5 rounded-[12px] bg-side-accent px-3 py-2.5 text-left text-side-accent-ink transition-opacity hover:opacity-85 active:scale-[0.98]"
           >
             <Sparkles className="size-4 flex-none" />
-            <span className="text-[13.5px] font-semibold">Falar com a assistente</span>
+            <span className="text-[13.5px] font-semibold">Falar com a JulIA</span>
           </button>
         )}
 
@@ -348,7 +348,7 @@ export function AppLayout() {
             {ai.data?.enabled && (
               <button
                 type="button"
-                aria-label="Falar com a assistente"
+                aria-label="Falar com a JulIA"
                 onClick={() => setAssistenteAberto(true)}
                 className="flex size-11 flex-none items-center justify-center rounded-[10px] text-brand transition-colors hover:bg-surface-2"
               >

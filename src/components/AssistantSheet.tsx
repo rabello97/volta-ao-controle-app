@@ -67,7 +67,7 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
     try {
       setResultado(await askAssistant(frase));
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Não consegui entender agora.");
+      toast.error(error instanceof Error ? error.message : "A JulIA não conseguiu entender agora.");
     } finally {
       setPensando(false);
     }
@@ -140,7 +140,7 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
             <span className="flex size-8 flex-none items-center justify-center rounded-full bg-[color:var(--spot-line)]">
               <Sparkles className="size-4" />
             </span>
-            <DialogTitle className="text-[15px] font-semibold text-spot-fg">Assistente</DialogTitle>
+            <DialogTitle className="text-[15px] font-semibold text-spot-fg">JulIA</DialogTitle>
             <button
               type="button"
               aria-label="Fechar"
@@ -151,7 +151,7 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
             </button>
           </div>
           <DialogDescription className="sr-only">
-            Escreva ou fale o que você gastou e confirme antes de salvar.
+            Escreva ou fale para a JulIA o que você gastou, e confirme antes de salvar.
           </DialogDescription>
 
           <div className="mt-4 flex items-end gap-2">
@@ -215,7 +215,7 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
                 ))}
               </div>
               <p className="text-[12.5px] leading-[1.5] text-text-4">
-                Por enquanto só sei lançar entradas e saídas. Nada é salvo sem você confirmar.
+                Por enquanto a JulIA só sabe lançar entradas e saídas. Nada é salvo sem você confirmar.
               </p>
             </>
           )}

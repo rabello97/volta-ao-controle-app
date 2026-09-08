@@ -37,7 +37,7 @@ export function MonthlyInsightCard({ scope, month, className }: { scope?: string
       {!data && !loading && (
         <>
           <p className="text-[14px] leading-[1.55] text-spot-fg">
-            A IA lê os números do mês — renda, tetos, contas fixas e cartões — e aponta onde cortar para fechar no azul.
+            A JulIA lê os números do mês — renda, tetos, contas fixas e cartões — e aponta onde cortar para fechar no azul.
           </p>
           <p className="text-[13px] leading-[1.5] text-spot-fg-2">
             Cada análise é gerada quando você pede e fica guardada até pedir de novo.
