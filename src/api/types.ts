@@ -61,8 +61,25 @@ export interface Transaction {
   installmentNumber: number | null;
   installmentTotal: number | null;
   installmentGroupId: string | null;
+  /** Quando preenchido, o dinheiro só mudou de bolso dentro do casal. */
+  transferPeerUserId: string | null;
+  /** Só em entradas: de onde veio o dinheiro. Nulo = não informado. */
+  moneySource: MoneySource | null;
+  sourceConfirmedAt: string | null;
   createdAt: string;
 }
+
+/** De onde veio o dinheiro de uma entrada. "PARTNER" fica pendente até o
+ *  parceiro dizer de onde ele tirou — é a resposta dele que decide se a casa
+ *  ganhou dinheiro ou contraiu dívida. */
+export type MoneySource = "OWN" | "PARTNER" | "CARD_LOAN" | "OVERDRAFT" | "OTHER_LOAN";
+
+export const ORIGENS_DO_DINHEIRO: { value: Exclude<MoneySource, "PARTNER">; label: string; dica: string }[] = [
+  { value: "OWN", label: "Do meu salário ou saldo", dica: "Dinheiro que já era nosso — só mudou de bolso." },
+  { value: "CARD_LOAN", label: "Empréstimo ou Pix do cartão", dica: "Vira dívida na fatura do mês que vem." },
+  { value: "OVERDRAFT", label: "Cheque especial", dica: "Rende juros por dia enquanto não cobrir." },
+  { value: "OTHER_LOAN", label: "Outro empréstimo", dica: "Banco, financeira ou terceiro." },
+];
 
 export interface TransactionListResult {
   items: Transaction[];
@@ -248,6 +265,8 @@ export interface BudgetStatus {
   spentFromAccount: number;
   unbudgetedSpent: number;
   leftFromIncome: number;
+  /** Quanto do que entrou é emprestado — não é sobra, é dívida adiada. */
+  borrowedIncome: number;
   categories: BudgetCategoryStatus[];
 }
 

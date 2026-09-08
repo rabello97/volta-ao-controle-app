@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Chip } from "@/components/Chip";
+import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { formatCurrency, formatCategory } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useCreditCards } from "@/hooks/useCreditCards";
@@ -65,6 +66,9 @@ export function TransactionFormDialog({
     defaultValues: { type: "EXPENSE", amount: 0, date: "", category: "", description: "" },
   });
 
+  // Só faz sentido oferecer transferência e "veio do parceiro" quando existe
+  // parceiro vinculado.
+  const { partner: parceiro } = useHouseholdView();
   const type = watch("type");
   const category = watch("category");
   const creditCardId = watch("creditCardId");
@@ -106,6 +110,8 @@ export function TransactionFormDialog({
       // Parcelamento só na criação: mudar depois exigiria refazer as parcelas.
       installmentTotal:
         !transaction && values.type === "EXPENSE" && values.creditCardId ? values.installmentTotal : undefined,
+      transferPeerUserId: values.transferPeerUserId || undefined,
+      moneySource: values.type === "INCOME" ? values.moneySource : undefined,
     });
   }
 
@@ -210,6 +216,73 @@ export function TransactionFormDialog({
             <Label htmlFor="description">Descrição (opcional)</Label>
             <Input id="description" {...register("description")} />
           </div>
+
+          {/* Origem do dinheiro: sem isso, empréstimo entra no painel como sobra
+              e o número que responde "posso gastar?" mente. */}
+          {type === "INCOME" && (
+            <div className="flex flex-col gap-1.5">
+              <Label>De onde veio esse dinheiro?</Label>
+              <Controller
+                control={control}
+                name="moneySource"
+                render={({ field }) => (
+                  <div className="flex flex-wrap gap-1.5">
+                    {[
+                      { value: "OWN", label: "Meu dinheiro" },
+                      ...(parceiro ? [{ value: "PARTNER", label: `Veio d${parceiro.name.split(" ")[0].endsWith("a") ? "a" : "o"} ${parceiro.name.split(" ")[0]}` }] : []),
+                      { value: "CARD_LOAN", label: "Empréstimo/Pix do cartão" },
+                      { value: "OVERDRAFT", label: "Cheque especial" },
+                      { value: "OTHER_LOAN", label: "Outro empréstimo" },
+                    ].map((o) => (
+                      <Chip
+                        key={o.value}
+                        type="button"
+                        selected={field.value === o.value}
+                        onClick={() => {
+                          field.onChange(o.value);
+                          setValue("transferPeerUserId", o.value === "PARTNER" ? parceiro?.id : undefined);
+                        }}
+                      >
+                        {o.label}
+                      </Chip>
+                    ))}
+                  </div>
+                )}
+              />
+              {watch("moneySource") === "PARTNER" && parceiro && (
+                <span className="text-[12px] leading-[1.45] text-text-4">
+                  {parceiro.name.split(" ")[0]} vai receber um aviso para dizer de onde saiu — se do salário ou de
+                  empréstimo. Até lá, o painel trata como emprestado.
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Transferência: dinheiro que só mudou de bolso não é gasto da casa. */}
+          {type === "EXPENSE" && parceiro && (
+            <div className="flex flex-col gap-1.5">
+              <Controller
+                control={control}
+                name="transferPeerUserId"
+                render={({ field }) => (
+                  <label className="flex items-start gap-2.5 rounded-[13px] border border-divider bg-surface-inset px-3.5 py-3 text-[13px] leading-[1.45] text-text-3">
+                    <input
+                      type="checkbox"
+                      checked={field.value === parceiro.id}
+                      onChange={(e) => field.onChange(e.target.checked ? parceiro.id : undefined)}
+                      className="mt-0.5 size-4 flex-none accent-[var(--brand)]"
+                    />
+                    <span>
+                      É transferência para {parceiro.name.split(" ")[0]}
+                      <span className="block text-[12px] text-text-4">
+                        Não conta como gasto da casa — o dinheiro só mudou de bolso.
+                      </span>
+                    </span>
+                  </label>
+                )}
+              />
+            </div>
+          )}
 
           {type === "EXPENSE" && (wallets?.length ?? 0) > 0 && (
             <div className="flex flex-col gap-1.5">

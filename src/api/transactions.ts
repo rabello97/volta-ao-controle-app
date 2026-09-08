@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { InvoiceChoice, Transaction, TransactionListResult, TransactionType } from "./types";
+import type { InvoiceChoice, MoneySource, Transaction, TransactionListResult, TransactionType } from "./types";
 
 export interface TransactionFilters {
   from?: string;
@@ -25,6 +25,10 @@ export interface TransactionInput {
   installmentTotal?: number;
   /** Pagar com um benefício (VR). Exclui cartão. */
   walletId?: string;
+  /** Dinheiro que só mudou de bolso dentro do casal. */
+  transferPeerUserId?: string;
+  /** Só para entradas: de onde veio o dinheiro. */
+  moneySource?: MoneySource;
 }
 
 /** O que o formulário devolve: igual à criação, mas o cartão pode vir `null`
@@ -54,4 +58,21 @@ export function updateTransaction(id: string, input: UpdateTransactionInput) {
 
 export function deleteTransaction(id: string): Promise<void> {
   return apiRequest<void>(`/transactions/${id}`, { method: "DELETE" });
+}
+
+/** Entradas que dizem "veio do parceiro" e ainda esperam ele informar a origem. */
+export function listPendingSourceConfirmations(): Promise<Transaction[]> {
+  return apiRequest<Transaction[]>("/transactions/origem-pendente");
+}
+
+export function confirmMoneySource(
+  id: string,
+  input: {
+    source: Exclude<MoneySource, "PARTNER">;
+    registrarNaMinhaConta?: boolean;
+    creditCardId?: string;
+    invoiceChoice?: InvoiceChoice;
+  },
+): Promise<Transaction> {
+  return apiRequest<Transaction>(`/transactions/${id}/confirmar-origem`, { method: "POST", body: input });
 }

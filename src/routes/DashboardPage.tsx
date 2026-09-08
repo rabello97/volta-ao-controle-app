@@ -12,6 +12,7 @@ import { ErrorState } from "@/components/ErrorState";
 import { StatTile } from "@/components/StatTile";
 import { SurfaceCard, CardLink, CardTabs } from "@/components/SurfaceCard";
 import { MonthlyInsightCard } from "@/components/MonthlyInsightCard";
+import { OrigemPendenteCard } from "@/components/OrigemPendenteCard";
 import { TransactionFormDialog } from "@/components/TransactionFormDialog";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useBalanceSeries, useCategoryInsight, useDashboard } from "@/hooks/useDashboard";
@@ -137,6 +138,9 @@ export function DashboardPage() {
   const sobra = budget.data?.leftFromIncome ?? 0;
   const renda = (budget.data?.income ?? 0) + (budget.data?.benefitIncome ?? 0);
   const gasto = budget.data?.spentTotal ?? 0;
+  // Parte da "sobra" pode ser dinheiro emprestado, que vira dívida no mês
+  // seguinte. Mostrar só o total responderia errado a "posso gastar?".
+  const emprestado = budget.data?.borrowedIncome ?? 0;
   const ativos = (plans.data ?? []).filter((p) => !p.finished);
   const parcelasDoMes = ativos.reduce((soma, p) => soma + p.installmentAmount, 0);
 
@@ -178,6 +182,10 @@ export function DashboardPage() {
         <ErrorState onRetry={() => dashboard.refetch()} />
       ) : (
         <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-12">
+          {/* Pergunta esperando resposta vem antes dos números: enquanto a
+              origem não for dita, os números abaixo estão incertos. */}
+          <OrigemPendenteCard className="sm:col-span-2 xl:col-span-12" />
+
           {/* 2x2 no celular: um tile por tela empurrava todo o resto do
               painel para baixo da dobra. */}
           <div className="grid grid-cols-2 gap-3.5 sm:col-span-2 sm:grid-cols-4 xl:col-span-12">
@@ -187,11 +195,13 @@ export function DashboardPage() {
               value={sobra}
               tone={sobra >= 0 ? "brand" : "negative"}
               delta={
-                renda === 0
-                  ? { label: "cadastre a renda", tone: "quiet" }
-                  : sobra > 0
-                    ? { label: `${formatCurrency(porDia)}/dia`, tone: "down" }
-                    : { label: "no vermelho", tone: "up" }
+                emprestado > 0
+                  ? { label: `${formatCurrency(emprestado)} emprestado`, tone: "up" }
+                  : renda === 0
+                    ? { label: "cadastre a renda", tone: "quiet" }
+                    : sobra > 0
+                      ? { label: `${formatCurrency(porDia)}/dia`, tone: "down" }
+                      : { label: "no vermelho", tone: "up" }
               }
             />
             <StatTile icon={Wallet} label="Renda prevista" value={renda} tone="info"

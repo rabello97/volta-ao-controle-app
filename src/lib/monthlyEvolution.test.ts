@@ -17,6 +17,9 @@ function makeTransaction(overrides: Partial<Transaction> = {}): Transaction {
     installmentNumber: null,
     installmentTotal: null,
     installmentGroupId: null,
+    transferPeerUserId: null,
+    moneySource: null,
+    sourceConfirmedAt: null,
     createdAt: "2026-03-05",
     ...overrides,
   };

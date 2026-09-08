@@ -12,6 +12,7 @@ import { useTransactions } from "@/hooks/useTransactions";
 import { useRecurringBills } from "@/hooks/useRecurringBills";
 import { useCreditCards } from "@/hooks/useCreditCards";
 import { useAIStatus } from "@/hooks/useAI";
+import { usePendingSourceConfirmations } from "@/hooks/useMoneySource";
 import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useScanDraft } from "@/context/ScanDraftContext";
@@ -193,6 +194,9 @@ export function AppLayout() {
   const bills = useRecurringBills(scope);
   const cards = useCreditCards(scope);
   const ai = useAIStatus();
+  // Sem push, o contador é como ela fica sabendo que tem algo esperando ela.
+  const pendentes = usePendingSourceConfirmations();
+  const aguardando = pendentes.data?.length ?? 0;
   const scanDraft = useScanDraft();
   const [assistenteAberto, setAssistenteAberto] = useState(false);
 
@@ -251,11 +255,18 @@ export function AppLayout() {
                         <NavIcon>{item.icon}</NavIcon>
                       </span>
                       {item.label}
-                      {counts[item.to] !== undefined && (
+                      {item.to === "/dashboard" && aguardando > 0 ? (
+                        <span
+                          title="Esperando você dizer de onde veio o dinheiro"
+                          className="ml-auto rounded-full bg-warning px-[7px] py-px font-mono text-[11px] font-semibold text-[#2A2519]"
+                        >
+                          {aguardando}
+                        </span>
+                      ) : counts[item.to] !== undefined ? (
                         <span className="ml-auto rounded-full bg-side-line px-[7px] py-px font-mono text-[11px] font-semibold text-side-on">
                           {counts[item.to]}
                         </span>
-                      )}
+                      ) : null}
                       {item.to === "/credit-cards" && cardsAlert && (
                         <span className="ml-auto size-1.5 rounded-full bg-warning" />
                       )}

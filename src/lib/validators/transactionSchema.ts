@@ -12,6 +12,10 @@ export const transactionFormSchema = z
     invoiceChoice: z.enum(["CURRENT", "NEXT"]).optional(),
     installmentTotal: z.coerce.number().int().min(1).max(24).optional(),
     walletId: z.string().optional(),
+    /** Transferência para o parceiro: não conta como gasto da casa. */
+    transferPeerUserId: z.string().optional(),
+    /** Só em entradas: de onde veio o dinheiro. */
+    moneySource: z.enum(["OWN", "PARTNER", "CARD_LOAN", "OVERDRAFT", "OTHER_LOAN"]).optional(),
   })
   .refine((data) => !data.creditCardId || Boolean(data.invoiceChoice), {
     message: "Escolha a fatura atual ou a próxima",
