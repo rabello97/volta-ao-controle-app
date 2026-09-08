@@ -4,6 +4,7 @@ import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { Fab } from "@/components/Fab";
 import { RecurringBills } from "@/components/RecurringBills";
 import { InstallmentPlans } from "@/components/InstallmentPlans";
+import { DebtPanel } from "@/components/DebtPanel";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { useMonth } from "@/context/MonthContext";
 import { scopeFor } from "@/lib/scope";
@@ -12,6 +13,7 @@ import { cn } from "@/lib/utils";
 const ABAS = [
   { key: "fixas", label: "Contas fixas" },
   { key: "parceladas", label: "Parcelamentos" },
+  { key: "dividas", label: "Dívidas" },
 ] as const;
 
 type Aba = (typeof ABAS)[number]["key"];
@@ -32,7 +34,11 @@ export function BillsPage() {
       <PageHeader
         title="Contas"
         subtitle={
-          aba === "fixas" ? "Cobradas todo mês, sem data para acabar" : "Repetem todo mês, mas têm fim"
+          aba === "fixas"
+            ? "Cobradas todo mês, sem data para acabar"
+            : aba === "parceladas"
+              ? "Repetem todo mês, mas têm fim"
+              : "Tudo que ainda será cobrado, e quando acaba"
         }
         ctaLabel={aba === "fixas" ? "Nova conta" : undefined}
         onCta={aba === "fixas" ? () => setPedidoDeNovaConta((n) => n + 1) : undefined}
@@ -55,7 +61,9 @@ export function BillsPage() {
         ))}
       </div>
 
-      {aba === "fixas" ? (
+      {aba === "dividas" ? (
+        <DebtPanel scope={scope} monthKey={month.key} />
+      ) : aba === "fixas" ? (
         <RecurringBills scope={scope} month={month.key} abrirFormulario={pedidoDeNovaConta} />
       ) : (
         <InstallmentPlans scope={scope} />
