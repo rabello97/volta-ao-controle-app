@@ -5,12 +5,16 @@ import { LogOut, Users, Settings, ChevronDown, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { BrandMark } from "@/components/BrandMark";
+import { ScanButton } from "@/components/ScanButton";
 import { formatCurrency } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useRecurringBills } from "@/hooks/useRecurringBills";
 import { useCreditCards } from "@/hooks/useCreditCards";
+import { useAIStatus } from "@/hooks/useAI";
 import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
+import { useScanDraft } from "@/context/ScanDraftContext";
+import type { ScanResult } from "@/api/types";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,6 +28,7 @@ const NAV_ITEMS = [
   {
     to: "/dashboard",
     label: "Painel",
+    group: "Mês",
     icon: (
       <>
         <rect x="1.8" y="1.8" width="5" height="5" rx="1.2" />
@@ -36,11 +41,24 @@ const NAV_ITEMS = [
   {
     to: "/transactions",
     label: "Transações",
+    group: "Mês",
     icon: <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />,
+  },
+  {
+    to: "/reports",
+    label: "Relatórios",
+    group: "Mês",
+    icon: (
+      <>
+        <circle cx="8" cy="8" r="6.2" />
+        <path d="M8 1.8V8h6.2" />
+      </>
+    ),
   },
   {
     to: "/contas",
     label: "Contas",
+    group: "Compromissos",
     icon: (
       <>
         <path d="M2.6 8a5.4 5.4 0 0 1 9.2-3.8M13.4 8a5.4 5.4 0 0 1-9.2 3.8" />
@@ -49,19 +67,9 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: "/casa",
-    label: "Casa",
-    icon: (
-      <>
-        <path d="M2 3h1.9l1.7 7.6h6.9l1.6-5.3H4.4" />
-        <circle cx="6.6" cy="13" r="1" />
-        <circle cx="11.8" cy="13" r="1" />
-      </>
-    ),
-  },
-  {
     to: "/credit-cards",
     label: "Cartões",
+    group: "Compromissos",
     icon: (
       <>
         <rect x="1.5" y="3.5" width="13" height="9" rx="2" />
@@ -70,16 +78,20 @@ const NAV_ITEMS = [
     ),
   },
   {
-    to: "/reports",
-    label: "Relatórios",
+    to: "/casa",
+    label: "Casa",
+    group: "Casa",
     icon: (
       <>
-        <circle cx="8" cy="8" r="6.2" />
-        <path d="M8 1.8V8h6.2" />
+        <path d="M2 3h1.9l1.7 7.6h6.9l1.6-5.3H4.4" />
+        <circle cx="6.6" cy="13" r="1" />
+        <circle cx="11.8" cy="13" r="1" />
       </>
     ),
   },
-];
+] as const;
+
+const NAV_GROUPS = ["Mês", "Compromissos", "Casa"] as const;
 
 function NavIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -89,26 +101,27 @@ function NavIcon({ children }: { children: React.ReactNode }) {
   );
 }
 
+/** Meta de reserva na barra escura: trilho de vidro, preenchimento no acento. */
 function SavingsGoalCard({ saved, target }: { saved: number; target: number }) {
   const pct = target > 0 ? Math.min(100, Math.round((saved / target) * 100)) : 0;
 
   return (
-    <div className="flex flex-col gap-[9px] rounded-[14px] border border-divider bg-surface p-3.5 shadow-[var(--shadow-card)]">
+    <div className="flex flex-col gap-[9px] rounded-[14px] border border-side-line bg-white/[0.06] p-3.5">
       <div className="flex items-baseline justify-between">
-        <span className="text-[12px] text-text-3">Meta de reserva</span>
-        <span className="font-mono text-[12px] text-brand">{pct}%</span>
+        <span className="text-[12px] text-side-fg">Meta de reserva</span>
+        <span className="font-mono text-[12px] font-semibold text-side-accent">{pct}%</span>
       </div>
-      <div className="h-[5px] overflow-hidden rounded-[4px] bg-track">
-        <div className="h-full rounded-[4px] bg-[image:var(--meter-grad)]" style={{ width: `${pct}%` }} />
+      <div className="h-[5px] overflow-hidden rounded-[4px] bg-black/25">
+        <div className="h-full rounded-[4px] bg-side-accent" style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-[11px] text-text-5">
+      <span className="text-[11px] text-side-fg-2">
         {formatCurrency(saved)} de {formatCurrency(target)}
       </span>
     </div>
   );
 }
 
-function ThemeSegmented() {
+function ThemeSegmented({ onDark = false }: { onDark?: boolean }) {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
@@ -120,7 +133,7 @@ function ThemeSegmented() {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="flex gap-0.5 rounded-full bg-surface-2 p-[3px]">
+    <div className={cn("flex gap-0.5 rounded-full p-[3px]", onDark ? "bg-black/25" : "bg-surface-2")}>
       {(
         [
           { key: "light", label: "Tema claro", Icon: Sun },
@@ -137,7 +150,13 @@ function ThemeSegmented() {
             onClick={() => setTheme(key)}
             className={cn(
               "flex size-9 items-center justify-center rounded-full transition-colors",
-              active ? "bg-track text-text" : "text-text-5 hover:text-text",
+              active
+                ? onDark
+                  ? "bg-white/15 text-side-on"
+                  : "bg-track text-text"
+                : onDark
+                  ? "text-side-fg-2 hover:bg-white/10 hover:text-side-on"
+                  : "text-text-5 hover:bg-track hover:text-text",
             )}
           >
             <Icon className="size-3.5" />
@@ -172,83 +191,121 @@ export function AppLayout() {
   const transactions = useTransactions({ page: 1, limit: 1, scope });
   const bills = useRecurringBills(scope);
   const cards = useCreditCards(scope);
+  const ai = useAIStatus();
+  const scanDraft = useScanDraft();
 
   const counts: Record<string, number | undefined> = {
     "/transactions": transactions.data?.total,
-    "/recurring-bills": bills.data?.length,
+    "/contas": bills.data?.length,
   };
   const cardsAlert = (cards.data ?? []).some((c) => (c.utilizationPct ?? 0) >= 70);
+
+  /** Escanear pela barra lateral: a leitura entra direto no fluxo que cria o
+   *  lançamento e só pergunta o cartão. */
+  function handleScanned(result: ScanResult) {
+    scanDraft.start(result);
+  }
 
   // A casca é fixa nas quatro bordas em vez de ter altura 100dvh: no PWA em tela
   // cheia do iOS o dvh vem menor que a tela e sobrava uma faixa preta embaixo da
   // barra de navegação. Com inset-0 ela sempre cobre a viewport inteira.
   return (
-    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background text-text sm:grid sm:grid-cols-[252px_1fr]">
-      <aside className="hidden h-full flex-col gap-6 overflow-y-auto border-r border-divider px-4 py-[22px] sm:flex">
+    <div className="fixed inset-0 flex flex-col overflow-hidden bg-background text-text sm:grid sm:grid-cols-[236px_1fr] sm:gap-[18px] sm:p-[18px]">
+      <aside className="hidden h-full flex-col gap-[22px] overflow-y-auto rounded-[22px] bg-[image:var(--side)] px-4 py-[22px] text-side-fg shadow-[var(--shadow-lift)] sm:flex">
         <div className="flex items-center gap-[11px] px-2">
-          <div className="flex size-[30px] flex-none items-center justify-center rounded-[10px] bg-brand">
-            <BrandMark className="size-[18px] text-brand-ink" />
+          <div className="flex size-[30px] flex-none items-center justify-center rounded-[9px] bg-side-accent">
+            <BrandMark className="size-[18px] text-side-accent-ink" />
           </div>
-          <div className="flex flex-col leading-[1.15]">
-            <span className="whitespace-nowrap text-[15px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
-            <span className="text-[11px] text-text-5">Finanças pessoais</span>
+          <div className="flex min-w-0 flex-col leading-[1.15]">
+            <span className="truncate text-[15px] font-semibold -tracking-[0.01em] text-side-on">Volta ao Controle</span>
+            <span className="truncate text-[11px] text-side-fg-2">
+              {partner ? `Casa com ${partner.name.split(" ")[0]}` : "Finanças pessoais"}
+            </span>
           </div>
         </div>
 
-        <nav className="flex flex-col gap-[3px]">
-          <span className="px-[10px] pb-2 text-[11px] font-semibold tracking-[0.12em] text-text-5">GERAL</span>
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  "flex items-center gap-[11px] rounded-[10px] px-[10px] py-[9px] text-[13px] transition-colors",
-                  isActive
-                    ? "bg-nav-active-bg font-semibold text-nav-active-fg"
-                    : "text-nav-idle-fg hover:text-text",
-                )
-              }
-            >
-              <NavIcon>{item.icon}</NavIcon>
-              {item.label}
-              {counts[item.to] !== undefined && (
-                <span className="ml-auto font-mono text-[11px] text-text-5">{counts[item.to]}</span>
-              )}
-              {item.to === "/credit-cards" && cardsAlert && (
-                <span className="ml-auto size-1.5 rounded-full bg-negative" />
-              )}
-            </NavLink>
-          ))}
-        </nav>
+        {NAV_GROUPS.map((group) => (
+          <div key={group} className="flex flex-col">
+            <span className="px-2 pb-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-side-fg-2">
+              {group}
+            </span>
+            <nav className="flex flex-col gap-[3px]">
+              {NAV_ITEMS.filter((item) => item.group === group).map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  className={({ isActive }) =>
+                    cn(
+                      "flex items-center gap-[11px] rounded-[11px] px-[11px] py-[9px] text-[14px] transition-colors",
+                      isActive
+                        ? "bg-side-active font-semibold text-side-on"
+                        : "text-side-fg hover:bg-side-hover hover:text-side-on [&:hover_svg]:text-side-accent",
+                    )
+                  }
+                >
+                  {({ isActive }) => (
+                    <>
+                      <span className={isActive ? "text-side-accent" : undefined}>
+                        <NavIcon>{item.icon}</NavIcon>
+                      </span>
+                      {item.label}
+                      {counts[item.to] !== undefined && (
+                        <span className="ml-auto rounded-full bg-side-line px-[7px] py-px font-mono text-[11px] font-semibold text-side-on">
+                          {counts[item.to]}
+                        </span>
+                      )}
+                      {item.to === "/credit-cards" && cardsAlert && (
+                        <span className="ml-auto size-1.5 rounded-full bg-warning" />
+                      )}
+                    </>
+                  )}
+                </NavLink>
+              ))}
+            </nav>
+          </div>
+        ))}
 
-        {user && (
+        {user && (user.savingsGoalTarget ?? 0) > 0 && (
           <SavingsGoalCard saved={user.savingsGoalSaved ?? 0} target={user.savingsGoalTarget ?? 0} />
         )}
 
-        <div className="mt-auto flex flex-col gap-3">
-          <div className="flex items-center justify-between px-[10px] py-1.5">
-            <span className="text-[11px] font-semibold tracking-[0.12em] text-text-5">TEMA</span>
-            <ThemeSegmented />
+        {ai.data?.enabled && (
+          <div className="mt-auto rounded-[16px] border border-side-line bg-white/[0.07] p-[15px]">
+            <b className="mb-1 block text-[13.5px] font-semibold text-side-on">Escanear nota</b>
+            <p className="mb-3 text-[12.5px] leading-[1.5] text-side-fg-2">
+              Fotografe o cupom ou o print do banco e a transação entra sozinha.
+            </p>
+            <ScanButton
+              onScanned={handleScanned}
+              label="Abrir câmera"
+              className="w-full justify-center rounded-[9px] border-transparent bg-side-accent py-2 text-[13px] font-semibold text-side-accent-ink transition-opacity hover:opacity-85 hover:text-side-accent-ink active:scale-[0.98]"
+            />
+          </div>
+        )}
+
+        <div className={cn("flex flex-col gap-3 border-t border-side-line pt-4", !ai.data?.enabled && "mt-auto")}>
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-side-fg-2">Tema</span>
+            <ThemeSegmented onDark />
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2.5 rounded-[10px] border border-divider bg-surface px-[10px] py-2.5 transition-colors hover:border-divider-strong"
+                className="flex items-center gap-2.5 rounded-[11px] px-2 py-1.5 text-left transition-colors hover:bg-side-hover"
               >
-                <div className="flex size-7 flex-none items-center justify-center rounded-full bg-brand-tint text-[11px] font-semibold text-brand">
+                <div className="flex size-8 flex-none items-center justify-center rounded-full bg-white/15 text-[12px] font-semibold text-side-on">
                   {initials(user?.name)}
                 </div>
-                <div className="min-w-0 flex-1 text-left leading-[1.2]">
-                  <div className="truncate text-[13px] font-medium text-text">{user?.name ?? "Sessão ativa"}</div>
-                  <div className="text-[11px] text-text-5">Conta</div>
+                <div className="min-w-0 flex-1 leading-[1.2]">
+                  <div className="truncate text-[13.5px] font-medium text-side-on">{user?.name ?? "Sessão ativa"}</div>
+                  <div className="truncate text-[11.5px] text-side-fg-2">{user?.email ?? "Conta"}</div>
                 </div>
-                <ChevronDown className="size-3.5 flex-none text-text-5" />
+                <ChevronDown className="size-3.5 flex-none text-side-fg-2" />
               </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" side="top" className="w-48">
+            <DropdownMenuContent align="end" side="top" className="w-52">
               <DropdownMenuItem onClick={() => navigate("/household")}>
                 <Users className="size-4" /> Household
               </DropdownMenuItem>
@@ -264,17 +321,26 @@ export function AppLayout() {
         </div>
       </aside>
 
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col sm:overflow-hidden">
         <header className="flex flex-none items-center justify-between gap-3 border-b border-divider bg-surface px-4 pb-3 pt-[calc(0.75rem+env(safe-area-inset-top))] sm:hidden">
           <div className="flex items-center gap-2">
-            <div className="flex size-9 flex-none items-center justify-center rounded-lg bg-brand">
+            <div className="flex size-9 flex-none items-center justify-center rounded-[10px] bg-brand">
               <BrandMark className="size-3.5 text-brand-ink" />
             </div>
             <span className="text-[15px] font-semibold -tracking-[0.01em]">Volta ao Controle</span>
           </div>
           <div className="flex items-center gap-1">
+            {/* No celular não existe barra lateral, e é justamente no celular
+                que se fotografa o cupom — o scan precisa estar aqui. */}
+            {ai.data?.enabled && (
+              <ScanButton
+                onScanned={handleScanned}
+                label=""
+                className="size-11 justify-center rounded-[10px] border-transparent bg-transparent px-0 py-0 text-text-5 hover:bg-surface-2 hover:text-text"
+              />
+            )}
             <ThemeSegmented />
-            <button type="button" onClick={logout} aria-label="Sair" className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-surface-2 hover:text-text">
+            <button type="button" onClick={logout} aria-label="Sair" className="flex size-11 flex-none items-center justify-center rounded-[10px] text-text-5 transition-colors hover:bg-surface-2 hover:text-text md:size-9">
               <LogOut className="size-[18px]" />
             </button>
           </div>
@@ -282,8 +348,8 @@ export function AppLayout() {
 
         <main /* pb-24 no celular reserva o espaço do FAB: sem isso ele fica
              permanentemente por cima da última linha da lista. */
-          className="min-h-0 flex-1 overflow-y-auto px-4 pb-24 pt-5 sm:px-[34px] sm:pb-[54px] sm:pt-[26px]">
-          <div key={location.pathname} className="mx-auto w-full max-w-[1780px] animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
+          className="min-h-0 flex-1 overflow-y-auto px-4 pb-24 pt-5 sm:px-1 sm:pb-6 sm:pt-1">
+          <div key={location.pathname} className="mx-auto w-full max-w-[1500px] animate-in fade-in slide-in-from-bottom-2 duration-200 ease-out">
             <Outlet />
           </div>
         </main>

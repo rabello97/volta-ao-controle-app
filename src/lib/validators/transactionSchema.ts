@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { parseMoney } from "@/lib/money";
 
 export const transactionFormSchema = z
   .object({
     type: z.enum(["INCOME", "EXPENSE"]),
-    amount: z.coerce.number().positive("Informe um valor maior que zero"),
+    amount: z.preprocess(parseMoney, z.coerce.number().positive("Informe um valor maior que zero")),
     date: z.string().min(1, "Informe a data"),
     category: z.string().min(1, "Informe a categoria"),
     description: z.string().optional(),

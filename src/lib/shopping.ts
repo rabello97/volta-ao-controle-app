@@ -1,13 +1,15 @@
 import type { ShoppingItem } from "@/api/types";
+import { parseMoney } from "@/lib/money";
 
-/** Aceita "12,90" e "12.90" — no celular o teclado decimal manda vírgula.
- *  Devolve null para vazio ou valor inválido, que é como a API entende
- *  "esse item ainda não tem preço". */
+/** Preço digitado num campo livre. Delega a leitura a `parseMoney` para que
+ *  "13.500,00" (com separador de milhar) funcione: a versão anterior trocava
+ *  só a primeira vírgula e devolvia null para qualquer valor acima de mil —
+ *  ou seja, aluguel, salário e renda mensal simplesmente não salvavam. */
 export function parsePrice(value: string): number | null {
-  const clean = value.replace(/\s/g, "").replace(",", ".");
-  if (!clean) return null;
-  const parsed = Number(clean);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+  const limpo = value.replace(/\s/g, "");
+  if (!limpo) return null;
+  const parsed = parseMoney(limpo);
+  return typeof parsed === "number" && Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
 }
 
 /** Preço pago quando existe; senão a estimativa. Multiplicado pela quantidade. */

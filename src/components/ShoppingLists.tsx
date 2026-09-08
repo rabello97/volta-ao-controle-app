@@ -183,7 +183,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
       ) : (
         <div className="grid gap-4 lg:grid-cols-[300px_1fr]">
           <section className="flex flex-col gap-2.5">
-            <div className="flex items-center gap-2 rounded-2xl border border-divider bg-surface px-3 py-2">
+            <div className="flex items-center gap-2 rounded-full border border-divider bg-surface-inset px-3.5 py-2">
               <input
                 value={newListName}
                 onChange={(e) => setNewListName(e.target.value)}
@@ -196,7 +196,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                 onClick={handleCreateList}
                 disabled={!newListName.trim() || createList.isPending}
                 aria-label="Criar lista"
-                className="flex size-7 flex-none items-center justify-center rounded-lg bg-brand text-brand-ink transition-opacity disabled:opacity-40"
+                className="flex size-9 flex-none items-center justify-center rounded-[10px] bg-brand text-brand-ink transition-opacity disabled:opacity-40"
               >
                 <Plus className="size-4" />
               </button>
@@ -221,7 +221,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
             )}
           </section>
 
-          <section className="flex flex-col gap-3 rounded-[18px] border border-divider bg-surface px-4 py-4 shadow-[var(--shadow-card)] sm:px-[22px]">
+          <section className="flex flex-col gap-3 rounded-[20px] bg-surface px-4 py-4 shadow-[var(--shadow-soft)] sm:px-[22px]">
             {!list ? (
               <div className="flex flex-col items-center gap-2 py-16 text-center">
                 <ShoppingBasket className="size-7 text-text-5" />
@@ -245,7 +245,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                 </div>
 
                 {open && (
-                  <div className="flex flex-wrap items-center gap-2 rounded-xl border border-divider bg-surface-2 px-3 py-2">
+                  <div className="flex flex-wrap items-center gap-2 rounded-[13px] border border-divider bg-surface-inset px-3 py-2">
                     <input
                       value={itemName}
                       onChange={(e) => setItemName(e.target.value)}
@@ -258,7 +258,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                       onChange={(e) => setItemQty(e.target.value)}
                       inputMode="numeric"
                       aria-label="Quantidade"
-                      className="w-12 rounded-lg border border-divider bg-surface px-2 py-1 text-center font-mono text-[13px] text-text outline-none"
+                      className="w-12 rounded-[10px] border border-divider bg-surface-inset px-2 py-1 text-center font-mono text-[13px] text-text outline-none"
                     />
                     <input
                       value={itemPrice}
@@ -266,7 +266,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                       inputMode="decimal"
                       placeholder="R$"
                       aria-label="Preço estimado"
-                      className="w-20 rounded-lg border border-divider bg-surface px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+                      className="w-20 rounded-[10px] border border-divider bg-surface-inset px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
                     />
                     <button
                       type="button"
@@ -325,7 +325,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                           inputMode="decimal"
                           placeholder="R$"
                           aria-label={`Preço de ${item.name}`}
-                          className="w-20 flex-none rounded-lg border border-divider bg-surface px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+                          className="w-20 flex-none rounded-[10px] border border-divider bg-surface-inset px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
                         />
                       ) : (
                         <span className="w-20 flex-none text-right font-mono text-[13px] text-text-3">
@@ -365,7 +365,7 @@ export function ShoppingLists({ scope }: { scope?: string }) {
                 )}
 
                 {!open && (
-                  <p className="rounded-xl border border-divider bg-surface-2 px-3 py-2.5 text-[13px] text-text-3">
+                  <p className="rounded-[13px] border border-divider bg-surface-inset px-3 py-2.5 text-[13px] text-text-3">
                     Compra finalizada e lançada como despesa de {formatCurrency(purchasedTotal)}.
                   </p>
                 )}

@@ -1,5 +1,5 @@
 import { apiRequest } from "./client";
-import type { InvoiceChoice, TransactionListResult, TransactionType } from "./types";
+import type { InvoiceChoice, Transaction, TransactionListResult, TransactionType } from "./types";
 
 export interface TransactionFilters {
   from?: string;
@@ -44,8 +44,8 @@ export function listTransactions(filters: TransactionFilters = {}): Promise<Tran
   return apiRequest<TransactionListResult>("/transactions", { query: { ...filters } });
 }
 
-export function createTransaction(input: TransactionInput) {
-  return apiRequest("/transactions", { method: "POST", body: input });
+export function createTransaction(input: TransactionInput): Promise<Transaction> {
+  return apiRequest<Transaction>("/transactions", { method: "POST", body: input });
 }
 
 export function updateTransaction(id: string, input: UpdateTransactionInput) {

@@ -52,13 +52,14 @@ export function ScanButton({ onScanned, className, label = "Escanear nota ou pri
         type="button"
         onClick={() => inputRef.current?.click()}
         disabled={busy}
+        aria-label={label || "Escanear nota ou print"}
         className={cn(
           "flex flex-none items-center gap-2 whitespace-nowrap rounded-[10px] border border-divider bg-surface px-3 py-2 text-[13px] text-text-3 transition-colors hover:text-text disabled:opacity-60",
           className,
         )}
       >
         {busy ? <Loader2 className="size-4 animate-spin" /> : <Camera className="size-4" />}
-        {busy ? "Lendo..." : label}
+        {label ? (busy ? "Lendo..." : label) : null}
       </button>
     </>
   );

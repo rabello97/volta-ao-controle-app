@@ -38,7 +38,7 @@ export function ErrorPage({ kind = "not-found" }: { kind?: ErrorKind }) {
         <span className="text-[15px] font-semibold -tracking-[0.01em] text-text">Volta ao Controle</span>
       </div>
 
-      <div className="flex w-full max-w-[380px] flex-col items-center gap-3 rounded-[18px] border border-divider bg-surface px-6 py-8 shadow-[var(--shadow-card)]">
+      <div className="flex w-full max-w-[380px] flex-col items-center gap-3 rounded-[20px] bg-surface px-6 py-8 shadow-[var(--shadow-soft)]">
         <div className="flex size-[46px] items-center justify-center rounded-[14px] bg-brand-tint text-brand">
           <Icon className="size-5" />
         </div>

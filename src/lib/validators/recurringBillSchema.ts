@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { parseMoney } from "@/lib/money";
 
 export const recurringBillFormSchema = z.object({
   name: z.string().min(1, "Informe o nome"),
-  expectedAmount: z.coerce.number().positive("Informe um valor maior que zero"),
+  expectedAmount: z.preprocess(parseMoney, z.coerce.number().positive("Informe um valor maior que zero")),
   dueDay: z.coerce.number().int().min(1, "Dia deve estar entre 1 e 31").max(31, "Dia deve estar entre 1 e 31"),
   category: z.string().min(1, "Informe a categoria"),
 });

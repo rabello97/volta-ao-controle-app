@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, TrendingDown, TrendingUp, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/PageHeader";
 import { TransactionFormDialog } from "@/components/TransactionFormDialog";
@@ -20,9 +20,10 @@ import { useMonth, monthRange } from "@/context/MonthContext";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { ScanButton } from "@/components/ScanButton";
+import { useScanDraft } from "@/context/ScanDraftContext";
+import { StatTile } from "@/components/StatTile";
 import { Fab } from "@/components/Fab";
 import { useAIStatus } from "@/hooks/useAI";
-import type { ScanResult } from "@/api/types";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
@@ -30,8 +31,10 @@ import type { Transaction, TransactionType } from "@/api/types";
 import type { TransactionFormPayload } from "@/api/transactions";
 
 /** Mesma grade de colunas do mockup. Escrita literal (sem interpolar) porque o
- *  Tailwind precisa enxergar a classe no código-fonte para gerá-la. */
-const GRID = "md:grid-cols-[92px_1fr_150px_130px_150px_40px]";
+ *  Tailwind precisa enxergar a classe no código-fonte para gerá-la.
+ *  A última coluna cabe os dois botões (editar + excluir): com 40px o lápis
+ *  transbordava por cima do valor. */
+const GRID = "md:grid-cols-[92px_1fr_150px_130px_150px_84px]";
 
 export function TransactionsPage() {
   const [type, setType] = useState<TransactionType | "ALL">("ALL");
@@ -42,7 +45,6 @@ export function TransactionsPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [deleting, setDeleting] = useState<Transaction | null>(null);
-  const [draft, setDraft] = useState<Record<string, unknown> | null>(null);
 
   const { view, partner } = useHouseholdView();
   const month = useMonth();
@@ -61,24 +63,9 @@ export function TransactionsPage() {
 
   /** A leitura da imagem abre o formulário preenchido em vez de lançar direto:
    *  OCR erra, e conferir valor e data leva dois segundos. */
-  function handleScanned(result: ScanResult) {
-    const card = (cards ?? []).find(
-      (c) => result.cartaoSugerido && c.nickname.toLowerCase() === result.cartaoSugerido.toLowerCase(),
-    );
-    setEditing(null);
-    setDraft({
-      type: result.tipo,
-      amount: result.valor,
-      date: result.data || new Date().toISOString().slice(0, 10),
-      category: result.categoriaSugerida,
-      description: result.descricao || result.estabelecimento,
-      ...(card ? { creditCardId: card.id, invoiceChoice: "CURRENT" } : {}),
-    });
-    setFormOpen(true);
-    if (result.confianca !== "alta") {
-      toast.warning(result.observacao || "Confira os valores antes de salvar.");
-    }
-  }
+  // O scan é o mesmo em qualquer tela: cria o lançamento e só pergunta o
+  // cartão. Quem conduz é o ScanDraftProvider.
+  const scan = useScanDraft();
 
   const createMutation = useCreateTransaction();
   const updateMutation = useUpdateTransaction();
@@ -131,7 +118,6 @@ export function TransactionsPage() {
             ? undefined
             : () => {
                 setEditing(null);
-                setDraft(null);
                 setFormOpen(true);
               }
         }
@@ -140,14 +126,42 @@ export function TransactionsPage() {
         aside={
           <>
             <HouseholdViewToggle />
-            {!readOnly && ai.data?.enabled && <ScanButton onScanned={handleScanned} label="Escanear" />}
+            {!readOnly && ai.data?.enabled && <ScanButton onScanned={scan.start} label="Escanear" />}
           </>
         }
       />
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3.5">
+        {/* 2 + 1 no celular: empilhados, os três resumos ocupavam uma tela
+            inteira antes da primeira transação. */}
+        {result && (
+          <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 [&>*:last-child]:col-span-2 sm:[&>*:last-child]:col-span-1">
+            <StatTile
+              icon={TrendingDown}
+              label="Saídas no filtro"
+              value={result.totals.expense}
+              tone="negative"
+              delta={{ label: plural(result.total, "lançamento"), tone: "quiet" }}
+            />
+            <StatTile
+              icon={TrendingUp}
+              label="Entradas no filtro"
+              value={result.totals.income}
+              tone="brand"
+              delta={{ label: "no período selecionado", tone: "quiet" }}
+            />
+            <StatTile
+              icon={Receipt}
+              label="Ticket médio"
+              value={result.total > 0 ? result.totals.expense / result.total : 0}
+              tone="info"
+              delta={{ label: month.label.toLowerCase(), tone: "quiet" }}
+            />
+          </div>
+        )}
+
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex flex-none gap-0.5 rounded-[10px] border border-divider bg-surface p-[3px]">
+          <div className="flex flex-none gap-0.5 rounded-full bg-track p-[3px]">
             {(
               [
                 { key: "ALL", label: "Todas" },
@@ -160,8 +174,8 @@ export function TransactionsPage() {
                 type="button"
                 onClick={() => reset(setType)(opt.key)}
                 className={cn(
-                  "whitespace-nowrap rounded-lg px-3.5 py-1.5 text-[13px] transition-colors",
-                  type === opt.key ? "bg-track font-medium text-text" : "text-text-3 hover:text-text",
+                  "min-h-9 whitespace-nowrap rounded-full px-3.5 text-[13px] transition-colors sm:min-h-0 sm:py-1.5",
+                  type === opt.key ? "bg-surface font-semibold text-text shadow-[var(--shadow-card)]" : "text-text-4 hover:text-text",
                 )}
               >
                 {opt.label}
@@ -170,7 +184,7 @@ export function TransactionsPage() {
           </div>
 
           <Select value={category || "all"} onValueChange={(v) => reset(setCategory)(v === "all" ? "" : v)}>
-            <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[13px] text-text-3">
+            <SelectTrigger className="h-auto min-h-9 w-auto gap-[7px] rounded-full border-transparent bg-surface-inset px-3.5 py-2 text-[13px] text-text-3 shadow-none">
               <SelectValue placeholder="Categoria: todas" />
             </SelectTrigger>
             <SelectContent>
@@ -185,7 +199,7 @@ export function TransactionsPage() {
 
           {cards && cards.length > 0 && (
             <Select value={creditCardId || "all"} onValueChange={(v) => reset(setCreditCardId)(v === "all" ? "" : v)}>
-              <SelectTrigger className="h-auto w-auto gap-[7px] rounded-[10px] border-divider bg-surface px-3 py-2 text-[13px] text-text-3">
+              <SelectTrigger className="h-auto min-h-9 w-auto gap-[7px] rounded-full border-transparent bg-surface-inset px-3.5 py-2 text-[13px] text-text-3 shadow-none">
                 <SelectValue placeholder="Cartão: todos" />
               </SelectTrigger>
               <SelectContent>
@@ -199,19 +213,12 @@ export function TransactionsPage() {
             </Select>
           )}
 
-          {result && (
-            <div className="ml-auto flex flex-wrap items-center gap-[18px] whitespace-nowrap rounded-[10px] border border-divider bg-surface px-4 py-2">
-              <span className="text-xs text-text-4">{plural(result.total, "lançamento")}</span>
-              <span className="font-mono text-[13px] text-positive">+ {formatCurrency(result.totals.income)}</span>
-              <span className="font-mono text-[13px] text-negative">− {formatCurrency(result.totals.expense)}</span>
-            </div>
-          )}
         </div>
 
         {transactions.isError ? (
           <ErrorState onRetry={() => transactions.refetch()} />
         ) : transactions.isLoading ? (
-          <section className="overflow-hidden rounded-[18px] border border-divider bg-surface">
+          <section className="overflow-hidden rounded-[20px] bg-surface shadow-[var(--shadow-soft)]">
             {[0, 1, 2, 3, 4].map((i) => (
               <div key={i} className="flex items-center gap-3 border-b border-divider px-4 py-3.5 last:border-b-0">
                 <Skeleton className="size-[26px] flex-none rounded-lg" />
@@ -224,7 +231,7 @@ export function TransactionsPage() {
             ))}
           </section>
         ) : result?.items.length === 0 ? (
-          <section className="flex flex-col items-center gap-2 rounded-[18px] border border-divider bg-surface px-[22px] py-14">
+          <section className="flex flex-col items-center gap-2 rounded-[20px] bg-surface px-[22px] py-14 shadow-[var(--shadow-soft)]">
             <div className="mb-1.5 flex size-[46px] items-center justify-center rounded-[14px] bg-brand-tint text-brand">
               <svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />
@@ -252,7 +259,7 @@ export function TransactionsPage() {
           </section>
         ) : (
           result && (
-            <section className="overflow-hidden rounded-[18px] border border-divider bg-surface">
+            <section className="overflow-hidden rounded-[20px] bg-surface shadow-[var(--shadow-soft)]">
               <div className={cn("hidden gap-3 border-b border-divider bg-surface-inset px-[22px] py-3 md:grid", GRID)}>
                 {["DATA", "DESCRIÇÃO", "CATEGORIA", "ORIGEM"].map((h) => (
                   <span key={h} className="text-[11px] font-semibold tracking-[0.1em] text-text-5">
@@ -271,7 +278,7 @@ export function TransactionsPage() {
                   <div
                     key={t.id}
                     className={cn(
-                      "flex items-center gap-3 border-b border-divider px-4 py-3 transition-colors last:border-b-0 hover:bg-surface-2 active:bg-surface-2 md:grid md:items-center md:gap-3 md:px-[22px] md:py-[13px]",
+                      "flex flex-wrap items-center gap-x-3 gap-y-1.5 border-b border-divider px-4 py-3 transition-colors last:border-b-0 hover:bg-surface-2 active:bg-surface-2 md:grid md:flex-nowrap md:items-center md:gap-3 md:px-[22px] md:py-[13px]",
                       GRID,
                     )}
                   >
@@ -289,16 +296,16 @@ export function TransactionsPage() {
                         {income ? "+" : "−"}
                       </span>
                       <div className="flex min-w-0 flex-col">
-                        <span className="truncate text-[13px] text-text">
+                        {/* No celular a descrição quebra em vez de truncar: numa tela de
+                            360px ela chegava a mostrar 56% do texto, e é o
+                            campo pelo qual se procura a transação. */}
+                        <span className="text-[13px] text-text md:truncate">
                           {t.description || t.category}
                           {t.installmentTotal && t.installmentTotal > 1 && (
                             <span className="ml-1.5 text-[11px] text-text-5">
                               {t.installmentNumber} de {t.installmentTotal}
                             </span>
                           )}
-                        </span>
-                        <span className="truncate text-[12px] text-text-4 md:hidden">
-                          {formatDate(t.date)} · {t.category} · {origin}
                         </span>
                       </div>
                     </div>
@@ -315,6 +322,14 @@ export function TransactionsPage() {
                       {income ? "+ " : "− "}
                       {formatCurrency(t.amount)}
                     </span>
+
+                    {/* No celular data/categoria/origem e as ações dividem uma
+                        segunda linha. Na mesma linha da descrição sobravam
+                        81px para ela numa tela de 360px. */}
+                    <div className="flex w-full items-center gap-2 pl-[37px] md:contents">
+                      <span className="min-w-0 flex-1 text-[12px] leading-[1.35] text-text-4 md:hidden">
+                        {formatDate(t.date)} · {t.category} · {origin}
+                      </span>
 
                     <div className={cn("flex flex-none items-center justify-end gap-0.5", readOnly && "hidden")}>
                       <button
@@ -337,6 +352,7 @@ export function TransactionsPage() {
                         <Trash2 className="size-3.5" />
                       </button>
                     </div>
+                    </div>
                   </div>
                 );
               })}
@@ -350,7 +366,7 @@ export function TransactionsPage() {
                     type="button"
                     disabled={page <= 1}
                     onClick={() => setPage((p) => p - 1)}
-                    className="rounded-lg border border-divider px-[11px] py-[5px] text-xs text-text-5 transition-colors enabled:hover:border-brand enabled:hover:text-brand disabled:opacity-40"
+                    className="min-h-9 rounded-full border border-divider px-3.5 text-xs text-text-5 transition-colors enabled:hover:border-brand enabled:hover:text-brand disabled:opacity-40"
                   >
                     Anterior
                   </button>
@@ -358,7 +374,7 @@ export function TransactionsPage() {
                     type="button"
                     disabled={page >= totalPages}
                     onClick={() => setPage((p) => p + 1)}
-                    className="rounded-lg border border-divider-strong px-[11px] py-[5px] text-xs text-text-2 transition-colors enabled:hover:border-brand enabled:hover:text-brand disabled:opacity-40"
+                    className="min-h-9 rounded-full border border-divider-strong px-3.5 text-xs text-text-2 transition-colors enabled:hover:border-brand enabled:hover:text-brand disabled:opacity-40"
                   >
                     Próxima
                   </button>
@@ -374,7 +390,6 @@ export function TransactionsPage() {
           label="Nova transação"
           onClick={() => {
             setEditing(null);
-            setDraft(null);
             setFormOpen(true);
           }}
         />
@@ -386,11 +401,9 @@ export function TransactionsPage() {
           setFormOpen(open);
           if (!open) {
             setEditing(null);
-            setDraft(null);
           }
         }}
         transaction={editing}
-        draft={draft}
         onSubmit={handleSubmit}
         isSubmitting={createMutation.isPending || updateMutation.isPending}
       />

@@ -39,15 +39,15 @@ export function BillsPage() {
         aside={<HouseholdViewToggle />}
       />
 
-      <div className="mb-4 flex w-fit gap-0.5 rounded-[10px] border border-divider bg-surface p-[3px]">
+      <div className="mb-4 flex w-fit gap-0.5 rounded-full bg-track p-[3px]">
         {ABAS.map((opt) => (
           <button
             key={opt.key}
             type="button"
             onClick={() => setAba(opt.key)}
             className={cn(
-              "whitespace-nowrap rounded-[10px] px-3.5 py-1.5 text-[13px] transition-colors",
-              aba === opt.key ? "bg-track font-medium text-text" : "text-text-3 hover:text-text",
+              "min-h-9 whitespace-nowrap rounded-full px-4 text-[13px] transition-colors sm:min-h-0 sm:py-1.5",
+              aba === opt.key ? "bg-surface font-semibold text-text shadow-[var(--shadow-card)]" : "text-text-3 hover:text-text",
             )}
           >
             {opt.label}

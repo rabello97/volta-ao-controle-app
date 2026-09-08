@@ -49,7 +49,7 @@ export function CreditCardDetailPage() {
         <ChevronLeft className="size-4" /> Cartões
       </Link>
 
-      <div className="rounded-2xl border border-divider bg-surface p-5 shadow-[var(--shadow-card)]">
+      <div className="rounded-[20px] bg-surface p-5 shadow-[var(--shadow-soft)]">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="font-heading text-lg font-bold text-text">{card?.nickname ?? "Cartão"}</h3>

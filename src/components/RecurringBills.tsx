@@ -22,15 +22,17 @@ import { ErrorState } from "@/components/ErrorState";
 import type { RecurringBillWithStatus } from "@/api/types";
 import type { RecurringBillInput } from "@/api/recurringBills";
 
-const ROW = "md:grid-cols-[56px_1fr_150px_110px_120px_110px]";
+// A última coluna cabe os três controles (switch + editar + excluir):
+// com 110px eles estouravam 6px para dentro da coluna do valor.
+const ROW = "md:grid-cols-[56px_1fr_150px_110px_120px_128px]";
 
 function KpiCard({ label, value, hint, accent }: { label: string; value: string; hint?: string; accent?: boolean }) {
   return (
-    <div className="flex flex-col gap-[5px] rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
+    <div className="flex flex-col gap-[5px] rounded-[20px] bg-surface px-[18px] py-4 shadow-[var(--shadow-soft)]">
       <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">{label}</span>
       <span
         className={cn(
-          "font-mono text-[23px] font-medium -tracking-[0.02em]",
+          "font-mono text-[19px] font-medium -tracking-[0.03em] sm:text-[23px] sm:-tracking-[0.02em]",
           accent ? "text-brand" : "text-text",
         )}
       >
@@ -129,7 +131,7 @@ export function RecurringBills({
               <div
                 key={i}
                 className={cn(
-                  "flex flex-col gap-2 rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]",
+                  "flex flex-col gap-2 rounded-[20px] bg-surface px-[18px] py-4 shadow-[var(--shadow-soft)]",
                   i === 2 && "col-span-2 sm:col-span-1",
                 )}
               >
@@ -150,7 +152,7 @@ export function RecurringBills({
               hint={pendingTotal > 0 ? `${formatCurrency(pendingTotal)} ainda a pagar` : "Tudo pago"}
               accent
             />
-            <div className="col-span-2 flex flex-col gap-[5px] rounded-2xl border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)] sm:col-span-1">
+            <div className="col-span-2 flex flex-col gap-[5px] rounded-[20px] bg-surface px-[18px] py-4 shadow-[var(--shadow-soft)] sm:col-span-1">
               <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">PRÓXIMA A VENCER</span>
               <span className="text-[19px] font-semibold -tracking-[0.01em] text-text">
                 {stats.data.nextDue ? `${stats.data.nextDue.name} · dia ${stats.data.nextDue.dueDay}` : "—"}
@@ -165,7 +167,7 @@ export function RecurringBills({
         )}
 
         {!bills.isError && (
-        <section className="rounded-[18px] border border-divider bg-surface px-[22px] pb-2 pt-5 shadow-[var(--shadow-card)]">
+        <section className="rounded-[20px] bg-surface px-[22px] pb-2 pt-5 shadow-[var(--shadow-soft)]">
           <div className="mb-1 flex items-center gap-2.5">
             <h2 className="text-[15px] font-semibold text-text">Contas fixas</h2>
             <span className="text-xs text-text-4">Cobradas todo mês, na mesma data</span>
@@ -203,7 +205,7 @@ export function RecurringBills({
                   ROW,
                 )}
               >
-                <div className="flex size-10 flex-none flex-col items-center justify-center rounded-xl border border-divider bg-surface-2 md:size-11">
+                <div className="flex size-10 flex-none flex-col items-center justify-center rounded-[13px] border border-divider bg-surface-inset md:size-11">
                   <span className="font-mono text-[13px] font-medium text-text md:text-sm">{bill.dueDay}</span>
                   <span className="text-[11px] tracking-[0.08em] text-text-5">DIA</span>
                 </div>
@@ -242,8 +244,11 @@ export function RecurringBills({
 
                 {/* No celular status e ações ficam numa faixa própria de largura
                     total; no desktop o agrupador vira `contents` e os dois voltam
-                    a ser colunas da grade. */}
-                <div className="flex w-full items-center gap-2 pl-[52px] md:contents">
+                    a ser colunas da grade.
+                    Sem recuo à esquerda de propósito: com os 52px de alinhamento
+                    sob o texto, os cinco controles (todos com alvo de 44px) não
+                    cabiam em 375px e a lixeira escapava para fora do card. */}
+                <div className="flex w-full items-center gap-1.5 md:contents md:gap-2">
                   {bill.paidThisMonth ? (
                     <span className="flex-none whitespace-nowrap rounded-full bg-brand-tint px-2.5 py-1 text-[11px] font-semibold text-brand md:justify-self-start">
                       Pago
@@ -253,7 +258,7 @@ export function RecurringBills({
                       type="button"
                       onClick={() => handlePay(bill.id)}
                       disabled={payMutation.isPending}
-                      className="flex-none whitespace-nowrap rounded-full bg-negative-tint px-2.5 py-1 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:justify-self-start"
+                      className="flex min-h-9 flex-none items-center whitespace-nowrap rounded-full bg-negative-tint px-3 text-[11px] font-semibold text-negative transition-opacity hover:opacity-80 disabled:opacity-50 md:min-h-0 md:py-1 md:justify-self-start"
                     >
                       A pagar
                     </button>

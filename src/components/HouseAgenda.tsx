@@ -124,14 +124,14 @@ export function HouseAgenda({ scope }: { scope?: string }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <section className="flex flex-wrap items-end gap-2.5 rounded-[18px] border border-divider bg-surface px-4 py-4 shadow-[var(--shadow-card)] sm:px-[22px]">
+      <section className="flex flex-wrap items-end gap-2.5 rounded-[20px] bg-surface px-4 py-4 shadow-[var(--shadow-soft)] sm:px-[22px]">
         <label className="flex min-w-[150px] flex-1 flex-col gap-1.5">
           <span className="text-[12px] text-text-4">O que é</span>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="IPVA, seguro, revisão..."
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none placeholder:text-text-4"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none placeholder:text-text-4"
           />
         </label>
         <label className="flex w-[132px] flex-col gap-1.5">
@@ -140,7 +140,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
             type="date"
             value={dueDate}
             onChange={(e) => setDueDate(e.target.value)}
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none"
           />
         </label>
         <label className="flex w-24 flex-col gap-1.5">
@@ -150,7 +150,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
             onChange={(e) => setCost(e.target.value)}
             inputMode="decimal"
             placeholder="R$"
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
           />
         </label>
         <label className="flex w-[136px] flex-col gap-1.5">
@@ -158,7 +158,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
           <select
             value={recurrence}
             onChange={(e) => setRecurrence(e.target.value)}
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none"
           >
             {REPETICOES.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -189,7 +189,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
         )}
       </section>
 
-      <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
+      <section className="rounded-[20px] bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-soft)] sm:px-[22px]">
         <div className="mb-1 flex flex-wrap items-baseline gap-2.5">
           <h2 className="text-[15px] font-semibold text-text">A vencer</h2>
           {totalPrevisto > 0 && (
@@ -262,7 +262,7 @@ export function HouseAgenda({ scope }: { scope?: string }) {
       </section>
 
       {concluidos.length > 0 && (
-        <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
+        <section className="rounded-[20px] bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-soft)] sm:px-[22px]">
           <h2 className="mb-1 text-[15px] font-semibold text-text">Já resolvidos</h2>
           {concluidos.map((task) => (
             <div key={task.id} className="flex items-center gap-3 border-b border-divider py-2.5 last:border-b-0">

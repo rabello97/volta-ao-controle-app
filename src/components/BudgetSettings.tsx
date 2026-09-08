@@ -50,7 +50,7 @@ export function BudgetSettings() {
   }
 
   return (
-    <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+    <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
       <div className="mb-1 flex flex-wrap items-baseline gap-2.5">
         <h2 className="text-[15px] font-semibold text-text">Orçamento</h2>
         <span className="text-xs text-text-4">Quanto entra por mês e quanto você pretende gastar</span>
@@ -64,14 +64,14 @@ export function BudgetSettings() {
             onChange={(e) => setIncome(e.target.value)}
             inputMode="decimal"
             placeholder="0,00"
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 font-mono text-[13px] text-text outline-none placeholder:text-text-4"
           />
         </label>
         <button
           type="button"
           onClick={handleSaveIncome}
           disabled={saveIncome.isPending}
-          className="rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
+          className="rounded-[10px] bg-brand flex min-h-9 items-center justify-center px-4 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           Salvar
         </button>
@@ -84,7 +84,7 @@ export function BudgetSettings() {
             list="categorias-orcamento"
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none"
           />
           <datalist id="categorias-orcamento">
             {EXPENSE_CATEGORIES.map((c) => (
@@ -99,14 +99,14 @@ export function BudgetSettings() {
             onChange={(e) => setLimit(e.target.value)}
             inputMode="decimal"
             placeholder="0,00"
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
           />
         </label>
         <button
           type="button"
           onClick={handleAddBudget}
           disabled={upsert.isPending}
-          className="rounded-[10px] border border-divider bg-surface px-4 py-2 text-[13px] font-semibold text-text transition-colors hover:border-divider-strong disabled:opacity-50"
+          className="flex min-h-9 items-center justify-center rounded-[10px] border border-divider bg-surface px-4 text-[13px] font-semibold text-text transition-colors hover:border-divider-strong disabled:opacity-50"
         >
           Definir
         </button>

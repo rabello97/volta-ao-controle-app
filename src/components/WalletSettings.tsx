@@ -96,7 +96,7 @@ export function WalletSettings() {
   }
 
   return (
-    <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+    <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
       <div className="mb-1 flex flex-wrap items-center gap-2.5">
         <WalletIcon className="size-4 text-text-4" />
         <h2 className="text-[15px] font-semibold text-text">Benefícios</h2>
@@ -109,7 +109,7 @@ export function WalletSettings() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none"
           />
         </label>
         <label className="flex w-28 flex-col gap-1.5">
@@ -119,7 +119,7 @@ export function WalletSettings() {
             onChange={(e) => setCredit(e.target.value)}
             inputMode="decimal"
             placeholder="0,00"
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
           />
         </label>
         <label className="flex w-16 flex-col gap-1.5">
@@ -128,7 +128,7 @@ export function WalletSettings() {
             value={day}
             onChange={(e) => setDay(e.target.value)}
             inputMode="numeric"
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-center font-mono text-[13px] text-text outline-none"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-center font-mono text-[13px] text-text outline-none"
           />
         </label>
         <label className={cn("flex w-28 flex-col gap-1.5", editando && "hidden")}>
@@ -138,14 +138,14 @@ export function WalletSettings() {
             onChange={(e) => setBalance(e.target.value)}
             inputMode="decimal"
             placeholder="0,00"
-            className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+            className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
           />
         </label>
         <button
           type="button"
           onClick={handleSubmit}
           disabled={create.isPending || update.isPending}
-          className="flex items-center gap-1.5 rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-[10px] bg-brand flex min-h-9 items-center justify-center px-4 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
         >
           {editando && <Check className="size-4" />}
           {editando ? "Salvar" : "Cadastrar"}
@@ -166,7 +166,7 @@ export function WalletSettings() {
       <div className="mt-4 flex flex-col">
         {(wallets.data ?? []).map((wallet) => (
           <div key={wallet.id} className="flex flex-wrap items-center gap-3 border-b border-divider py-3 last:border-b-0">
-            <div className="flex min-w-0 flex-1 flex-col gap-[3px]">
+            <div className="flex min-w-0 flex-1 basis-full flex-col gap-[3px] sm:basis-auto">
               <span className="truncate text-[13px] text-text">{wallet.name}</span>
               <span className="text-[12px] text-text-4">
                 {formatCurrency(wallet.monthlyCredit)} no dia {wallet.creditDay} · saldo{" "}
@@ -187,7 +187,7 @@ export function WalletSettings() {
                 inputMode="decimal"
                 placeholder="R$"
                 aria-label={`Corrigir saldo de ${wallet.name}`}
-                className="w-24 rounded-lg border border-divider bg-surface-2 px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+                className="w-24 rounded-[10px] border border-divider bg-surface-inset px-2 py-1 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
               />
             </label>
 

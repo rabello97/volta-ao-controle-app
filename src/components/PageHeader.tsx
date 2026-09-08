@@ -85,7 +85,7 @@ export function PageHeader({ title, subtitle, ctaLabel, onCta, search, onSearchC
                 onClick={() => setMonthOpen(false)}
                 className="fixed inset-0 z-10 cursor-default"
               />
-              <div className="absolute right-0 top-full z-20 mt-1.5 max-h-[280px] w-[180px] overflow-y-auto rounded-[10px] border border-divider bg-surface p-1 shadow-[var(--shadow-card)]">
+              <div className="absolute right-0 top-full z-20 mt-1.5 max-h-[280px] w-[180px] overflow-y-auto rounded-[14px] border border-divider bg-surface p-1 shadow-[var(--shadow-lift)]">
                 {!month.isCurrent && (
                   <button
                     type="button"

@@ -97,9 +97,9 @@ export function HouseholdPage() {
       <PageHeader title="Household" subtitle="Compartilhe as finanças com seu parceiro(a)" />
 
       {hasHousehold && partner && (
-        <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
           <h2 className="mb-3 text-[15px] font-semibold text-text">Vocês formam um household</h2>
-          <div className="flex items-center gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3">
+          <div className="flex items-center gap-3 rounded-[10px] border border-divider bg-surface-inset px-4 py-3">
             <div className="flex size-9 items-center justify-center rounded-full bg-brand-tint-2 text-sm font-semibold text-brand">
               {partner.name.charAt(0).toUpperCase()}
             </div>
@@ -125,13 +125,13 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && pendingReceived.length > 0 && (
-        <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
           <h2 className="mb-3 text-[15px] font-semibold text-text">Convites recebidos</h2>
           <ul className="flex flex-col gap-2.5">
             {pendingReceived.map((invite) => (
               <li
                 key={invite.id}
-                className="flex items-center justify-between gap-3 rounded-lg border border-divider bg-surface-2 px-4 py-3"
+                className="flex items-center justify-between gap-3 rounded-[10px] border border-divider bg-surface-inset px-4 py-3"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex size-9 items-center justify-center rounded-lg bg-brand-tint text-brand">
@@ -169,7 +169,7 @@ export function HouseholdPage() {
       )}
 
       {!hasHousehold && (
-        <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+        <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
           <h2 className="mb-3 text-[15px] font-semibold text-text">Convidar parceiro(a)</h2>
           <p className="mb-3 text-[13px] text-text-3">
             O e-mail serve para localizar a conta — ela precisa já ter se cadastrado no app com esse endereço.
@@ -200,7 +200,7 @@ export function HouseholdPage() {
               {pendingSent.map((invite) => (
                 <div
                   key={invite.id}
-                  className="flex items-center justify-between rounded-lg border border-divider bg-surface-2 px-4 py-2.5 text-sm"
+                  className="flex items-center justify-between rounded-[10px] border border-divider bg-surface-inset px-4 py-2.5 text-sm"
                 >
                   <span className="text-text">{invite.toEmail}</span>
                   <span className="text-xs text-text-4">{formatDate(invite.createdAt)}</span>

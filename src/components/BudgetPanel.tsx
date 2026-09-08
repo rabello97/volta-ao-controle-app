@@ -41,7 +41,7 @@ export function BudgetPanel({ scope, month }: { scope?: string; month?: string }
 
   if (status.isLoading) {
     return (
-      <div className="flex flex-col gap-3 rounded-[18px] border border-divider bg-surface px-[22px] py-5">
+      <div className="flex flex-col gap-3 rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
         <Skeleton className="h-4 w-40" />
         {[0, 1, 2].map((i) => (
           <Skeleton key={i} className="h-12 w-full" />
@@ -57,21 +57,21 @@ export function BudgetPanel({ scope, month }: { scope?: string; month?: string }
   const noVermelho = data.leftFromIncome < 0;
 
   return (
-    <section className="flex flex-col gap-3 rounded-[18px] border border-divider bg-surface px-4 py-5 shadow-[var(--shadow-card)] sm:px-[22px]">
+    <section className="flex flex-col gap-3 rounded-[20px] bg-surface px-4 py-5 shadow-[var(--shadow-soft)] sm:px-[22px]">
       <div className="flex flex-wrap items-baseline gap-2">
         <h2 className="text-[15px] font-semibold text-text">Orçamento do mês</h2>
         <span className="text-[12px] text-text-4">Renda contra o que já saiu</span>
       </div>
 
       <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-        <div className="flex flex-col gap-1 rounded-xl border border-divider bg-surface-2 px-3 py-2.5">
+        <div className="flex flex-col gap-1 rounded-[13px] border border-divider bg-surface-inset px-3 py-2.5">
           <span className="text-[11px] font-semibold tracking-[0.12em] text-text-4">RENDA</span>
           <span className="font-mono text-[15px] text-text">{formatCurrency(data.income)}</span>
           {data.benefitIncome > 0 && (
             <span className="text-[11px] text-text-4">+ {formatCurrency(data.benefitIncome)} em benefícios</span>
           )}
         </div>
-        <div className="flex flex-col gap-1 rounded-xl border border-divider bg-surface-2 px-3 py-2.5">
+        <div className="flex flex-col gap-1 rounded-[13px] border border-divider bg-surface-inset px-3 py-2.5">
           <span className="text-[11px] font-semibold tracking-[0.12em] text-text-4">SAIU DA CONTA</span>
           <span className="font-mono text-[15px] text-text">{formatCurrency(data.spentFromAccount)}</span>
           {data.spentTotal > data.spentFromAccount && (
@@ -80,7 +80,7 @@ export function BudgetPanel({ scope, month }: { scope?: string; month?: string }
             </span>
           )}
         </div>
-        <div className="col-span-2 flex flex-col gap-1 rounded-xl border border-divider bg-surface-2 px-3 py-2.5 sm:col-span-1">
+        <div className="col-span-2 flex flex-col gap-1 rounded-[13px] border border-divider bg-surface-inset px-3 py-2.5 sm:col-span-1">
           <span className="text-[11px] font-semibold tracking-[0.12em] text-text-4">SOBRA</span>
           <span className={cn("font-mono text-[15px]", noVermelho ? "text-negative" : "text-positive")}>
             {formatCurrency(data.leftFromIncome)}

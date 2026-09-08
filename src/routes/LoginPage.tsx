@@ -28,7 +28,7 @@ function ThemeToggleFloating() {
   const isDark = resolvedTheme === "dark";
 
   return (
-    <div className="flex gap-0.5 rounded-full border border-divider bg-surface p-[3px]">
+    <div className="flex gap-0.5 rounded-full bg-track p-[3px]">
       {(
         [
           { key: "light", label: "Tema claro", Icon: Sun },

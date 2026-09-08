@@ -13,6 +13,8 @@ import { scopeFor } from "@/lib/scope";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
 import { HouseholdViewToggle } from "@/components/HouseholdViewToggle";
 import { Skeleton } from "@/components/Skeleton";
+import { StatTile } from "@/components/StatTile";
+import { CalendarClock, CreditCard as CreditCardIcon } from "lucide-react";
 import { ErrorState } from "@/components/ErrorState";
 import type { CreditCardInput } from "@/api/creditCards";
 import type { CreditCardSummary } from "@/api/types";
@@ -31,6 +33,29 @@ export function CreditCardsPage() {
   const deleteMutation = useDeleteCreditCard();
 
   const openTotal = (cards ?? []).reduce((sum, c) => sum + c.currentInvoiceTotal, 0);
+
+  // O card escuro vai para o cartão que pede atenção — o de maior uso do
+  // limite, com a fatura como desempate. Antes era sempre o primeiro da lista,
+  // o que não dizia nada.
+  const destaque = (cards ?? []).reduce<number | null>((melhor, c, i, arr) => {
+    if (melhor === null) return i;
+    const a = arr[melhor];
+    const usoA = a.utilizationPct ?? 0;
+    const usoC = c.utilizationPct ?? 0;
+    if (usoC !== usoA) return usoC > usoA ? i : melhor;
+    return c.currentInvoiceTotal > a.currentInvoiceTotal ? i : melhor;
+  }, null);
+
+  // Próximo vencimento a partir de hoje; se todos já passaram no mês, o
+  // primeiro do mês que vem.
+  const hoje = new Date().getDate();
+  const proximo = (cards ?? [])
+    .slice()
+    .sort((a, b) => {
+      const da = a.dueDay >= hoje ? a.dueDay - hoje : a.dueDay + 31 - hoje;
+      const db = b.dueDay >= hoje ? b.dueDay - hoje : b.dueDay + 31 - hoje;
+      return da - db;
+    })[0];
 
   async function handleSubmit(input: CreditCardInput) {
     try {
@@ -72,11 +97,32 @@ export function CreditCardsPage() {
 
       {isError && <ErrorState onRetry={() => refetch()} />}
 
+      {!isError && !isLoading && (cards?.length ?? 0) > 0 && (
+        <div className="mb-3.5 grid grid-cols-2 gap-3.5 sm:max-w-[560px]">
+          <StatTile
+            icon={CreditCardIcon}
+            label="Faturas abertas"
+            value={openTotal}
+            tone="brand"
+            delta={{ label: plural(cards?.length ?? 0, "cartão", "cartões"), tone: "quiet" }}
+          />
+          {proximo && (
+            <StatTile
+              icon={CalendarClock}
+              label="Próximo vencimento"
+              value={`dia ${proximo.dueDay}`}
+              tone="warning"
+              delta={{ label: proximo.nickname, tone: "quiet" }}
+            />
+          )}
+        </div>
+      )}
+
       {!isError && (
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading &&
           [0, 1].map((i) => (
-            <div key={i} className="flex min-h-[168px] flex-col gap-6 rounded-[18px] border border-divider bg-surface p-5">
+            <div key={i} className="flex min-h-[168px] flex-col gap-6 rounded-[20px] shadow-[var(--shadow-soft)] bg-surface p-5">
               <Skeleton className="h-4 w-32" />
               <div className="flex flex-col gap-2">
                 <Skeleton className="h-2.5 w-24" />
@@ -87,50 +133,65 @@ export function CreditCardsPage() {
           ))}
 
         {cards?.map((card, index) => (
-          <div key={card.id} className="relative">
-            <CardTile card={card} highlight={index === 0} />
-            {/* Antes não havia como corrigir apelido, fechamento, vencimento ou
-                limite depois de cadastrar — só criar. */}
-            {!readOnly && (
-              // Canto inferior: o topo já é do selo "fecha em Xd".
-              <div className="absolute bottom-3 right-3 flex gap-0.5">
-                <button
-                  type="button"
-                  aria-label={`Editar ${card.nickname}`}
-                  onClick={() => {
-                    setEditing(card);
-                    setFormOpen(true);
-                  }}
-                  className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-surface-2 hover:text-text"
-                >
-                  <Pencil className="size-3.5" />
-                </button>
-                <button
-                  type="button"
-                  aria-label={`Excluir ${card.nickname}`}
-                  onClick={() => setDeleting(card)}
-                  className="flex size-11 flex-none items-center justify-center rounded-[10px] transition-colors md:size-9 text-text-5 hover:bg-negative-tint hover:text-negative"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
-              </div>
-            )}
-          </div>
+          <CardTile
+            key={card.id}
+            card={card}
+            highlight={index === destaque}
+            actions={
+              readOnly ? undefined : (
+                <>
+                  <button
+                    type="button"
+                    aria-label={`Editar ${card.nickname}`}
+                    onClick={() => {
+                      setEditing(card);
+                      setFormOpen(true);
+                    }}
+                    className={
+                      "flex size-9 flex-none items-center justify-center rounded-full transition-colors " +
+                      (index === destaque
+                        ? "text-spot-fg-2 hover:bg-white/15 hover:text-spot-fg"
+                        : "text-text-5 hover:bg-surface-2 hover:text-text")
+                    }
+                  >
+                    <Pencil className="size-3.5" />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={`Excluir ${card.nickname}`}
+                    onClick={() => setDeleting(card)}
+                    className={
+                      "flex size-9 flex-none items-center justify-center rounded-full transition-colors " +
+                      (index === destaque
+                        ? "text-spot-fg-2 hover:bg-white/15 hover:text-negative"
+                        : "text-text-5 hover:bg-negative-tint hover:text-negative")
+                    }
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </>
+              )
+            }
+          />
         ))}
 
         {!readOnly && (
         <button
           type="button"
           onClick={() => setFormOpen(true)}
-          className="flex min-h-[168px] flex-col items-center justify-center gap-2 rounded-[18px] border border-dashed border-divider-strong p-5 transition-colors hover:border-brand hover:bg-surface-2"
+          /* No celular vira uma linha; o tile de 168px era um bloco vazio
+             ocupando uma tela inteira embaixo dos cartões de verdade. */
+          className="flex items-center gap-3 rounded-[20px] border border-dashed border-divider-strong p-[18px] text-left transition-colors hover:border-brand hover:bg-surface-2 sm:min-h-[168px] sm:flex-col sm:justify-center sm:text-center"
         >
-          <div className="flex size-[38px] items-center justify-center rounded-xl bg-brand-tint text-brand">
+          <div className="flex size-[38px] flex-none items-center justify-center rounded-[12px] bg-brand-tint text-brand">
             <Plus className="size-4" />
           </div>
-          <span className="text-[13px] font-semibold text-text">Adicionar cartão</span>
-          <span className="max-w-[220px] text-center text-[12px] leading-[1.5] text-text-4">
-            Vincule transações e acompanhe a fatura fechando em tempo real.
-          </span>
+          <div className="flex min-w-0 flex-col gap-0.5 sm:items-center sm:gap-1.5">
+            <span className="text-[13.5px] font-semibold text-text">Adicionar cartão</span>
+            <span className="text-[12px] leading-[1.5] text-text-4 sm:max-w-[220px]">
+              Vincule transações e acompanhe a fatura fechando em tempo real.
+            </span>
+          </div>
         </button>
         )}
       </div>

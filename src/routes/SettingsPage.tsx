@@ -117,7 +117,7 @@ export function SettingsPage() {
     <div className="flex flex-col gap-5">
       <PageHeader title="Perfil e configurações" subtitle="Sua conta e preferências" />
 
-      <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+      <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
         <div className="mb-4 flex items-center gap-2">
           <User className="size-4 text-text-4" />
           <h2 className="text-[15px] font-semibold text-text">Seu perfil</h2>
@@ -144,7 +144,7 @@ export function SettingsPage() {
 
       <BudgetSettings />
 
-      <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+      <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
         <div className="mb-4 flex items-center gap-2">
           <Target className="size-4 text-text-4" />
           <h2 className="text-[15px] font-semibold text-text">Meta de reserva</h2>
@@ -169,7 +169,7 @@ export function SettingsPage() {
         </form>
       </div>
 
-      <div className="rounded-[18px] border border-divider bg-surface px-[22px] py-5 shadow-[var(--shadow-card)]">
+      <div className="rounded-[20px] bg-surface px-[22px] py-5 shadow-[var(--shadow-soft)]">
         <div className="mb-4 flex items-center gap-2">
           <KeyRound className="size-4 text-text-4" />
           <h2 className="text-[15px] font-semibold text-text">Senha</h2>

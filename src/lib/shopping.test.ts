@@ -45,3 +45,16 @@ describe("sumItems", () => {
     ).toBe(55);
   });
 });
+
+describe("parsePrice com separador de milhar", () => {
+  it("lê valores acima de mil no formato brasileiro", () => {
+    expect(parsePrice("13.500,00")).toBe(13500);
+    expect(parsePrice("1.410,00")).toBe(1410);
+    expect(parsePrice("7.400,00")).toBe(7400);
+  });
+
+  it("continua devolvendo null para valor inválido", () => {
+    expect(parsePrice("abc")).toBeNull();
+    expect(parsePrice("-5")).toBeNull();
+  });
+});

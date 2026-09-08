@@ -15,7 +15,7 @@ export function ErrorState({
   description = "Verifique sua conexão. Se você já abriu esta tela antes, os últimos dados salvos continuam disponíveis offline.",
 }: ErrorStateProps) {
   return (
-    <section className="flex flex-col items-center gap-2 rounded-[18px] border border-divider bg-surface px-[22px] py-12 text-center">
+    <section className="flex flex-col items-center gap-2 rounded-[20px] bg-surface shadow-[var(--shadow-soft)] px-[22px] py-12 text-center">
       <div className="mb-1.5 flex size-[46px] items-center justify-center rounded-[14px] bg-negative-tint text-negative">
         <WifiOff className="size-5" />
       </div>

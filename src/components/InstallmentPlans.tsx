@@ -8,6 +8,7 @@ import { formatCurrency } from "@/lib/format";
 import { plural } from "@/lib/plural";
 import { parsePrice } from "@/lib/shopping";
 import { cn } from "@/lib/utils";
+import { faturaDaProximaCompra, rotuloFatura } from "@/lib/invoiceMonth";
 import { EXPENSE_CATEGORIES } from "@/lib/categories";
 import { useCreditCards } from "@/hooks/useCreditCards";
 import {
@@ -48,6 +49,26 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
   const [renomeando, setRenomeando] = useState<InstallmentPlan | null>(null);
   const [novoNome, setNovoNome] = useState("");
   const [novaCategoria, setNovaCategoria] = useState("");
+
+  // Prévia do que vai acontecer. Sem ela a pessoa digita "7", salva, e só então
+  // descobre que a 6 caiu no mês corrente porque o cartão já tinha fechado —
+  // foi exatamente essa surpresa que motivou este texto.
+  const previa = (() => {
+    const nTotal = Number(total);
+    const nAtual = Number(atual);
+    if (!Number.isInteger(nTotal) || nTotal < 1) return null;
+    if (!Number.isInteger(nAtual) || nAtual < 1 || nAtual > nTotal) return null;
+
+    const card = (cards ?? []).find((c) => c.id === (cartao || cards?.[0]?.id));
+    if (!card) return null;
+
+    const fatura = rotuloFatura(faturaDaProximaCompra(card.closingDay));
+    if (nAtual === 1) {
+      return `Compra nova: a 1ª de ${nTotal} entra na fatura de ${fatura} do ${card.nickname}.`;
+    }
+    const anteriores = nAtual - 1;
+    return `A parcela ${nAtual} de ${nTotal} entra na fatura de ${fatura} do ${card.nickname}. As ${anteriores} anteriores entram no histórico como já cobradas — o cartão fecha dia ${card.closingDay}, então a parcela ${anteriores} é a que está na fatura em aberto.`;
+  })();
 
   const emAndamento = (plans.data ?? []).filter((p) => !p.finished);
   const encerradas = (plans.data ?? []).filter((p) => p.finished);
@@ -124,14 +145,14 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
   return (
     <div className="flex flex-col gap-4">
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-        <div className="flex flex-col gap-[5px] rounded-[14px] border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
+        <div className="flex flex-col gap-[5px] rounded-[14px] bg-surface px-[18px] py-4 shadow-[var(--shadow-soft)]">
           <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">AINDA A PAGAR</span>
           <span className="font-mono text-[23px] font-medium -tracking-[0.02em] text-text">
             {formatCurrency(comprometido)}
           </span>
           <span className="text-[12px] text-text-4">{plural(emAndamento.length, "compra")} em andamento</span>
         </div>
-        <div className="flex flex-col gap-[5px] rounded-[14px] border border-divider bg-surface px-[18px] py-4 shadow-[var(--shadow-card)]">
+        <div className="flex flex-col gap-[5px] rounded-[14px] bg-surface px-[18px] py-4 shadow-[var(--shadow-soft)]">
           <span className="text-[11px] font-semibold tracking-[0.13em] text-text-4">PESO POR MÊS</span>
           <span className="font-mono text-[23px] font-medium -tracking-[0.02em] text-brand">
             {formatCurrency(porMes)}
@@ -158,14 +179,14 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
       </div>
 
       {aberto && !semCartao && (
-        <section className="flex flex-wrap items-end gap-2.5 rounded-[18px] border border-divider bg-surface px-4 py-4 shadow-[var(--shadow-card)] sm:px-[22px]">
+        <section className="flex flex-wrap items-end gap-2.5 rounded-[20px] bg-surface px-4 py-4 shadow-[var(--shadow-soft)] sm:px-[22px]">
           <label className="flex min-w-[150px] flex-1 flex-col gap-1.5">
             <span className="text-[12px] text-text-4">O que foi</span>
             <input
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               placeholder="TV, geladeira, notebook..."
-              className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none placeholder:text-text-4"
+              className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none placeholder:text-text-4"
             />
           </label>
           <label className="flex w-28 flex-col gap-1.5">
@@ -175,7 +196,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
               onChange={(e) => setValor(e.target.value)}
               inputMode="decimal"
               placeholder="0,00"
-              className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+              className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-right font-mono text-[13px] text-text outline-none placeholder:text-text-4"
             />
           </label>
           <label className="flex w-20 flex-col gap-1.5">
@@ -185,16 +206,16 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
               onChange={(e) => setTotal(e.target.value)}
               inputMode="numeric"
               placeholder="10"
-              className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-center font-mono text-[13px] text-text outline-none placeholder:text-text-4"
+              className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-center font-mono text-[13px] text-text outline-none placeholder:text-text-4"
             />
           </label>
-          <label className="flex w-20 flex-col gap-1.5">
-            <span className="text-[12px] text-text-4">Está na</span>
+          <label className="flex w-[104px] flex-col gap-1.5">
+            <span className="text-[12px] text-text-4">Próxima parcela</span>
             <input
               value={atual}
               onChange={(e) => setAtual(e.target.value)}
               inputMode="numeric"
-              className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-center font-mono text-[13px] text-text outline-none"
+              className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-center font-mono text-[13px] text-text outline-none"
             />
           </label>
           <label className="flex w-32 flex-col gap-1.5">
@@ -202,7 +223,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
             <select
               value={categoria}
               onChange={(e) => setCategoria(e.target.value)}
-              className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] capitalize text-text outline-none"
+              className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] capitalize text-text outline-none"
             >
               {EXPENSE_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
@@ -216,7 +237,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
             <select
               value={cartao || cards?.[0]?.id || ""}
               onChange={(e) => setCartao(e.target.value)}
-              className="w-full rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none"
+              className="w-full rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none"
             >
               {cards?.map((c) => (
                 <option key={c.id} value={c.id}>
@@ -229,14 +250,20 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
             type="button"
             onClick={handleCreate}
             disabled={create.isPending}
-            className="rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
+            className="flex min-h-9 items-center justify-center rounded-[10px] bg-brand px-4 text-[13px] font-semibold text-brand-ink transition-opacity disabled:opacity-50"
           >
             Cadastrar
           </button>
+
+          {previa && (
+            <p className="w-full text-[12.5px] leading-[1.5] text-text-4">
+              {previa}
+            </p>
+          )}
         </section>
       )}
 
-      <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
+      <section className="rounded-[20px] bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-soft)] sm:px-[22px]">
         <div className="mb-1 flex flex-wrap items-baseline gap-2.5">
           <h2 className="text-[15px] font-semibold text-text">Compras parceladas</h2>
           <span className="text-[12px] text-text-4">Repetem todo mês, mas têm data para acabar</span>
@@ -254,12 +281,12 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
                     value={novoNome}
                     onChange={(e) => setNovoNome(e.target.value)}
                     autoFocus
-                    className="min-w-[140px] flex-1 rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] text-text outline-none"
+                    className="min-w-[140px] flex-1 rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] text-text outline-none"
                   />
                   <select
                     value={novaCategoria}
                     onChange={(e) => setNovaCategoria(e.target.value)}
-                    className="w-32 rounded-[10px] border border-divider bg-surface-2 px-3 py-2 text-[13px] capitalize text-text outline-none"
+                    className="w-32 rounded-[12px] border border-divider bg-surface-inset px-3 py-2 text-[13px] capitalize text-text outline-none"
                   >
                     {EXPENSE_CATEGORIES.map((c) => (
                       <option key={c} value={c}>
@@ -348,7 +375,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
       </section>
 
       {encerradas.length > 0 && (
-        <section className="rounded-[18px] border border-divider bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-card)] sm:px-[22px]">
+        <section className="rounded-[20px] bg-surface px-4 pb-2 pt-5 shadow-[var(--shadow-soft)] sm:px-[22px]">
           <h2 className="mb-1 text-[15px] font-semibold text-text">Já quitadas</h2>
           {encerradas.map((plano) => (
             <div key={plano.groupId} className="flex items-center gap-3 border-b border-divider py-2.5 last:border-b-0">

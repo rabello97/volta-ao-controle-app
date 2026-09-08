@@ -10,6 +10,7 @@ import { purgeLegacyCaches } from "@/lib/pwa";
 import { AuthProvider } from "@/context/AuthContext";
 import { HouseholdViewProvider } from "@/context/HouseholdViewContext";
 import { MonthProvider } from "@/context/MonthContext";
+import { ScanDraftProvider } from "@/context/ScanDraftContext";
 import { App } from "@/App";
 import "./index.css";
 
@@ -26,8 +27,10 @@ createRoot(document.getElementById("root")!).render(
             <AuthProvider>
               <HouseholdViewProvider>
                 <MonthProvider>
-                <App />
-                <Toaster />
+                  <ScanDraftProvider>
+                    <App />
+                    <Toaster />
+                  </ScanDraftProvider>
                 </MonthProvider>
               </HouseholdViewProvider>
             </AuthProvider>
