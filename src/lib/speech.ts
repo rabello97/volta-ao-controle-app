@@ -41,6 +41,17 @@ export function podeFalar(): boolean {
   return typeof window !== "undefined" && "speechSynthesis" in window;
 }
 
+/** O Safari do iPhone só deixa falar se a síntese tiver sido acionada dentro de
+ *  um gesto do usuário. Como a nossa fala nasce depois da resposta da API —
+ *  fora do gesto —, "destravamos" com uma emissão vazia no próprio toque. Sem
+ *  isso a JulIA fica muda no iOS, que é justamente onde ela mais serve. */
+export function destravarVoz(): void {
+  if (!podeFalar()) return;
+  const mudo = new SpeechSynthesisUtterance("");
+  mudo.volume = 0;
+  window.speechSynthesis.speak(mudo);
+}
+
 export function falar(texto: string): void {
   if (!podeFalar() || !texto) return;
   window.speechSynthesis.cancel();

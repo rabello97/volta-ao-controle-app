@@ -7,7 +7,7 @@ import { useWallets } from "@/hooks/useWallets";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { askAssistant } from "@/api/ai";
 import { formatCurrency, formatDate } from "@/lib/format";
-import { calar, falar, fraseDeConfirmacao, podeFalar } from "@/lib/speech";
+import { calar, destravarVoz, falar, fraseDeConfirmacao, podeFalar } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 import type { AcaoProposta, AssistantResult } from "@/api/types";
 
@@ -73,6 +73,8 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
 
   async function perguntar(frase: string) {
     if (!frase.trim() || pensando) return;
+    // Ainda dentro do gesto que disparou o envio: é aqui que o iOS libera a voz.
+    if (voz) destravarVoz();
     setPensando(true);
     setResultado(null);
     try {
@@ -170,7 +172,8 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
                   } catch {
                     /* modo privado: a preferência só não persiste */
                   }
-                  if (!proximo) calar();
+                  if (proximo) destravarVoz();
+                  else calar();
                 }}
                 className={cn(
                   "ml-auto flex size-8 items-center justify-center rounded-full transition-colors",

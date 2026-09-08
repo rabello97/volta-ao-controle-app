@@ -135,6 +135,7 @@ describe("AssistantSheet", () => {
       "SpeechSynthesisUtterance",
       class {
         text: string;
+        volume = 1;
         constructor(text: string) {
           this.text = text;
         }
@@ -157,6 +158,7 @@ describe("AssistantSheet", () => {
       "SpeechSynthesisUtterance",
       class {
         text: string;
+        volume = 1;
         constructor(text: string) {
           this.text = text;
         }
@@ -173,9 +175,12 @@ describe("AssistantSheet", () => {
     await enviar(user, "gastei 45,90 no posto pelo nubank");
     await screen.findByRole("button", { name: /Confirmar/ });
 
+    // Duas emissões: a muda que destrava o iOS dentro do gesto, e a de verdade.
+    expect(speak).toHaveBeenCalledTimes(2);
+    expect(speak.mock.calls[0][0].text).toBe("");
+    expect(speak.mock.calls[0][0].volume).toBe(0);
     // O valor tem que sair falado, não como "R cifrão 45 vírgula 90".
-    expect(speak).toHaveBeenCalledTimes(1);
-    expect(speak.mock.calls[0][0].text).toBe(
+    expect(speak.mock.calls[1][0].text).toBe(
       "Saída de 45 reais e 90 centavos em transporte, no cartão Nubank. Confirma?",
     );
     localStorage.removeItem("julia-voz");
