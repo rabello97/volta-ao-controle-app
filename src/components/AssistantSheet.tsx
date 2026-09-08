@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Loader2, Mic, Send, Sparkles, X } from "lucide-react";
+import { Loader2, Mic, Send, Sparkles, Volume2, VolumeX, X } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { useCreditCards } from "@/hooks/useCreditCards";
@@ -7,6 +7,7 @@ import { useWallets } from "@/hooks/useWallets";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { askAssistant } from "@/api/ai";
 import { formatCurrency, formatDate } from "@/lib/format";
+import { calar, falar, fraseDeConfirmacao, podeFalar } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 import type { AcaoProposta, AssistantResult } from "@/api/types";
 
@@ -44,6 +45,15 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
   const [resultado, setResultado] = useState<AssistantResult | null>(null);
   const [ouvindo, setOuvindo] = useState(false);
   const [salvando, setSalvando] = useState(false);
+  // Desligada por padrão: o app pode ser aberto numa reunião ou com gente por
+  // perto, e uma voz falando valores sem aviso é constrangedor.
+  const [voz, setVoz] = useState(() => {
+    try {
+      return localStorage.getItem("julia-voz") === "1";
+    } catch {
+      return false;
+    }
+  });
   const reconhecimento = useRef<Reconhecimento | null>(null);
 
   const { data: cards } = useCreditCards();
@@ -57,6 +67,7 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
       setPensando(false);
       reconhecimento.current?.abort();
       setOuvindo(false);
+      calar();
     }
   }, [open]);
 
@@ -65,7 +76,11 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
     setPensando(true);
     setResultado(null);
     try {
-      setResultado(await askAssistant(frase));
+      const r = await askAssistant(frase);
+      setResultado(r);
+      // Confirmação de mãos ocupadas: você dita no posto e ouve de volta sem
+      // olhar a tela. A síntese é do navegador — não gasta token.
+      if (voz) falar(fraseDeConfirmacao(r.acoes) || r.resposta);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "A JulIA não conseguiu entender agora.");
     } finally {
@@ -94,6 +109,7 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
   /** Executa o que o usuário confirmou. Cada ação vai pelo mesmo endpoint do
    *  formulário, então as validações e as checagens do servidor são as mesmas. */
   async function confirmar(acoes: AcaoProposta[]) {
+    calar();
     setSalvando(true);
     let feitas = 0;
     for (const acao of acoes) {
@@ -141,11 +157,37 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
               <Sparkles className="size-4" />
             </span>
             <DialogTitle className="text-[15px] font-semibold text-spot-fg">JulIA</DialogTitle>
+            {podeFalar() && (
+              <button
+                type="button"
+                aria-label={voz ? "Desligar a voz da JulIA" : "Ligar a voz da JulIA"}
+                aria-pressed={voz}
+                onClick={() => {
+                  const proximo = !voz;
+                  setVoz(proximo);
+                  try {
+                    localStorage.setItem("julia-voz", proximo ? "1" : "0");
+                  } catch {
+                    /* modo privado: a preferência só não persiste */
+                  }
+                  if (!proximo) calar();
+                }}
+                className={cn(
+                  "ml-auto flex size-8 items-center justify-center rounded-full transition-colors",
+                  voz ? "bg-spot-accent text-side-accent-ink" : "text-spot-fg-2 hover:bg-white/15 hover:text-spot-fg",
+                )}
+              >
+                {voz ? <Volume2 className="size-4" /> : <VolumeX className="size-4" />}
+              </button>
+            )}
             <button
               type="button"
               aria-label="Fechar"
               onClick={() => onOpenChange(false)}
-              className="ml-auto flex size-8 items-center justify-center rounded-full text-spot-fg-2 transition-colors hover:bg-white/15 hover:text-spot-fg"
+              className={cn(
+                "flex size-8 items-center justify-center rounded-full text-spot-fg-2 transition-colors hover:bg-white/15 hover:text-spot-fg",
+                !podeFalar() && "ml-auto",
+              )}
             >
               <X className="size-4" />
             </button>

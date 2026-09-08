@@ -126,4 +126,59 @@ describe("AssistantSheet", () => {
     await screen.findByText(/não sei apagar/i);
     expect(screen.queryByRole("button", { name: /Confirmar/ })).toBeNull();
   });
+
+  it("não fala nada enquanto a voz estiver desligada, que é o padrão", async () => {
+    const user = userEvent.setup();
+    const speak = vi.fn();
+    vi.stubGlobal("speechSynthesis", { speak, cancel: vi.fn() });
+    vi.stubGlobal(
+      "SpeechSynthesisUtterance",
+      class {
+        text: string;
+        constructor(text: string) {
+          this.text = text;
+        }
+      },
+    );
+
+    vi.mocked(aiApi.askAssistant).mockResolvedValue({ resposta: "ok", acoes: [acao()], duvidas: [] });
+    renderSheet();
+    await enviar(user, "gastei 45 no posto");
+    await screen.findByRole("button", { name: /Confirmar/ });
+
+    expect(speak).not.toHaveBeenCalled();
+  });
+
+  it("lê o resumo quando a voz está ligada", async () => {
+    const user = userEvent.setup();
+    const speak = vi.fn();
+    vi.stubGlobal("speechSynthesis", { speak, cancel: vi.fn() });
+    vi.stubGlobal(
+      "SpeechSynthesisUtterance",
+      class {
+        text: string;
+        constructor(text: string) {
+          this.text = text;
+        }
+      },
+    );
+    localStorage.setItem("julia-voz", "1");
+
+    vi.mocked(aiApi.askAssistant).mockResolvedValue({
+      resposta: "ok",
+      acoes: [acao({ amount: 45.9, creditCardNickname: "Nubank" })],
+      duvidas: [],
+    });
+    renderSheet();
+    await enviar(user, "gastei 45,90 no posto pelo nubank");
+    await screen.findByRole("button", { name: /Confirmar/ });
+
+    // O valor tem que sair falado, não como "R cifrão 45 vírgula 90".
+    expect(speak).toHaveBeenCalledTimes(1);
+    expect(speak.mock.calls[0][0].text).toBe(
+      "Saída de 45 reais e 90 centavos em transporte, no cartão Nubank. Confirma?",
+    );
+    localStorage.removeItem("julia-voz");
+  });
 });
+
