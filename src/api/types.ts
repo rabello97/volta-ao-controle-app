@@ -285,6 +285,31 @@ export interface MonthlyInsight {
   model: string;
 }
 
+export interface AcaoProposta {
+  tipo: "criar_transacao";
+  transacao: {
+    type: "EXPENSE" | "INCOME";
+    amount: number;
+    date: string;
+    category: string;
+    description: string;
+    /** Apelido do cartão como o usuário cadastrou, ou "" para não vincular. */
+    creditCardNickname: string;
+    /** Nome do benefício (VR), ou "". Exclui cartão. */
+    walletName: string;
+    installmentTotal: number;
+  };
+  resumo: string;
+}
+
+export interface AssistantResult {
+  resposta: string;
+  /** Vazio quando a frase não pede nenhuma ação. */
+  acoes: AcaoProposta[];
+  /** O que a IA chutou e vale conferir antes de confirmar. */
+  duvidas: string[];
+}
+
 export interface ScanResult {
   encontrou: boolean;
   tipo: "EXPENSE" | "INCOME";

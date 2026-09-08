@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "next-themes";
-import { LogOut, Users, Settings, ChevronDown, Sun, Moon } from "lucide-react";
+import { LogOut, Users, Settings, ChevronDown, Sun, Moon, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { BrandMark } from "@/components/BrandMark";
 import { ScanButton } from "@/components/ScanButton";
+import { AssistantSheet } from "@/components/AssistantSheet";
 import { formatCurrency } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
 import { useRecurringBills } from "@/hooks/useRecurringBills";
@@ -193,6 +194,7 @@ export function AppLayout() {
   const cards = useCreditCards(scope);
   const ai = useAIStatus();
   const scanDraft = useScanDraft();
+  const [assistenteAberto, setAssistenteAberto] = useState(false);
 
   const counts: Record<string, number | undefined> = {
     "/transactions": transactions.data?.total,
@@ -270,7 +272,18 @@ export function AppLayout() {
         )}
 
         {ai.data?.enabled && (
-          <div className="mt-auto rounded-[16px] border border-side-line bg-white/[0.07] p-[15px]">
+          <button
+            type="button"
+            onClick={() => setAssistenteAberto(true)}
+            className="mt-auto flex items-center gap-2.5 rounded-[12px] bg-side-accent px-3 py-2.5 text-left text-side-accent-ink transition-opacity hover:opacity-85 active:scale-[0.98]"
+          >
+            <Sparkles className="size-4 flex-none" />
+            <span className="text-[13.5px] font-semibold">Falar com a assistente</span>
+          </button>
+        )}
+
+        {ai.data?.enabled && (
+          <div className="rounded-[16px] border border-side-line bg-white/[0.07] p-[15px]">
             <b className="mb-1 block text-[13.5px] font-semibold text-side-on">Escanear nota</b>
             <p className="mb-3 text-[12.5px] leading-[1.5] text-side-fg-2">
               Escolha a foto do cupom ou o print do banco e a transação entra sozinha.
@@ -333,6 +346,16 @@ export function AppLayout() {
             {/* No celular não existe barra lateral, e é justamente no celular
                 que se fotografa o cupom — o scan precisa estar aqui. */}
             {ai.data?.enabled && (
+              <button
+                type="button"
+                aria-label="Falar com a assistente"
+                onClick={() => setAssistenteAberto(true)}
+                className="flex size-11 flex-none items-center justify-center rounded-[10px] text-brand transition-colors hover:bg-surface-2"
+              >
+                <Sparkles className="size-[18px]" />
+              </button>
+            )}
+            {ai.data?.enabled && (
               <ScanButton
                 onScanned={handleScanned}
                 label=""
@@ -374,6 +397,8 @@ export function AppLayout() {
           ))}
         </nav>
       </div>
+
+      <AssistantSheet open={assistenteAberto} onOpenChange={setAssistenteAberto} />
     </div>
   );
 }

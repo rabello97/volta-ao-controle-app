@@ -1,5 +1,6 @@
 export const EXPENSE_CATEGORIES = [
   "mercado",
+  "alimentação",
   "transporte",
   "lazer",
   "moradia",
