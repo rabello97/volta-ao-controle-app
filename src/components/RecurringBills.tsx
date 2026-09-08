@@ -12,7 +12,7 @@ import {
   useRecurringBillsWithStatus,
   useUpdateRecurringBill,
 } from "@/hooks/useRecurringBills";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory } from "@/lib/format";
 import { plural } from "@/lib/plural";
 import { cn } from "@/lib/utils";
 import { useHouseholdView } from "@/context/HouseholdViewContext";
@@ -213,7 +213,7 @@ export function RecurringBills({
                 <div className="flex min-w-0 flex-1 flex-col gap-[3px] md:flex-none">
                   <span className="truncate text-[13px] font-medium text-text">{bill.name}</span>
                   <span className="truncate text-[12px] capitalize text-text-4">
-                    {bill.category}
+                    {formatCategory(bill.category)}
                     {viewingOthers && bill.ownerId !== user?.id && partner ? ` · de ${partner.name.split(" ")[0]}` : ""}
                   </span>
                 </div>

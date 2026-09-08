@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { formatCategory } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Chip } from "@/components/Chip";
@@ -113,7 +114,7 @@ export function RecurringBillFormDialog({
                     selected={category === preset}
                     onClick={() => setValue("category", preset, { shouldValidate: true })}
                   >
-                    {preset}
+                    {formatCategory(preset)}
                   </Chip>
                 ))}
                 <Chip type="button" onClick={() => setCustomCategory(true)}>

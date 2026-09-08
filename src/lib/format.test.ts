@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatCurrency, formatDate, formatMonthLabel } from "./format";
+import { formatCurrency, formatDate, formatMonthLabel, formatCategory } from "./format";
 
 describe("formatCurrency", () => {
   it("formata número em reais", () => {
@@ -21,5 +21,22 @@ describe("formatMonthLabel", () => {
   it("retorna a abreviação em português do mês", () => {
     expect(formatMonthLabel(1)).toBe("jan");
     expect(formatMonthLabel(12)).toBe("dez");
+  });
+});
+
+describe("formatCategory", () => {
+  it("põe maiúscula só na primeira letra", () => {
+    expect(formatCategory("mercado")).toBe("Mercado");
+    expect(formatCategory("alimentação")).toBe("Alimentação");
+    expect(formatCategory("saúde")).toBe("Saúde");
+  });
+
+  it("não vira Title Case: 'Renda extra' lê melhor que 'Renda Extra'", () => {
+    expect(formatCategory("renda extra")).toBe("Renda extra");
+  });
+
+  it("não mexe no que já está certo nem quebra com vazio", () => {
+    expect(formatCategory("Mercado")).toBe("Mercado");
+    expect(formatCategory("")).toBe("");
   });
 });

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { MoneyValue } from "@/components/MoneyValue";
 import { StatusPill } from "@/components/StatusPill";
-import { formatMonthLabel } from "@/lib/format";
+import { formatMonthLabel, formatCategory } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { UpcomingDueItem } from "@/api/types";
 
@@ -29,7 +29,7 @@ export function DueRow({ item, onPay, isPaying }: DueRowProps) {
         </div>
         <div className="min-w-0">
           <div className="truncate text-sm font-medium text-text">{item.name}</div>
-          <div className="truncate text-xs text-text-3">{item.category}</div>
+          <div className="truncate text-xs text-text-3">{formatCategory(item.category)}</div>
         </div>
       </div>
       <div className="flex flex-none items-center gap-2.5">

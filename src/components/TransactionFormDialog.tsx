@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Chip } from "@/components/Chip";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useCreditCards } from "@/hooks/useCreditCards";
 import { useWallets } from "@/hooks/useWallets";
@@ -195,7 +195,7 @@ export function TransactionFormDialog({
                     selected={category === preset}
                     onClick={() => setValue("category", preset, { shouldValidate: true })}
                   >
-                    {preset}
+                    {formatCategory(preset)}
                   </Chip>
                 ))}
                 <Chip type="button" onClick={() => setCustomCategory(true)}>

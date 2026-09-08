@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Skeleton } from "@/components/Skeleton";
 import { useBudgetStatus } from "@/hooks/useBudget";
@@ -15,7 +15,7 @@ function CategoryRow({ item }: { item: BudgetCategoryStatus }) {
   return (
     <div className="flex flex-col gap-1.5 border-b border-divider py-3 last:border-b-0">
       <div className="flex items-center gap-2">
-        <span className="flex-1 truncate text-[13px] capitalize text-text">{item.category}</span>
+        <span className="flex-1 truncate text-[13px] text-text">{formatCategory(item.category)}</span>
         <span className="flex-none font-mono text-[13px] text-text-3">
           {formatCurrency(item.spent)} / {formatCurrency(item.limit)}
         </span>

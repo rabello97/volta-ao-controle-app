@@ -27,7 +27,7 @@ import { usePayRecurringBill } from "@/hooks/useRecurringBills";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { useCategorySummary } from "@/hooks/useReports";
 import { useMonth, monthRange, type MonthValue } from "@/context/MonthContext";
-import { formatCurrency, formatMonthLabel, splitCurrency } from "@/lib/format";
+import { formatCurrency, formatMonthLabel, splitCurrency, formatCategory } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import type { TransactionFormPayload } from "@/api/transactions";
 import type { UpcomingDueItem } from "@/api/types";
@@ -62,7 +62,7 @@ function DueItem({ item, onPay, isPaying }: { item: UpcomingDueItem; onPay?: () 
       <div className={cn("h-[30px] w-px flex-none rounded-sm", barColor)} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="truncate text-[14px] font-medium text-text">{item.name}</span>
-        <span className="truncate text-[12px] text-text-5">{item.category}</span>
+        <span className="truncate text-[12px] text-text-5">{formatCategory(item.category)}</span>
       </div>
       <span className="flex-none whitespace-nowrap font-mono text-[14px] font-semibold text-text">
         {formatCurrency(item.amount)}

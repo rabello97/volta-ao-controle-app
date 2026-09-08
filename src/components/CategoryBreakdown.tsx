@@ -1,4 +1,4 @@
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory } from "@/lib/format";
 import type { CategorySummaryEntry } from "@/api/types";
 
 /** Ordem de cores das categorias, igual à do mockup (teal, âmbar, coral, azul,
@@ -38,7 +38,7 @@ export function CategoryBreakdown({ data }: { data: CategorySummaryEntry[] }) {
               className="size-2 flex-none rounded-[4px]"
               style={{ background: SEGMENT_COLORS[index] }}
             />
-            <span className="truncate text-[13px] capitalize text-text">{item.category}</span>
+            <span className="truncate text-[13px] text-text">{formatCategory(item.category)}</span>
             <span className="ml-auto flex-none whitespace-nowrap font-mono text-[13px] text-text-2">
               {formatCurrency(item.total)}
             </span>

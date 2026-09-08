@@ -6,7 +6,7 @@ import { useCreditCards } from "@/hooks/useCreditCards";
 import { useWallets } from "@/hooks/useWallets";
 import { useCreateTransaction } from "@/hooks/useTransactions";
 import { askAssistant } from "@/api/ai";
-import { formatCurrency, formatDate } from "@/lib/format";
+import { formatCurrency, formatDate, formatCategory } from "@/lib/format";
 import { calar, destravarVoz, falar, fraseDeConfirmacao, podeFalar } from "@/lib/speech";
 import { cn } from "@/lib/utils";
 import type { AcaoProposta, AssistantResult } from "@/api/types";
@@ -292,9 +292,9 @@ export function AssistantSheet({ open, onOpenChange }: { open: boolean; onOpenCh
                       </span>
                       <span className="ml-auto font-mono text-[12.5px] text-text-4">{formatDate(t.date)}</span>
                     </div>
-                    <div className="text-[13.5px] text-text">{t.description || t.category}</div>
+                    <div className="text-[13.5px] text-text">{t.description || formatCategory(t.category)}</div>
                     <div className="flex flex-wrap gap-1.5">
-                      <span className="rounded-full bg-track px-2.5 py-0.5 text-[11.5px] text-text-3">{t.category}</span>
+                      <span className="rounded-full bg-track px-2.5 py-0.5 text-[11.5px] text-text-3">{formatCategory(t.category)}</span>
                       {t.creditCardNickname && (
                         <span className="rounded-full bg-brand-tint px-2.5 py-0.5 text-[11.5px] font-semibold text-brand">
                           {t.creditCardNickname}

@@ -4,7 +4,7 @@ import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { Skeleton } from "@/components/Skeleton";
 import { ErrorState } from "@/components/ErrorState";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory } from "@/lib/format";
 import { plural } from "@/lib/plural";
 import { parsePrice } from "@/lib/shopping";
 import { cn } from "@/lib/utils";
@@ -227,7 +227,7 @@ export function InstallmentPlans({ scope }: { scope?: string }) {
             >
               {EXPENSE_CATEGORIES.map((c) => (
                 <option key={c} value={c}>
-                  {c}
+                  {formatCategory(c)}
                 </option>
               ))}
             </select>

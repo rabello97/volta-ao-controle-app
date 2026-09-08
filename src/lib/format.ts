@@ -42,3 +42,16 @@ export function splitCurrency(value: number): [string, string] {
   const idx = formatted.lastIndexOf(",");
   return idx === -1 ? [formatted, ""] : [formatted.slice(0, idx), formatted.slice(idx)];
 }
+
+/** Categoria como o usuário vê: "mercado" → "Mercado".
+ *
+ *  Só a exibição muda. O valor continua gravado em minúsculo porque renomear a
+ *  constante faria toda transação antiga virar uma categoria diferente das
+ *  novas — a mesma fragmentação que "saude" ao lado de "saúde" causava.
+ *
+ *  Maiúscula só na primeira letra, não em cada palavra: "Renda extra" lê melhor
+ *  em português que "Renda Extra". */
+export function formatCategory(categoria: string): string {
+  if (!categoria) return categoria;
+  return categoria.charAt(0).toUpperCase() + categoria.slice(1);
+}

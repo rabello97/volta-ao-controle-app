@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import { formatCurrency } from "@/lib/format";
+import { formatCurrency, formatCategory } from "@/lib/format";
 import { parsePrice } from "@/lib/shopping";
 import { EXPENSE_CATEGORIES } from "@/lib/categories";
 import { useBudgets, useDeleteBudget, useSetMonthlyIncome, useUpsertBudget } from "@/hooks/useBudget";
@@ -115,7 +115,7 @@ export function BudgetSettings() {
       <div className="mt-4 flex flex-col">
         {(budgets.data ?? []).map((budget) => (
           <div key={budget.id} className="flex items-center gap-3 border-b border-divider py-2.5 last:border-b-0">
-            <span className="flex-1 truncate text-[13px] capitalize text-text">{budget.category}</span>
+            <span className="flex-1 truncate text-[13px] text-text">{formatCategory(budget.category)}</span>
             <span className="flex-none font-mono text-[13px] text-text-3">
               {formatCurrency(Number(budget.monthlyLimit))}
             </span>
