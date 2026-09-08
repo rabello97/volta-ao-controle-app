@@ -273,11 +273,11 @@ export function AppLayout() {
           <div className="mt-auto rounded-[16px] border border-side-line bg-white/[0.07] p-[15px]">
             <b className="mb-1 block text-[13.5px] font-semibold text-side-on">Escanear nota</b>
             <p className="mb-3 text-[12.5px] leading-[1.5] text-side-fg-2">
-              Fotografe o cupom ou o print do banco e a transação entra sozinha.
+              Escolha a foto do cupom ou o print do banco e a transação entra sozinha.
             </p>
             <ScanButton
               onScanned={handleScanned}
-              label="Abrir câmera"
+              label="Escolher imagem"
               className="w-full justify-center rounded-[9px] border-transparent bg-side-accent py-2 text-[13px] font-semibold text-side-accent-ink transition-opacity hover:opacity-85 hover:text-side-accent-ink active:scale-[0.98]"
             />
           </div>
