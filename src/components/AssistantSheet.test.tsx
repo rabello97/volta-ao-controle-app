@@ -33,7 +33,7 @@ function acao(over: Partial<Record<string, unknown>> = {}) {
 
 function renderSheet() {
   vi.mocked(cardsApi.listCreditCards).mockResolvedValue([
-    { id: "card-1", nickname: "Nubank", closingDay: 3, dueDay: 10, creditLimit: null, currentInvoiceTotal: 0, utilizationPct: null },
+    { id: "card-1", userId: "u", nickname: "Nubank", closingDay: 3, dueDay: 10, creditLimit: null, currentInvoiceTotal: 0, utilizationPct: null },
   ]);
   vi.mocked(walletsApi.listWallets).mockResolvedValue([
     { id: "w-1", name: "VR Bruna", userId: "u", monthlyCredit: 640, creditDay: 15, balance: 480, active: true, daysUntilNextCredit: 7, createdAt: "" } as never,

@@ -3,7 +3,7 @@ import { pesoMensal, proximoAlivio, totalDevido, trajetoria } from "./debt";
 import type { CreditCardSummary, InstallmentPlan } from "@/api/types";
 
 const card = (over: Partial<CreditCardSummary> = {}): CreditCardSummary => ({
-  id: "c", nickname: "Nubank", closingDay: 3, dueDay: 10,
+  id: "c", userId: "u", nickname: "Nubank", closingDay: 3, dueDay: 10,
   creditLimit: null, currentInvoiceTotal: 0, utilizationPct: null, ...over,
 });
 

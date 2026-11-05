@@ -69,7 +69,9 @@ export function LoginPage() {
   } = useForm<LoginFormValues>({ resolver: zodResolver(loginSchema) });
 
   if (status === "authenticated") {
-    return <Navigate to="/dashboard" replace />;
+    // Entrar cai nas contas, não no painel: a primeira pergunta do dia é
+    // "o que eu pago agora", e não "quanto sobra".
+    return <Navigate to="/contas" replace />;
   }
 
   async function onSubmit(values: LoginFormValues) {

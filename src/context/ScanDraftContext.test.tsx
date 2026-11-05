@@ -35,7 +35,7 @@ function Gatilho() {
 
 function renderFluxo() {
   vi.mocked(creditCardsApi.listCreditCards).mockResolvedValue([
-    { id: "card-1", nickname: "Nubank", closingDay: 3, dueDay: 10, creditLimit: null, currentInvoiceTotal: 0, utilizationPct: null },
+    { id: "card-1", userId: "u", nickname: "Nubank", closingDay: 3, dueDay: 10, creditLimit: null, currentInvoiceTotal: 0, utilizationPct: null },
   ]);
   vi.mocked(transactionsApi.createTransaction).mockResolvedValue({ id: "t-1" } as never);
 

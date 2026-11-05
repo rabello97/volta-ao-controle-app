@@ -15,7 +15,7 @@ function renderDialog() {
   vi.mocked(creditCardsApi.listCreditCards).mockResolvedValue([
     {
       id: "card-1",
-      nickname: "Nubank",
+      userId: "u", nickname: "Nubank",
       closingDay: 10,
       dueDay: 17,
       creditLimit: null,

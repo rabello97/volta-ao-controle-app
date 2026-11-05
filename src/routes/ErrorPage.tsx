@@ -54,10 +54,10 @@ export function ErrorPage({ kind = "not-found" }: { kind?: ErrorKind }) {
             <ArrowLeft className="size-3.5" /> Voltar
           </button>
           <Link
-            to="/dashboard"
+            to="/contas"
             className="rounded-[10px] bg-brand px-3.5 py-2 text-[13px] font-semibold text-brand-ink transition-all hover:bg-brand-hover active:scale-95"
           >
-            Ir para o painel
+            Ir para as contas
           </Link>
         </div>
       </div>

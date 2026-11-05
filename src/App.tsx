@@ -6,6 +6,7 @@ import { DashboardPage } from "@/routes/DashboardPage";
 import { TransactionsPage } from "@/routes/TransactionsPage";
 import { HousePage } from "@/routes/HousePage";
 import { BillsPage } from "@/routes/BillsPage";
+import { ContasPage } from "@/routes/ContasPage";
 import { CreditCardsPage } from "@/routes/CreditCardsPage";
 import { CreditCardDetailPage } from "@/routes/CreditCardDetailPage";
 import { ReportsPage } from "@/routes/ReportsPage";
@@ -25,7 +26,10 @@ export function App() {
         <Route element={<AppLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/transactions" element={<TransactionsPage />} />
-          <Route path="/contas" element={<BillsPage />} />
+          <Route path="/contas" element={<ContasPage />} />
+          {/* As três abas antigas continuam de pé — contas fixas,
+              parcelamentos e dívidas — só saíram do caminho. */}
+          <Route path="/compromissos" element={<BillsPage />} />
           {/* Rota antiga, mantida para quem salvou o link. */}
           <Route path="/recurring-bills" element={<Navigate to="/contas" replace />} />
           <Route path="/casa" element={<HousePage />} />
@@ -39,7 +43,9 @@ export function App() {
         </Route>
       </Route>
 
-      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+      {/* Entrar no app cai nas contas: é a pergunta do dia a dia. O painel
+          respondia "quanto sobra", que depende de renda lançada todo mês. */}
+      <Route path="/" element={<Navigate to="/contas" replace />} />
       <Route path="/sem-acesso" element={<ErrorPage kind="forbidden" />} />
       {/* Rota desconhecida mostra o 404 em vez de mandar em silêncio para o
           painel — assim um link errado fica visível em vez de parecer que a

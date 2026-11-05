@@ -9,7 +9,6 @@ import { ScanButton } from "@/components/ScanButton";
 import { AssistantSheet } from "@/components/AssistantSheet";
 import { formatCurrency } from "@/lib/format";
 import { useTransactions } from "@/hooks/useTransactions";
-import { useRecurringBills } from "@/hooks/useRecurringBills";
 import { useCreditCards } from "@/hooks/useCreditCards";
 import { useAIStatus } from "@/hooks/useAI";
 import { usePendingSourceConfirmations } from "@/hooks/useMoneySource";
@@ -28,39 +27,9 @@ import {
 /** Ícones desenhados a partir dos SVGs inline do mockup (16x16, stroke 1.5). */
 const NAV_ITEMS = [
   {
-    to: "/dashboard",
-    label: "Painel",
-    group: "Mês",
-    icon: (
-      <>
-        <rect x="1.8" y="1.8" width="5" height="5" rx="1.2" />
-        <rect x="9.2" y="1.8" width="5" height="5" rx="1.2" />
-        <rect x="1.8" y="9.2" width="5" height="5" rx="1.2" />
-        <rect x="9.2" y="9.2" width="5" height="5" rx="1.2" />
-      </>
-    ),
-  },
-  {
-    to: "/transactions",
-    label: "Transações",
-    group: "Mês",
-    icon: <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />,
-  },
-  {
-    to: "/reports",
-    label: "Relatórios",
-    group: "Mês",
-    icon: (
-      <>
-        <circle cx="8" cy="8" r="6.2" />
-        <path d="M8 1.8V8h6.2" />
-      </>
-    ),
-  },
-  {
     to: "/contas",
     label: "Contas",
-    group: "Compromissos",
+    group: "Mês",
     icon: (
       <>
         <path d="M2.6 8a5.4 5.4 0 0 1 9.2-3.8M13.4 8a5.4 5.4 0 0 1-9.2 3.8" />
@@ -71,7 +40,7 @@ const NAV_ITEMS = [
   {
     to: "/credit-cards",
     label: "Cartões",
-    group: "Compromissos",
+    group: "Mês",
     icon: (
       <>
         <rect x="1.5" y="3.5" width="13" height="9" rx="2" />
@@ -80,9 +49,26 @@ const NAV_ITEMS = [
     ),
   },
   {
+    to: "/compromissos",
+    label: "Parcelas",
+    group: "Mês",
+    icon: (
+      <>
+        <circle cx="8" cy="8" r="6.2" />
+        <path d="M8 1.8V8h6.2" />
+      </>
+    ),
+  },
+  {
+    to: "/transactions",
+    label: "Lançamentos",
+    group: "Registro",
+    icon: <path d="M2 5h10l-2.5-2.5M14 11H4l2.5 2.5" />,
+  },
+  {
     to: "/casa",
     label: "Casa",
-    group: "Casa",
+    group: "Registro",
     icon: (
       <>
         <path d="M2 3h1.9l1.7 7.6h6.9l1.6-5.3H4.4" />
@@ -93,7 +79,7 @@ const NAV_ITEMS = [
   },
 ] as const;
 
-const NAV_GROUPS = ["Mês", "Compromissos", "Casa"] as const;
+const NAV_GROUPS = ["Mês", "Registro"] as const;
 
 function NavIcon({ children }: { children: React.ReactNode }) {
   return (
@@ -191,7 +177,6 @@ export function AppLayout() {
   const scope = scopeFor(view, partner?.id ?? null);
 
   const transactions = useTransactions({ page: 1, limit: 1, scope });
-  const bills = useRecurringBills(scope);
   const cards = useCreditCards(scope);
   const ai = useAIStatus();
   // Sem push, o contador é como ela fica sabendo que tem algo esperando ela.
@@ -202,7 +187,6 @@ export function AppLayout() {
 
   const counts: Record<string, number | undefined> = {
     "/transactions": transactions.data?.total,
-    "/contas": bills.data?.length,
   };
   const cardsAlert = (cards.data ?? []).some((c) => (c.utilizationPct ?? 0) >= 70);
 
@@ -255,7 +239,7 @@ export function AppLayout() {
                         <NavIcon>{item.icon}</NavIcon>
                       </span>
                       {item.label}
-                      {item.to === "/dashboard" && aguardando > 0 ? (
+                      {item.to === "/contas" && aguardando > 0 ? (
                         <span
                           title="Esperando você dizer de onde veio o dinheiro"
                           className="ml-auto rounded-full bg-warning px-[7px] py-px font-mono text-[11px] font-semibold text-[#2A2519]"

@@ -131,6 +131,8 @@ export interface CreditCard {
 
 export interface CreditCardSummary {
   id: string;
+  /** De quem é o cartão — a visão do casal precisa marcar o dono. */
+  userId: string;
   nickname: string;
   closingDay: number;
   dueDay: number;
@@ -185,14 +187,18 @@ export type UpcomingDueStatus = "PAID" | "DUE" | "OVERDUE";
 
 export interface UpcomingDueItem {
   id: string;
-  kind: "RECURRING_BILL" | "INVOICE";
+  /** PLANNED = gasto previsto não mensal (manutenção do carro, IPVA, seguro). */
+  kind: "RECURRING_BILL" | "INVOICE" | "PLANNED";
   name: string;
   category: string;
   amount: number;
   dueDate: string;
   status: UpcomingDueStatus;
+  /** De quem é a conta — a tela do casal marca quem paga o quê. */
+  ownerId: string;
   recurringBillId?: string;
   creditCardId?: string;
+  houseTaskId?: string;
 }
 
 export interface BalancePoint {
