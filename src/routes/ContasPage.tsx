@@ -174,7 +174,7 @@ export function ContasPage() {
     <>
       <PageHeader
         title="Contas"
-        subtitle={partner ? `Suas e de ${partner.name.split(" ")[0]}` : month.label}
+        subtitle={partner ? `Suas e de ${partner.name.split(" ")[0]}` : "Tudo que vence neste mês"}
         ctaLabel="Nova conta"
         onCta={() => setFormAberto(true)}
       />
